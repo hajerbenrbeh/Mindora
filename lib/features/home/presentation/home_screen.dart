@@ -401,7 +401,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 child: Icon(
                                   Icons.calendar_month_outlined,
                                   size: 18,
-                                  color: tokens.accent,
+                                  color: tokens.textPrimary,
                                 ),
                               ),
                             ),
@@ -423,8 +423,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 width: 38,
                                 height: 38,
                                 decoration: BoxDecoration(
-                                  color: tokens.accent,
+                                  color: isDark ? tokens.surfaceSecondary : tokens.accent,
                                   shape: BoxShape.circle,
+                                  border: isDark
+                                      ? Border.all(color: tokens.border, width: 1.0)
+                                      : null,
                                 ),
                                 alignment: Alignment.center,
                                 child: (profile?.preferredName.isNotEmpty == true && profile!.preferredName != 'Friend')
@@ -433,13 +436,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
-                                          color: isDark ? tokens.background : Colors.white,
+                                          color: isDark ? tokens.textPrimary : Colors.white,
                                         ),
                                       )
                                     : Icon(
                                         Icons.person_outline_rounded,
                                         size: 19,
-                                        color: isDark ? tokens.background : Colors.white,
+                                        color: isDark ? tokens.textPrimary : Colors.white,
                                       ),
                               ),
                             ),
@@ -832,7 +835,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(tokens.cardRadius),
         border: Border.all(color: tokens.border, width: 1),
       ),
       child: Center(
@@ -982,15 +985,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required MindTokens tokens,
     required VoidCallback onTap,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tileRadius = isDark ? tokens.cardRadius : 18.0;
+    final iconBoxRadius = isDark ? tokens.chipRadius : 11.0;
+
     return MindPressable(
       onPressed: onTap,
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(tileRadius),
       child: Container(
         constraints: const BoxConstraints(minHeight: 72),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: tokens.surface,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(tileRadius),
           border: Border.all(color: tokens.border, width: 1.0),
         ),
         child: Row(
@@ -1000,7 +1007,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               height: 36,
               decoration: BoxDecoration(
                 color: tokens.accentSoft,
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.circular(iconBoxRadius),
+                border: isDark ? Border.all(color: tokens.border, width: 1.0) : null,
               ),
               child: Icon(icon, size: 18, color: tokens.accent),
             ),

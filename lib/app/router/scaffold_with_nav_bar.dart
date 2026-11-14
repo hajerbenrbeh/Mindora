@@ -58,12 +58,12 @@ class ScaffoldWithNavBar extends ConsumerWidget {
               height: 64,
               decoration: BoxDecoration(
                 color: navBg,
-                borderRadius: BorderRadius.circular(24),
+                borderRadius: BorderRadius.circular(isDark ? 14 : 24),
                 border: Border.all(color: borderColor, width: 1.0),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.28 : 0.05),
-                    blurRadius: 16,
+                    color: Colors.black.withValues(alpha: isDark ? 0.55 : 0.05),
+                    blurRadius: isDark ? 20 : 16,
                     offset: const Offset(0, 4),
                   ),
                 ],
@@ -196,8 +196,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: activeColor.withValues(alpha: isDark ? 0.25 : 0.22),
-                      blurRadius: 8,
+                      color: activeColor.withValues(alpha: isDark ? 0.16 : 0.22),
+                      blurRadius: isDark ? 12 : 8,
                       offset: const Offset(0, 2),
                     ),
                   ],

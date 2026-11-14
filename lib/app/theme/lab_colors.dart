@@ -79,21 +79,21 @@ class LabColors {
   static const Color warmIvoryBorder = borderIvory; // #E5E0D6
 
   // ===========================================================================
-  // NIGHT PALETTE (Soft Slate Obsidian & Sage Glow)
+  // NIGHT PALETTE (Luxury Vercel Dark — Pitch Black Canvas & Hairline Obsidian)
   // ===========================================================================
-  static const Color nightBackground = Color(0xFF121614); // Soft calm obsidian slate
-  static const Color nightSurface = Color(0xFF1A211E); // Elevated slate card surface
-  static const Color nightSurfaceElevated = Color(0xFF232C28); // Level 2 elevated surface
-  static const Color nightSurfaceSubtle = Color(0xFF232C28); // Secondary surface
-  static const Color nightBorder = Color(0xFF2B3631); // Subtle boundary (1.0px)
-  static const Color nightBorderSubtle = Color(0xFF202925);
-  static const Color nightTextPrimary = Color(0xFFEFF2EE); // Calm warm ivory primary text
-  static const Color nightTextSecondary = Color(0xFF9CA9A0); // Muted neutral sage secondary text
-  static const Color nightAccent = Color(0xFF8EB19B); // Soft sage interactive glow
+  static const Color nightBackground = Color(0xFF000000); // Pure pitch black canvas
+  static const Color nightSurface = Color(0xFF0A0A0A); // Level 1 obsidian card surface
+  static const Color nightSurfaceElevated = Color(0xFF121212); // Level 2 elevated inset well
+  static const Color nightSurfaceSubtle = Color(0xFF121212); // Secondary subtle surface
+  static const Color nightBorder = Color(0xFF222222); // Crisp 1.0px Geist hairline border
+  static const Color nightBorderSubtle = Color(0xFF181818); // Subtle divider hairline
+  static const Color nightTextPrimary = Color(0xFFFAFAFA); // High-contrast crisp white text
+  static const Color nightTextSecondary = Color(0xFFA1A1AA); // Muted neutral zinc secondary text
+  static const Color nightAccent = Color(0xFFFFFFFF); // Stark white Vercel primary action accent
   static const Color nightAccentBlue = Color(0xFF38BDF8);
-  static const Color nightAccentSoft = Color(0xFF213028);
+  static const Color nightAccentSoft = Color(0xFF161616); // Subtle obsidian active tint
 
-  // Dark Forest Semantic Aliases
+  // Dark Forest Semantic Aliases (mapped cleanly to Vercel obsidian hierarchy)
   static const Color darkForestBackground = nightBackground;
   static const Color darkForestSurface = nightSurface;
   static const Color darkForestCard = nightSurfaceElevated;
@@ -102,70 +102,70 @@ class LabColors {
   static const Color darkTextSecondary = nightTextSecondary;
 
   // ===========================================================================
-  // HARMONIZED MOOD PALETTE (Distinct, dignified, grounded in nature)
+  // HARMONIZED MOOD PALETTE (Crisp on both Warm Linen & Pitch Black)
   // ===========================================================================
-  static const Color moodCalm = Color(0xFF8EB19B); // Botanical Sage
-  static const Color moodAnxious = Color(0xFFD4976A); // Warm Sand / Desert Dune
-  static const Color moodFrustrated = Color(0xFFE5A93C); // Soft Amber Gold
-  static const Color moodHeavy = Color(0xFF9B8CE0); // Soft Iris Slate
-  static const Color moodRestless = Color(0xFF5FA8D3); // Mineral Mist Sky
+  static const Color moodCalm = Color(0xFF34D399); // Emerald Sage (#34D399)
+  static const Color moodAnxious = Color(0xFFF59E0B); // Warm Amber
+  static const Color moodFrustrated = Color(0xFFE11D48); // Cherry Red (#E11D48)
+  static const Color moodHeavy = Color(0xFFA78BFA); // Iris Violet
+  static const Color moodRestless = Color(0xFF38BDF8); // Sky Ice
 
   // ===========================================================================
-  // SAFETY & CRISIS WARMTH (Restrained Terracotta / Warm Clay)
-  // Highly visible emergency support without harsh neon red or decorative pink
+  // SAFETY & CRISIS WARMTH (Restrained Cherry / Warm Terracotta)
+  // Highly visible emergency support without harsh visual noise
   // ===========================================================================
   static const Color safetyWarmth = Color(0xFFB34624); // Rich Terracotta (>= 5.0:1 AA on soft safety tint)
-  static const Color safetyWarmthDark = Color(0xFFE58363); // Terracotta Ember (Dark)
+  static const Color safetyWarmthDark = Color(0xFFFB7185); // Luminous Cherry Rose (>= 6.3:1 AA on dark tint)
   static const Color safetySoftBgLight = Color(0xFFFDF3EE);
-  static const Color safetySoftBgDark = Color(0xFF2B1C17);
+  static const Color safetySoftBgDark = Color(0xFF1E0B10);
   static const Color safetyBorderLight = Color(0xFFF2CFC2);
-  static const Color safetyBorderDark = Color(0xFF4E2F24);
+  static const Color safetyBorderDark = Color(0xFF4C1422);
   static const Color safetySoftBg = safetySoftBgLight;
 
   // Harmonized warm grounding accents
-  static const Color cherryRed = safetyWarmth;
-  static const Color cherryRedGlow = Color(0xFFD4976A);
-  static const Color cherryRedDeep = Color(0xFF8B3A1C);
+  static const Color cherryRed = Color(0xFFE11D48);
+  static const Color cherryRedGlow = Color(0xFFFB7185);
+  static const Color cherryRedDeep = Color(0xFF9F1239);
   static const Color cherryBgDark = safetySoftBgDark;
   static const Color cherryBorderDark = safetyBorderDark;
   static const Color cherryBgLight = safetySoftBgLight;
   static const Color cherryBorderLight = safetyBorderLight;
 
-  // Warm Cashmere Beige
-  static const Color warmBeige = Color(0xFFD9B9A9);
-  static const Color warmBeigeGlow = Color(0xFFF4E5DA);
+  // Warm Cashmere Beige (#E7D8C9)
+  static const Color warmBeige = Color(0xFFE7D8C9);
+  static const Color warmBeigeGlow = Color(0xFFF5ECE3);
   static const Color warmBeigeMuted = Color(0xFFC8B69B);
   static const Color warmBeigeDark = Color(0xFF8A7760);
-  static const Color warmBeigeBgDark = Color(0xFF25201B);
-  static const Color warmBeigeBorderDark = Color(0xFF3E362E);
+  static const Color warmBeigeBgDark = Color(0xFF171411);
+  static const Color warmBeigeBorderDark = Color(0xFF332C24);
   static const Color warmBeigeBgLight = Color(0xFFFAF7F2);
   static const Color warmBeigeBorderLight = Color(0xFFE8DECF);
 
-  // Sage Green & Parasympathetic Equilibrium
-  static const Color sageGreen = Color(0xFF8EB19B);
-  static const Color sageGreenGlow = Color(0xFFA7C2B0);
-  static const Color sageBgDark = Color(0xFF1D2923);
-  static const Color sageBorderDark = Color(0xFF2D4036);
+  // Sage Green & Parasympathetic Equilibrium (#34D399)
+  static const Color sageGreen = Color(0xFF34D399);
+  static const Color sageGreenGlow = Color(0xFF6EE7B7);
+  static const Color sageBgDark = Color(0xFF0A1D15);
+  static const Color sageBorderDark = Color(0xFF163A2B);
   static const Color sageBgLight = Color(0xFFE8EFEA);
   static const Color sageBorderLight = Color(0xFFC9D9CE);
 
-  // Backward compatibility tokens mapped directly to Option A palette
+  // Backward compatibility tokens mapped directly to Luxury Vercel Dark palette
   static const Color surface0 = nightBackground;
   static const Color surface1 = nightSurface;
   static const Color surfaceElevated = nightSurfaceElevated;
   static const Color borderSubtle = nightBorder;
   static const Color textPrimary = nightTextPrimary;
   static const Color textSecondary = nightTextSecondary;
-  static const Color textTertiary = Color(0xFF8D9B91); // Dark tertiary muted sage (>= 4.9:1 AA)
+  static const Color textTertiary = Color(0xFF8F8F98); // Neutral zinc tertiary (>= 5.7:1 AA on #121212)
   static const Color deepBurgundy = Color(0xFF2B3D31);
   static const Color darkWine = nightSurface;
   static const Color almostBlackBurgundy = nightBackground;
   static const Color softBeige = Color(0xFFE8EFEA);
-  static const Color champagneGold = Color(0xFF8EB19B); // Calm Sage Accent
-  static const Color champagneGlow = Color(0xFFA7C2B0);
-  static const Color wineBorder = nightBorder; // Slate Border
-  static const Color burgundyRose = Color(0xFF8EB19B);
-  static const Color burgundyMaroon = Color(0xFF5B7563);
+  static const Color champagneGold = Color(0xFFE7D8C9); // Warm Beige
+  static const Color champagneGlow = Color(0xFFF5ECE3);
+  static const Color wineBorder = nightBorder; // Hairline Border
+  static const Color burgundyRose = Color(0xFFFB7185);
+  static const Color burgundyMaroon = Color(0xFF9F1239);
   static const Color burgundyDark = nightSurface;
 
   // Helper Methods

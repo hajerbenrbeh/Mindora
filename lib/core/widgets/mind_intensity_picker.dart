@@ -174,22 +174,26 @@ class _ExpressiveTierCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final fill = isSelected
-        ? activeColor.withValues(alpha: 0.14)
-        : tokens.surfaceSecondary.withValues(alpha: 0.72);
+        ? activeColor.withValues(alpha: isDark ? 0.13 : 0.14)
+        : (isDark
+            ? tokens.surfaceSecondary
+            : tokens.surfaceSecondary.withValues(alpha: 0.72));
     final borderColor = isSelected ? activeColor : tokens.border;
     final badgeFill = isSelected
         ? activeColor.withValues(alpha: 0.20)
         : tokens.surface;
     final badgeBorder = isSelected ? activeColor : tokens.border;
     final strokeColor = isSelected ? tokens.textPrimary : tokens.textSecondary;
+    final tileRadius = isDark ? tokens.buttonRadius : 16.0;
 
     return Semantics(
       selected: isSelected,
       child: MindPressable(
         key: ValueKey<String>('intensity-tier-${spec.tierIndex + 1}'),
         semanticLabel: semanticLabel,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(tileRadius),
         pressScale: 0.96,
         onPressed: onTap,
         child: AnimatedContainer(
@@ -203,11 +207,19 @@ class _ExpressiveTierCard extends StatelessWidget {
           ),
           decoration: BoxDecoration(
             color: fill,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(tileRadius),
             border: Border.all(
               color: borderColor,
               width: isSelected ? 1.5 : 1.0,
             ),
+            boxShadow: (isSelected && isDark)
+                ? [
+                    BoxShadow(
+                      color: activeColor.withValues(alpha: 0.16),
+                      blurRadius: 10,
+                    ),
+                  ]
+                : null,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -287,15 +299,17 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final direction = Directionality.of(context);
     final animDuration =
         reduceMotion ? Duration.zero : const Duration(milliseconds: 140);
+    final capsuleRadius = isDark ? tokens.buttonRadius : 16.0;
 
     return Container(
       constraints: const BoxConstraints(minHeight: 48),
       decoration: BoxDecoration(
         color: tokens.surfaceSecondary,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(capsuleRadius),
         border: Border.all(color: tokens.border),
       ),
       child: Row(
@@ -307,7 +321,7 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
               key: const ValueKey<String>('intensity-step-down'),
               enabled: selected > 1,
               semanticLabel: strings.intensityDecreaseLabel,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(capsuleRadius - 1),
               onPressed: selected > 1 ? () => onChanged(selected - 1) : null,
               child: Center(
                 child: Icon(
@@ -395,7 +409,7 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
               key: const ValueKey<String>('intensity-step-up'),
               enabled: selected < 10,
               semanticLabel: strings.intensityIncreaseLabel,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(capsuleRadius - 1),
               onPressed: selected < 10 ? () => onChanged(selected + 1) : null,
               child: Center(
                 child: Icon(

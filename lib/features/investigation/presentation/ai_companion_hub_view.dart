@@ -148,7 +148,9 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: dialogTokens.safetyWarmth,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(dialogCtx).brightness == Brightness.dark
+                    ? dialogTokens.background
+                    : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(dialogTokens.buttonRadius),
                 ),
@@ -207,7 +209,9 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: dialogTokens.safetyWarmth,
-                foregroundColor: Colors.white,
+                foregroundColor: Theme.of(dialogCtx).brightness == Brightness.dark
+                    ? dialogTokens.background
+                    : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(dialogTokens.buttonRadius),
                 ),

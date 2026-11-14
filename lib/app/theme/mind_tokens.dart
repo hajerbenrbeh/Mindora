@@ -65,9 +65,9 @@ class MindTokens extends ThemeExtension<MindTokens> {
     accentSoft: LabColors.nightAccentSoft,
     safetyWarmth: LabColors.safetyWarmthDark,
     safetyWarmthSoft: LabColors.safetySoftBgDark,
-    cardRadius: 20.0,
-    buttonRadius: 18.0,
-    chipRadius: 20.0,
+    cardRadius: 10.0,
+    buttonRadius: 10.0,
+    chipRadius: 8.0,
   );
 
   @override

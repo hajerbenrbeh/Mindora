@@ -208,6 +208,9 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: ctx.tokens.safetyWarmth,
+              foregroundColor: Theme.of(ctx).brightness == Brightness.dark
+                  ? ctx.tokens.background
+                  : Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(ctx.tokens.buttonRadius),
               ),
@@ -232,7 +235,17 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                 }
               }
             },
-            child: Text(strings.deletePermanentlyBtn, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.5)),
+            child: Text(
+              strings.deletePermanentlyBtn,
+              style: TextStyle(
+                color: Theme.of(ctx).brightness == Brightness.dark
+                    ? ctx.tokens.background
+                    : Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 11,
+                letterSpacing: 0.5,
+              ),
+            ),
           ),
         ],
       ),

@@ -48,10 +48,16 @@ class SupportButton extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: tokens.safetyWarmthSoft,
                 shape: BoxShape.circle,
+                border: Border.all(
+                  color: Theme.of(context).brightness == Brightness.dark
+                      ? LabColors.safetyBorderDark
+                      : LabColors.safetyBorderLight,
+                  width: 1.0,
+                ),
               ),
               child: Icon(
                 Icons.shield_outlined,
-                size: 20,
+                size: 19,
                 color: tokens.safetyWarmth,
               ),
             ),

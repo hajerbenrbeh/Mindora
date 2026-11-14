@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/router/app_router.dart';
+import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_intensity_picker.dart';
 import '../../../../core/widgets/mind_pressable.dart';
@@ -76,13 +77,21 @@ class HomeDailyCheckInCard extends StatelessWidget {
               padding: const EdgeInsetsDirectional.fromSTEB(12, 6, 4, 6),
               margin: const EdgeInsets.only(bottom: 14),
               decoration: BoxDecoration(
-                color: tokens.accentSoft,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: tokens.accent.withValues(alpha: 0.4)),
+                color: isDark ? tokens.surfaceSecondary : tokens.accentSoft,
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                border: Border.all(
+                  color: isDark
+                      ? LabColors.sageBorderDark
+                      : tokens.accent.withValues(alpha: 0.4),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.check_circle_outline_rounded, size: 16, color: tokens.accent),
+                  Icon(
+                    Icons.check_circle_outline_rounded,
+                    size: 16,
+                    color: isDark ? LabColors.sageGreen : tokens.accent,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -97,7 +106,7 @@ class HomeDailyCheckInCard extends StatelessWidget {
                   MindPressable(
                     onPressed: () => context.go('${AppRouter.track}?tab=1'),
                     semanticLabel: viewLabel,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(tokens.chipRadius),
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                       child: Padding(
@@ -108,7 +117,7 @@ class HomeDailyCheckInCard extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
-                              color: tokens.accent,
+                              color: isDark ? tokens.textPrimary : tokens.accent,
                             ),
                           ),
                         ),
@@ -124,12 +133,16 @@ class HomeDailyCheckInCard extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 14),
               decoration: BoxDecoration(
                 color: tokens.surfaceSecondary,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 border: Border.all(color: tokens.border),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.history_toggle_off_rounded, size: 15, color: tokens.accent),
+                  Icon(
+                    Icons.history_toggle_off_rounded,
+                    size: 15,
+                    color: isDark ? LabColors.warmBeige : tokens.accent,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text.rich(
@@ -187,16 +200,27 @@ class HomeDailyCheckInCard extends StatelessWidget {
                     curve: Curves.easeOutCubic,
                     constraints: const BoxConstraints(minHeight: 48),
                     padding: EdgeInsets.symmetric(
-                      horizontal: isSelected ? 12.4 : 13.0,
-                      vertical: isSelected ? 9.4 : 10.0,
+                      horizontal: isSelected ? 12.5 : 13.0,
+                      vertical: isSelected ? 9.5 : 10.0,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected ? tokens.accentSoft : tokens.surface,
+                      color: isSelected
+                          ? (isDark ? moodColor.withValues(alpha: 0.12) : tokens.accentSoft)
+                          : (isDark ? tokens.surfaceSecondary : tokens.surface),
                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                       border: Border.all(
                         color: isSelected ? moodColor : tokens.border,
-                        width: isSelected ? 1.6 : 1.0,
+                        width: isSelected ? 1.5 : 1.0,
                       ),
+                      boxShadow: (isSelected && isDark)
+                          ? [
+                              BoxShadow(
+                                color: moodColor.withValues(alpha: 0.16),
+                                blurRadius: 10,
+                                spreadRadius: 0,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -308,15 +332,15 @@ class HomeDailyCheckInCard extends StatelessWidget {
               fillColor: tokens.surfaceSecondary,
               contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 borderSide: BorderSide(color: tokens.border, width: 1.0),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 borderSide: BorderSide(color: tokens.border, width: 1.0),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 borderSide: BorderSide(color: tokens.accent, width: 1.5),
               ),
             ),
