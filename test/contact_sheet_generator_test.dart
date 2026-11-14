@@ -48,7 +48,7 @@ void main() {
     final canvas = Canvas(recorder, const Rect.fromLTWH(0, 0, totalW, totalH));
 
     // Background
-    final bgPaint = Paint()..color = const Color(0xFF151B19);
+    final bgPaint = Paint()..color = const Color(0xFF000000);
     canvas.drawRect(const Rect.fromLTWH(0, 0, totalW, totalH), bgPaint);
 
     // Header Title
@@ -70,7 +70,7 @@ void main() {
     // Subtitle
     final subPainter = TextPainter(
       text: const TextSpan(
-        text: '8 Core Screens Rendered with Inter Typography, Earth & Sage Palette, and Data Integrity',
+        text: '8 Core Screens Rendered with Inter Typography, Luxury Vercel Palette & Data Integrity',
         style: TextStyle(
           color: Color(0xFF91AD9A),
           fontSize: 20,
@@ -111,7 +111,7 @@ void main() {
 
       // Border behind image
       final borderPaint = Paint()
-        ..color = const Color(0xFF303E37)
+        ..color = const Color(0xFF222222)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
       final rrect = RRect.fromRectAndRadius(imgRect, const Radius.circular(20));
