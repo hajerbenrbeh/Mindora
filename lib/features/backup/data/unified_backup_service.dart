@@ -124,7 +124,7 @@ class UnifiedBackupService {
 
       final Map<String, dynamic> backupData = {
         'schemaVersion': schemaVersion,
-        'app': 'Mind Forensics',
+        'app': 'Mindora',
         'exportedAt': now.toIso8601String(),
         'userId': userId,
         'userCodename': codename,
@@ -183,10 +183,10 @@ class UnifiedBackupService {
     try {
       final Map<String, dynamic> data = jsonDecode(rawJson) as Map<String, dynamic>;
 
-      if (data['app'] != 'Mind Forensics' && data['sessions'] == null && data['traces'] == null) {
+      if (data['app'] != 'Mindora' && data['app'] != 'Mind Forensics' && data['sessions'] == null && data['traces'] == null) {
         return const BackupOperationResult(
           success: false,
-          message: 'Invalid backup format: missing Mind Forensics schema headers.',
+          message: 'Invalid backup format: missing Mindora schema headers.',
         );
       }
 
@@ -195,7 +195,7 @@ class UnifiedBackupService {
       if (majorVersion > 2) {
         return BackupOperationResult(
           success: false,
-          message: 'Unsupported backup schema version ($schema). Please update Mind Forensics.',
+          message: 'Unsupported backup schema version ($schema). Please update Mindora.',
         );
       }
 
@@ -372,7 +372,7 @@ class UnifiedBackupService {
       final ciphertext = await cipher.encryptString(rawResult.rawJson!);
 
       final encryptedPayload = {
-        'app': 'Mind Forensics',
+        'app': 'Mindora',
         'encrypted': true,
         'schemaVersion': '2.0.0',
         'kdf': 'pbkdf2_sha256',
@@ -433,7 +433,7 @@ class UnifiedBackupService {
       final bool isLegacyFormat = schemaVersion.startsWith('1.') ||
           data['schemaVersion'] == null ||
           (iterationsRaw == kLegacyPbkdf2Iterations &&
-              (data['app'] == 'Mind Forensics' || data['app'] == null));
+              (data['app'] == 'Mindora' || data['app'] == 'Mind Forensics' || data['app'] == null));
 
       if (iterationsRaw == null) {
         // Missing iteration fields are accepted ONLY for a recognized legacy format.

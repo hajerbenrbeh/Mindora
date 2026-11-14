@@ -62,7 +62,7 @@ class CloudSyncService {
   String exportBackupJson(List<CaseModel> sessions) {
     final list = sessions.map((c) => c.toJson()).toList();
     final Map<String, dynamic> payload = {
-      'app': 'Mind Forensics',
+      'app': 'Mindora',
       'version': '1.0.0',
       'exportedAt': DateTime.now().toIso8601String(),
       'sessionCount': sessions.length,

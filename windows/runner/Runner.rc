@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.mindforensics" "\0"
-            VALUE "FileDescription", "mind_forensics" "\0"
+            VALUE "FileDescription", "Mindora" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "mind_forensics" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.mindforensics. All rights reserved." "\0"
             VALUE "OriginalFilename", "mind_forensics.exe" "\0"
-            VALUE "ProductName", "mind_forensics" "\0"
+            VALUE "ProductName", "Mindora" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

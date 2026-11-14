@@ -12,7 +12,7 @@ void main() {
     test('Base system prompt contains mandated clinical identity & principles', () {
       final base = PsychologicalCompanionPrompt.baseSystemInstruction;
 
-      expect(base.contains('Mind Forensics Psychological Companion'), isTrue);
+      expect(base.contains('Mindora Psychological Companion'), isTrue);
       expect(base.contains('Cognitive Behavioral Therapy (CBT)'), isTrue);
       expect(base.contains('HANDLING INTRUSIVE THOUGHTS'), isTrue);
       expect(base.contains('HANDLING MOOD DISORDERS'), isTrue);

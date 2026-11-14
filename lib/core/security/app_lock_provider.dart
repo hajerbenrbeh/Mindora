@@ -50,7 +50,7 @@ class AppLockNotifier extends Notifier<AppLockState> {
     }
 
     final success = await _securityService.authenticate(
-      reason: reason ?? 'Authenticate to unlock your Mind Forensics vault',
+      reason: reason ?? 'Authenticate to unlock Mindora',
     );
     if (success) {
       state = state.copyWith(isEnabled: true, isLocked: false);

@@ -25,7 +25,7 @@ void main() {
       expect(AiCompanionSystemPrompt.promptVersion, '1.2.0');
       expect(
         AiCompanionSystemPrompt.coreIdentityPrompt,
-        contains('You are the AI Companion inside Mind Forensics.'),
+        contains('You are the AI Companion inside Mindora.'),
       );
       expect(
         AiCompanionSystemPrompt.coreIdentityPrompt,
@@ -299,7 +299,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Initially active conversation dialogue & warm welcome state are open
-      expect(find.text('AI Guide'), findsAtLeastNWidgets(1));
+      expect(find.text('Companion'), findsAtLeastNWidgets(1));
       expect(find.text("What's on your mind?"), findsOneWidget);
       expect(find.text('Local On-Device'), findsOneWidget);
       expect(find.text('Talk with your companion...'), findsOneWidget);

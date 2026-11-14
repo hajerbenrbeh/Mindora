@@ -13,7 +13,7 @@ void main() {
     GoogleFonts.config.allowRuntimeFetching = false;
   });
 
-  testWidgets('Mind Forensics App smoke test with 5 bottom tabs and options-first Daily Check-in', (WidgetTester tester) async {
+  testWidgets('Mindora App smoke test with 5 bottom tabs and options-first Daily Check-in', (WidgetTester tester) async {
     // Build our app wrapped in ProviderScope
     await tester.pumpWidget(
       const ProviderScope(
@@ -23,12 +23,12 @@ void main() {
     await tester.pumpAndSettle();
 
     // 1. Verify that the header renders
-    expect(find.text('Mind Forensics'), findsOneWidget);
+    expect(find.text('Mindora'), findsOneWidget);
 
     // 2. Verify all 5 persistent bottom navigation tabs (Flo-style standard navigation)
     expect(find.text('Home'), findsOneWidget);
     expect(find.text('Track'), findsOneWidget);
-    expect(find.text('AI Guide'), findsAtLeastNWidgets(1));
+    expect(find.text('Companion'), findsAtLeastNWidgets(1));
     expect(find.text('Insights'), findsOneWidget);
     expect(find.text('Profile'), findsOneWidget);
     expect(find.text('Observatory'), findsNothing);

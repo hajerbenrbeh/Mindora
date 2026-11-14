@@ -7,7 +7,7 @@ import '../../features/profile/domain/condition_type.dart';
 import '../../features/profile/domain/diagnostic_status.dart';
 import 'locale_controller.dart';
 
-/// Central type-safe medical & cognitive neuropsychological dictionary for Mind Forensics.
+/// Central type-safe medical & cognitive neuropsychological dictionary for Mindora.
 ///
 /// Supports English ('en'), Français médical ('fr'), and authentic Tunisian Arabic ('ar').
 class AppStrings {
@@ -18,12 +18,12 @@ class AppStrings {
   bool get isArabic => languageCode == 'ar';
   bool get isFrench => languageCode == 'fr';
 
-  // Navigation (5 Standard Destinations: Home, Track, AI Guide, Insights, Profile)
+  // Navigation (5 Standard Destinations: Home, Track, Companion, Insights, Profile)
   String get navHome => isArabic ? 'الرئيسية' : (isFrench ? 'Accueil' : 'Home');
   String get navObservatory => isArabic ? 'الأدوات' : (isFrench ? 'Outils' : 'Tools');
   String get navInnerObservatory => isArabic ? 'أدوات العناية' : (isFrench ? 'Outils Bien-être' : 'Self-Care Tools');
-  String get navAiGuide => isArabic ? 'المساعد' : (isFrench ? 'Assistant' : 'AI Guide');
-  String get navInvestigator => isArabic ? 'المساعد النفسي' : (isFrench ? 'Assistant IA' : 'AI Guide');
+  String get navAiGuide => isArabic ? 'المرافق' : (isFrench ? 'Compagnon' : 'Companion');
+  String get navInvestigator => isArabic ? 'المرافق' : (isFrench ? 'Compagnon' : 'Companion');
   String get navProfile => isArabic ? 'ملفي' : (isFrench ? 'Profil' : 'Profile');
 
   // Contextual Support
@@ -85,7 +85,7 @@ class AppStrings {
   String get navCases => navJournal;
   String get navTools => navToolkit;
   String get navSettings => navProfile;
-  String get newInvestigation => isArabic ? 'استكشاف فكري جديد' : (isFrench ? 'Nouvelle Réflexion' : 'New Thought Exploration');
+  String get newInvestigation => isArabic ? 'تأمل جديد' : (isFrench ? 'Nouvelle Réflexion' : 'New Reflection');
 
   // Memory Log
   String get memoryVaultTitle => isArabic ? 'سجل الذاكرة' : (isFrench ? 'Journal de mémoire' : 'Memory Log');
@@ -162,7 +162,7 @@ class AppStrings {
   String get mindsetPulseSection => isArabic ? 'مؤشر الاستثارة العصبية' : (isFrench ? 'ÉTAT DU SYSTÈME NERVEUX' : 'NEURAL AROUSAL PULSE');
   String get recentCasesSection => isArabic ? 'سجل الجلسات المعرفية' : (isFrench ? 'SESSIONS RÉCENTES' : 'RECENT SESSIONS');
   String get viewAll => isArabic ? 'عرض الأرشيف' : (isFrench ? 'Voir tout' : 'View All');
-  String get startInvestigation => isArabic ? 'بدء استكشاف فكري' : (isFrench ? 'Explorer une Pensée' : 'Explore a Thought');
+  String get startInvestigation => isArabic ? 'بدء تأمل فكري' : (isFrench ? 'Nouvelle Réflexion' : 'New Reflection');
   String get startInvestigationSub => isArabic 
       ? 'استكشاف هادئ للأفكار التلقائية والتشنج الجسدي في دقائق معدودة' 
       : (isFrench ? 'Prenez du recul sur vos pensées automatiques et sensations corporelles' : 'Gently examine automatic thoughts and physical tension in a few calm minutes');
@@ -279,12 +279,12 @@ class AppStrings {
   String get pacerSub => isArabic ? '4 ثواني شهيق • 4 حبس • 4 زفير • 4 استقرار' : (isFrench ? '4s Inspiration • 4s Rétention • 4s Expiration • 4s Pause' : '4s Inhale • 4s Hold • 4s Exhale • 4s Rest');
 
   // Settings
-  String get settingsTitle => isArabic ? 'إعدادات المنظومة' : (isFrench ? 'Paramètres Cliniques' : 'Clinical Settings');
+  String get settingsTitle => isArabic ? 'الإعدادات' : (isFrench ? 'Paramètres' : 'Settings');
   String get themeModeTitle => isArabic ? 'بيئة الإضاءة البصرية' : (isFrench ? 'Environnement Visuel' : 'Visual Environment');
   String get themeDaylight => isArabic ? 'نهاري' : (isFrench ? 'Jour' : 'Daylight');
   String get themeNight => isArabic ? 'ليلي عالي التباين' : (isFrench ? 'Sombre OLED' : 'OLED Dark');
   String get themeSystem => isArabic ? 'النظام' : (isFrench ? 'Système' : 'System');
-  String get languageTitle => isArabic ? 'لغة المنظومة' : (isFrench ? 'Langue clinique' : 'Clinical Language');
+  String get languageTitle => isArabic ? 'اللغة' : (isFrench ? 'Langue' : 'Language');
   String get aiHistoryTitle => isArabic ? 'سياق الأنماط المعرفية التراكمية' : (isFrench ? 'Mémoire des schémas cognitifs' : 'Cognitive Pattern Memory');
   String get aiHistoryDesc => isArabic ? 'تضمين الجلسات السابقة لرصد الأنماط المتكررة بدقة' : (isFrench ? 'Croiser les sessions pour détecter les schémas récurrents' : 'Cross-reference sessions to identify recurring cognitive schemas');
   String get biometricLockTitle => isArabic ? 'قفل الأمان البيومتري' : (isFrench ? 'Verrouillage biométrique' : 'Biometric Security');
@@ -356,11 +356,11 @@ class AppStrings {
   String get classifyThoughtLabel => isArabic ? 'تصنيف الفكرة التلقائية' : (isFrench ? 'CLASSIFICATION ÉPISTÉMIQUE' : 'CLASSIFY THE AUTOMATIC THOUGHT');
   String get examinePerspectivesBtn => isArabic ? 'توليد النماذج التفسيرية البديلة' : (isFrench ? 'Générer les modèles alternatifs' : 'GENERATE ALTERNATIVE MODELS');
 
-  String get warmInvestigatorTitle => isArabic ? 'النماذج الإدراكية البديلة' : (isFrench ? 'Modèles Cognitifs Alternatifs' : 'Alternative Neuro-Cognitive Models');
+  String get warmInvestigatorTitle => isArabic ? 'زوايا رؤية بديلة' : (isFrench ? 'Perspectives Alternatives' : 'Alternative Perspectives');
   String get hypothesesSub => isArabic
       ? 'مسارات عصبية بديلة لتفكيك النظرة الضيقة وتخفيف نشاط مركز الخوف بالمخ.'
       : (isFrench ? 'Perspectives cliniques alternatives pour désamorcer l’hypervigilance de l’amygdale.' : 'Alternative prefrontal cognitive pathways to disarm limbic hypervigilance.');
-  String get queryInvestigatorBtn => isArabic ? 'توليد مسارات تفسيرية إضافية' : (isFrench ? 'Générer d’autres hypothèses' : 'Generate Additional Models');
+  String get queryInvestigatorBtn => isArabic ? 'استكشاف زوايا بديلة' : (isFrench ? 'Explorer d’autres perspectives' : 'Explore Alternative Perspectives');
   String get whyItFitsPrefix => isArabic ? 'عوامل التوافق:' : (isFrench ? 'Facteurs concordants :' : 'Congruent evidence:');
   String get whatDoesNotFitPrefix => isArabic ? 'مؤشرات التناقض:' : (isFrench ? 'Facteurs divergents :' : 'Contradictory evidence:');
   String get testAssumptionsBtn => isArabic ? 'إجراء اختبار الواقع السقراطي' : (isFrench ? 'Tester la réalité socratique' : 'RUN SOCRATIC REALITY TEST');
@@ -380,7 +380,7 @@ class AppStrings {
       : (isFrench ? '« Quelle est la probabilité statistique réelle du pire scénario ? »' : '“What is the statistical likelihood of your catastrophic fear?”');
   String get synthesizeFindingsBtn => isArabic ? 'عرض تشخيص الانحيازات المعرفية' : (isFrench ? 'Afficher le diagnostic cognitif' : 'SYNTHESIZE DISTORTION DIAGNOSIS');
 
-  String get findingsTitle => isArabic ? 'تشخيص الانحيازات المعرفية' : (isFrench ? 'Diagnostic des Distorsions' : 'Cognitive Distortion Diagnosis');
+  String get findingsTitle => isArabic ? 'خلاصة الجلسة' : (isFrench ? 'Synthèse de la Session' : 'Session Summary');
   String get findingsSub => isArabic 
       ? 'خلاصة الفرز بين الواقع الحسي والانحيازات العصبية التي ضخمت الموقف:'
       : (isFrench ? 'Séparation clinique entre réalité empirique et filtres déformants :' : 'Clinical triage between empirical reality and cognitive distortions:');
@@ -597,10 +597,10 @@ class AppStrings {
       ? (count == 1 ? 'تم استبعاد جلسة واحدة موسومة كخاصة وسرية' : 'تم استبعاد $count جلسات موسومة كخاصة وسرية')
       : (isFrench ? '$count session(s) confidentielle(s) exclue(s)' : '$count private shielded session(s) excluded');
   String get clinicalDisclaimerNotice => isArabic
-      ? 'إشعار سريري: Mind Forensics مستوحى من مبادئ العلاج السلوكي المعرفي (CBT). الفرضيات الاستكشافية ليست تشخيصاً نفسياً أو استنتاجاً طبياً.'
+      ? 'إشعار سريري: Mindora مستوحى من مبادئ العلاج السلوكي المعرفي (CBT). الفرضيات الاستكشافية ليست تشخيصاً نفسياً أو استنتاجاً طبياً.'
       : (isFrench
-          ? 'Avis clinique : Mind Forensics est inspiré des approches TCC. Les hypothèses exploratoires ne sont pas des diagnostics médicaux.'
-          : 'Clinical Notice: Mind Forensics is inspired by CBT principles. Exploratory hypotheses are not medical diagnoses or clinical findings.');
+          ? 'Avis clinique : Mindora est inspiré des approches TCC. Les hypothèses exploratoires ne sont pas des diagnostics médicaux.'
+          : 'Clinical Notice: Mindora is inspired by CBT principles. Exploratory hypotheses are not medical diagnoses or clinical findings.');
 
   // Clinical Sharing History (Principle 5)
   String get clinicalSharingHistoryTitle => isArabic ? 'سجل التصدير والمشاركات السريرية' : (isFrench ? 'Historique des Partages Cliniques' : 'Clinical Sharing History');
@@ -708,10 +708,10 @@ class AppStrings {
   // =========================================================================
   String get myPsychologicalProfileTitle => isArabic ? 'ملفي النفسي' : (isFrench ? 'Mon Profil Psychologique' : 'My Psychological Profile');
   String get profileIntroQuote => isArabic
-      ? '«تجاربك فريدة تماماً. ساعد Mind Forensics على فهم عالمك النفسي، وتحدياتك، وما يهمك حقاً.»'
+      ? '«تجاربك فريدة تماماً. ساعد Mindora على فهم عالمك النفسي، وتحدياتك، وما يهمك حقاً.»'
       : (isFrench
-          ? '« Vos expériences sont uniques. Aidez Mind Forensics à comprendre votre monde intérieur et ce qui compte pour vous. »'
-          : '“Your experiences are unique. Help Mind Forensics understand your psychological world, your challenges, and what matters to you.”');
+          ? '« Vos expériences sont uniques. Aidez Mindora à comprendre votre monde intérieur et ce qui compte pour vous. »'
+          : '“Your experiences are unique. Help Mindora understand your psychological world, your challenges, and what matters to you.”');
   String get profileSecondaryQuote => isArabic
       ? 'شارك فقط ما ترتاح في مشاركته. يمكنك تحديث أو إزالة أي معلومة متى شئت دون قيود.'
       : (isFrench
@@ -724,9 +724,9 @@ class AppStrings {
   String get sectionSymptoms => isArabic ? 'الأعراض والصعوبات' : (isFrench ? 'Symptômes et difficultés' : 'Symptoms and Difficulties');
   String get sectionSymptomsDesc => isArabic ? 'التحديات الانفعالية، الفكرية، السلوكية والجسدية الحالية.' : (isFrench ? 'Défis émotionnels, cognitifs, comportementaux et somatiques.' : 'Current emotional, cognitive, and behavioral challenges.');
   String get sectionGoals => isArabic ? 'الأهداف الشخصية' : (isFrench ? 'Objectifs personnels' : 'Personal Goals');
-  String get sectionGoalsDesc => isArabic ? 'ما ترغب في استكشافه أو تطويره من خلال Mind Forensics.' : (isFrench ? 'Ce que vous souhaitez comprendre ou renforcer grâce à l’application.' : 'What you would like to explore or improve through Mind Forensics.');
+  String get sectionGoalsDesc => isArabic ? 'ما ترغب في استكشافه أو تطويره من خلال Mindora.' : (isFrench ? 'Ce que vous souhaitez comprendre ou renforcer grâce à l’application.' : 'What you would like to explore or improve through Mindora.');
   String get sectionContext => isArabic ? 'سياقي الشخصي' : (isFrench ? 'Contexte personnel' : 'Personal Context');
-  String get sectionContextDesc => isArabic ? 'ما ترغب أن يدركه التطبيق عن تاريخك وتحدياتك وما يساعدك.' : (isFrench ? 'Ce que vous aimeriez que Mind Forensics comprenne de votre parcours.' : 'What you would like Mind Forensics to understand about you.');
+  String get sectionContextDesc => isArabic ? 'ما ترغب أن يدركه التطبيق عن تاريخك وتحدياتك وما يساعدك.' : (isFrench ? 'Ce que vous aimeriez que Mindora comprenne de votre parcours.' : 'What you would like Mindora to understand about you.');
   String get sectionCommunication => isArabic ? 'تفضيلات التواصل' : (isFrench ? 'Préférences de communication' : 'Communication Preferences');
   String get sectionCommunicationDesc => isArabic ? 'نبرة المساعد، طول الردود، وتفضيلات التعامل أثناء التوتر.' : (isFrench ? 'Ton du compagnon, longueur des réponses et préférences en cas de détresse.' : 'AI tone, response length, and preferences when feeling distressed.');
   String get sectionPrivacy => isArabic ? 'الخصوصية وتخصيص الذكاء الاصطناعي' : (isFrench ? 'Confidentialité et IA' : 'Privacy and AI Personalization');
@@ -757,22 +757,18 @@ class AppStrings {
   String get shareWithAiDesc => aiDataSharingDescEnabled;
 
   String get aiDataSharingToggle => isArabic
-      ? 'المعالجة الخارجية ومشاركة البيانات مع الذكاء الاصطناعي'
+      ? 'معالجة الذكاء الاصطناعي على الجهاز'
       : (isFrench
-          ? 'Traitement externe par IA'
-          : 'External AI processing & sharing');
+          ? 'Traitement IA sur l’appareil'
+          : 'On-Device AI Processing');
 
   String get aiDataSharingDescEnabled => isArabic
-      ? 'مفعّل: يسمح بإرسال المحتوى والسياق المحدد إلى مزود الذكاء الاصطناعي المعتمد للتحليل. لا يتم تخزين أي بيانات شخصية عن بعد بواسطة Mind Forensics، ويمكنك إلغاء الإذن في أي وقت.'
+      ? 'تتم معالجة التأملات المدعومة بالذكاء الاصطناعي محلياً على هذا الجهاز. لا يتم إرسال أي نصوص أو سياق شخصي إلى مزودي ذكاء اصطناعي خارجيين في هذا الإصدار.'
       : (isFrench
-          ? 'Activé : autorise l’envoi des requêtes et du contexte sélectionné au fournisseur d’IA configuré. Aucune donnée personnelle n’est conservée à distance par Mind Forensics, révocable à tout moment.'
-          : 'Enabled: Permits sending prompts and selected context to the configured AI provider. No personal data is stored remotely by Mind Forensics, and you can revoke this at any time.');
+          ? 'Les réflexions assistées par IA sont traitées localement sur cet appareil. Aucun texte ni contexte personnel n’est transmis à des fournisseurs d’IA externes dans cette version.'
+          : 'AI-powered reflections are processed locally on this device. No prompts or personal context are transmitted to external AI providers in this release.');
 
-  String get aiDataSharingDescDisabled => isArabic
-      ? 'معطّل: معالجة الذكاء الاصطناعي الخارجي محجوبة تماماً عبر جميع الميزات. تظل يومياتك وسجلاتك وأدواتك المحلية تعمل بالكامل على هذا الجهاز.'
-      : (isFrench
-          ? 'Désactivé : les requêtes d’IA externe sont totalement bloquées. Le journal, le suivi et tous les outils locaux restent pleinement opérationnels sur cet appareil.'
-          : 'Disabled: Outbound AI processing is completely blocked across all features. All tracking, journaling, and local tools remain fully functional on this device.');
+  String get aiDataSharingDescDisabled => aiDataSharingDescEnabled;
 
   String get aiPersonalizationToggle => isArabic
       ? 'تخصيص ردود المرافق الذكي بسياق الملف'
@@ -906,10 +902,10 @@ class AppStrings {
           ? 'Facultatif : aide à affiner l’observation des rythmes somatiques sans restriction.'
           : 'Voluntary: helps tailor somatic observation (such as physical energy rhythms) without clinical stereotyping or restrictions.');
   String get minorSupportNotice => isArabic
-      ? 'تنبيه: التطبيق هو مساحة للاستبصار الذاتي وليس علاجاً طبياً أو تدخلاً طارئاً. إذا كنت تمر بضائقة حادة، تواصل مع شخص بالغ تثق به أو مع خدمات الطوارئ الطبية الرسمية.'
+      ? 'تنبيه: Mindora هو مساحة للاستبصار الذاتي وليس علاجاً طبياً أو تدخلاً طارئاً. إذا كنت تمر بضائقة حادة، تواصل مع شخص بالغ تثق به أو مع خدمات الطوارئ الطبية الرسمية.'
       : (isFrench
-          ? 'Important : Mind Forensics est un outil d’auto-observation, non un traitement médical. En cas de détresse intense, parlez-en à un adulte de confiance ou aux services d’urgence.'
-          : 'Important: Mind Forensics is a self-reflection tool, not medical treatment. If you are experiencing acute distress, reach out to a trusted adult, professional, or local emergency services.');
+          ? 'Important : Mindora est un outil d’auto-observation, non un traitement médical. En cas de détresse intense, parlez-en à un adulte de confiance ou aux services d’urgence.'
+          : 'Important: Mindora is a self-reflection tool, not medical treatment. If you are experiencing acute distress, reach out to a trusted adult, professional, or local emergency services.');
 
   String get onboardingBackgroundTitle => isArabic ? 'نقطة انطلاقك' : (isFrench ? 'Votre point de départ' : 'Your Starting Point');
   String get onboardingBackgroundSubtitle => isArabic
@@ -1522,7 +1518,7 @@ class AppStrings {
   String get frequentEmotionsLabel => isArabic ? 'المشاعر المتكررة' : (isFrench ? 'ÉMOTIONS FRÉQUENTES' : 'FREQUENT EMOTIONS');
   String get suggestedTherapyLabel => isArabic ? 'مواضيع مقترحة للنقاش المهني' : (isFrench ? 'PISTES DE DISCUSSION THÉRAPEUTIQUE' : 'SUGGESTED FOR THERAPY DISCUSSION');
 
-  String get memberRoleLabel => isArabic ? 'عضو مسار الوعي الذاتي' : (isFrench ? 'Membre Mind Forensics' : 'Mind Forensics Member');
+  String get memberRoleLabel => isArabic ? 'عضو Mindora' : (isFrench ? 'Membre Mindora' : 'Mindora Member');
   String get myAccountTitle => isArabic ? 'ملفي النفسي وحسابي' : (isFrench ? 'Mon Profil & Compte' : 'My Account & Context');
   String get myAccountSub => isArabic ? 'السياق الشخصي وتفضيلات الحوار' : (isFrench ? 'Gérer le contexte personnel et les préférences' : 'Manage psychological context and preferences');
   String get mindAssistantEngineTitle => isArabic ? 'محرّك المساعد الذهني' : (isFrench ? 'Moteur d’Assistant Mental' : 'Mind Assistant Engine');
@@ -1533,10 +1529,10 @@ class AppStrings {
           : 'Local reflection and support engine');
   String get aiEngineStatusTitle => isArabic ? 'حالة محرّك المساعد' : (isFrench ? 'État du Moteur' : 'Engine Status');
   String get aiEngineStatusDesc => isArabic
-      ? 'يعمل Mind Forensics عبر محرّك محلي للتأمل والدعم على هذا الجهاز. مزودو الذكاء الاصطناعي الخارجيون غير متاحين حالياً.'
+      ? 'يعمل Mindora عبر محرّك محلي للتأمل والدعم على هذا الجهاز. مزودو الذكاء الاصطناعي الخارجيون غير متاحين حالياً.'
       : (isFrench
-          ? 'Mind Forensics fonctionne via un moteur local de réflexion et de soutien sur cet appareil. Les fournisseurs d’IA externes sont actuellement indisponibles.'
-          : 'Mind Forensics operates via a local reflection and support engine on this device. External AI providers are currently unavailable.');
+          ? 'Mindora fonctionne via un moteur local de réflexion et de soutien sur cet appareil. Les fournisseurs d’IA externes sont actuellement indisponibles.'
+          : 'Mindora operates via a local reflection and support engine on this device. External AI providers are currently unavailable.');
   String get localAiTitle => isArabic ? 'محرّك محلي للتأمل والدعم (على الجهاز)' : (isFrench ? 'Moteur local de réflexion et de soutien' : 'Local Reflection & Support Engine');
   String get localAiStatus => isArabic ? 'متاح ونشط' : (isFrench ? 'Disponible et actif' : 'Available & Active');
   String get localAiDesc => isArabic
@@ -1781,10 +1777,10 @@ class AppStrings {
   String get copyKeyBtn => isArabic ? 'نسخ المفتاح' : (isFrench ? 'Copier la clé' : 'Copy Recovery Key');
   String get keyCopiedSnackbar => isArabic ? 'تم نسخ المفتاح إلى الحافظة بأمان.' : (isFrench ? 'Clé copiée dans le presse-papiers.' : 'Recovery key copied to clipboard.');
   String get recoveryKeyWarning => isArabic
-      ? 'احفظ هذا المفتاح في مكان آمن وخاص. لا تشاركه مع أي شخص أبداً. تطبيق Mind Forensics لا يستطيع استعادة بياناتك في حال ضياعه.'
+      ? 'احفظ هذا المفتاح في مكان آمن وخاص. لا تشاركه مع أي شخص أبداً. تطبيق Mindora لا يستطيع استعادة بياناتك في حال ضياعه.'
       : (isFrench
-          ? 'Conservez cette clé en lieu sûr et confidentiel. Ne la partagez avec personne. Mind Forensics ne peut pas restaurer vos données en cas de perte.'
-          : 'Store this key somewhere private and safe. Never share it with anyone. Mind Forensics cannot recover your local data if this key is lost.');
+          ? 'Conservez cette clé en lieu sûr et confidentiel. Ne la partagez avec personne. Mindora ne peut pas restaurer vos données en cas de perte.'
+          : 'Store this key somewhere private and safe. Never share it with anyone. Mindora cannot recover your local data if this key is lost.');
   String get recoveryKeySavedCheckbox => isArabic
       ? 'أؤكد أنني حفظت هذا المفتاح في مكان آمن وخاص.'
       : (isFrench

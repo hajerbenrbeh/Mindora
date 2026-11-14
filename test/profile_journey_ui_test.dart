@@ -37,10 +37,11 @@ void main() {
       expect(find.text('ADHD'), findsOneWidget);
       expect(find.text('OCD (Obsessive-Compulsive Disorder)'), findsOneWidget);
 
-      // Verify decoupled AI consent toggles exist
-      expect(find.text('External AI processing & sharing'), findsOneWidget);
+      // Verify decoupled AI consent: on-device informational card + profile personalization toggle
+      expect(find.text('On-Device AI Processing'), findsOneWidget);
+      expect(find.text('ON-DEVICE AI PROCESSING'), findsOneWidget);
       expect(find.text('Personalize AI with profile context'), findsOneWidget);
-      expect(find.byType(Switch), findsNWidgets(2));
+      expect(find.byType(Switch), findsOneWidget);
 
       // Verify Save button exists
       expect(find.text('SAVE PROFILE'), findsOneWidget);

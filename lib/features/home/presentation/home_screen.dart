@@ -258,7 +258,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(width: 6),
             Flexible(
               child: Text(
-                'Mind Forensics',
+                'Mindora',
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(

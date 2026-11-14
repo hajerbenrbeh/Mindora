@@ -119,7 +119,7 @@ void main() {
       ];
 
       final jsonOutput = syncService.exportBackupJson(cases);
-      expect(jsonOutput, contains('Mind Forensics'));
+      expect(jsonOutput, contains('Mindora'));
       expect(jsonOutput, contains('SESSION 01'));
 
       final parsed = syncService.parseBackupJson(jsonOutput);
@@ -798,13 +798,13 @@ void main() {
         expect(strings.aiPersonalizationDescDisabled, isNotEmpty);
 
         if (code == 'en') {
-          expect(strings.aiDataSharingDescDisabled, contains('remain fully functional'));
+          expect(strings.aiDataSharingDescDisabled, contains('processed locally'));
           expect(strings.aiPersonalizationDescDisabled, contains('excluded from AI prompts'));
         } else if (code == 'fr') {
-          expect(strings.aiDataSharingDescDisabled, contains('pleinement opérationnels'));
+          expect(strings.aiDataSharingDescDisabled, contains('traitées localement'));
           expect(strings.aiPersonalizationDescDisabled, contains('exclu des requêtes'));
         } else if (code == 'ar') {
-          expect(strings.aiDataSharingDescDisabled, contains('تعمل بالكامل'));
+          expect(strings.aiDataSharingDescDisabled, contains('محلياً'));
           expect(strings.aiPersonalizationDescDisabled, contains('حجب بيانات ملفك'));
         }
       }

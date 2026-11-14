@@ -31,20 +31,12 @@ class PrivacyManagementSheet extends ConsumerStatefulWidget {
 }
 
 class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet> {
-  late bool _shareWithAi;
   late bool _allowPersonalization;
 
   @override
   void initState() {
     super.initState();
-    _shareWithAi = widget.profile.shareWithAiCompanion;
     _allowPersonalization = widget.profile.allowAiPersonalization;
-  }
-
-  Future<void> _toggleShareWithAi(bool val) async {
-    HapticFeedback.lightImpact();
-    setState(() => _shareWithAi = val);
-    await ref.read(profileControllerProvider.notifier).setShareWithAiCompanion(val);
   }
 
   Future<void> _togglePersonalization(bool val) async {
@@ -221,17 +213,13 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
 
                 const SizedBox(height: 20),
 
-                // 1. External AI Processing & Data Sharing Consent Card
+                // 1. On-Device AI Processing Status Card
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: _shareWithAi
-                        ? context.tokens.accentSoft
-                        : context.tokens.surfaceSecondary,
+                    color: context.tokens.surfaceSecondary,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(
-                      color: _shareWithAi ? context.tokens.accent : border,
-                    ),
+                    border: Border.all(color: border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,18 +237,30 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                               ),
                             ),
                           ),
-                          Switch.adaptive(
-                            value: _shareWithAi,
-                            activeTrackColor: context.tokens.accent,
-                            onChanged: _toggleShareWithAi,
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: context.tokens.accentSoft,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: context.tokens.accent.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            child: Text(
+                              'ON-DEVICE AI PROCESSING',
+                              style: TextStyle(
+                                fontSize: 9.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.5,
+                                color: context.tokens.accent,
+                              ),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        _shareWithAi
-                            ? strings.aiDataSharingDescEnabled
-                            : strings.aiDataSharingDescDisabled,
+                        strings.aiDataSharingDescEnabled,
                         style: TextStyle(fontSize: 11, height: 1.35, color: textSecondary),
                       ),
                     ],

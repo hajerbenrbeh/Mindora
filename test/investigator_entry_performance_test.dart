@@ -36,7 +36,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Dialogue is smoothly active
-      expect(find.text('AI Guide'), findsAtLeastNWidgets(1));
+      expect(find.text('Companion'), findsAtLeastNWidgets(1));
       expect(find.text('Talk with your companion...'), findsOneWidget);
       expect(find.text('AI HUB'), findsNothing);
     });
@@ -66,8 +66,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(caughtError, isNull, reason: 'Expected zero layout overflows in AI Guide header');
-      expect(find.text('AI Guide'), findsAtLeastNWidgets(1));
+      expect(caughtError, isNull, reason: 'Expected zero layout overflows in Companion header');
+      expect(find.text('Companion'), findsAtLeastNWidgets(1));
       expect(find.text('Local'), findsOneWidget);
       expect(find.text('Explore a Thought'), findsOneWidget);
     });

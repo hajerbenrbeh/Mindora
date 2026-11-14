@@ -102,7 +102,7 @@ class LockOverlay extends ConsumerWidget {
                   const SizedBox(height: 12),
 
                   Text(
-                    'Mind Forensics',
+                    'Mindora',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w800,

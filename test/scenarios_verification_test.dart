@@ -26,7 +26,7 @@ void main() {
     TestWidgetsFlutterBinding.ensureInitialized();
   });
 
-  group('Mind Forensics Critical Scenarios Verification Suite', () {
+  group('Mindora Critical Scenarios Verification Suite', () {
     test('TEST A: Create mood entry, close app, reopen, verify record remains', () async {
       final mockStore = <String, Object>{};
       SharedPreferences.setMockInitialValues(mockStore);
@@ -177,7 +177,7 @@ void main() {
       // Validate JSON structure
       final decoded = jsonDecode(backupResult.rawJson!) as Map<String, dynamic>;
       expect(decoded['schemaVersion'], equals('2.0.0'));
-      expect(decoded['app'], equals('Mind Forensics'));
+      expect(decoded['app'], equals('Mindora'));
       expect((decoded['traces'] as List).length, equals(1));
       expect((decoded['sessions'] as List).length, equals(1));
       expect(decoded['profile'], isNotNull);

@@ -26,7 +26,7 @@ class MindForensicsApp extends ConsumerWidget {
     final locale = ref.watch(localeControllerProvider);
 
     return MaterialApp.router(
-      title: 'Mind Forensics',
+      title: 'Mindora',
       debugShowCheckedModeBanner: false,
       theme: LabTheme.daylightTheme,
       darkTheme: LabTheme.nightTheme,

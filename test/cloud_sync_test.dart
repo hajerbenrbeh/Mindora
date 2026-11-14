@@ -61,7 +61,7 @@ void main() {
       ];
 
       final jsonString = syncService.exportBackupJson(testCases);
-      expect(jsonString, contains('Mind Forensics'));
+      expect(jsonString, contains('Mindora'));
       expect(jsonString, contains('SESSION 01'));
 
       final decoded = jsonDecode(jsonString) as Map<String, dynamic>;

@@ -32,10 +32,10 @@ class ClinicalExportService {
     // Header & Confidentiality banner
     buffer.writeln('======================================================================');
     buffer.writeln(isAr
-        ? 'MIND FORENSICS — ملخص الجلسات السريري (SESSION BRIEF)'
+        ? 'MINDORA — ملخص الجلسات السريري (SESSION BRIEF)'
         : (isFr
-            ? 'MIND FORENSICS — BILAN DE SESSIONS CLINIQUES (SESSION BRIEF)'
-            : 'MIND FORENSICS — CLINICAL SESSION BRIEF'));
+            ? 'MINDORA — BILAN DE SESSIONS CLINIQUES (SESSION BRIEF)'
+            : 'MINDORA — CLINICAL SESSION BRIEF'));
     buffer.writeln(isAr
         ? 'تقرير معرفي صادر بمبادرة شخصية من المستعمل لمناقشته مع المعالج'
         : (isFr
@@ -46,23 +46,23 @@ class ClinicalExportService {
     // Clinical Notice & Mandatory Principles (Principles 4 & Forbidden terms compliance)
     buffer.writeln(isAr ? '[إشعار وتنبيه سريري]' : (isFr ? '[AVIS ET MENTIONS CLINIQUES]' : '[CLINICAL NOTICE & DISCLAIMER]'));
     if (isAr) {
-      buffer.writeln('• تم تصميم Mind Forensics كأداة للتأمل الفكري الذاتي مستوحاة من مبادئ العلاج السلوكي المعرفي (CBT).');
+      buffer.writeln('• تم تصميم Mindora كأداة للتأمل الفكري الذاتي مستوحاة من مبادئ العلاج السلوكي المعرفي (CBT).');
       buffer.writeln('• التطبيق لا يقدم علاجاً طبياً، تشخيصاً نفسياً، أو علاجاً سريرياً بديلاً عن الطبيب المختص.');
       buffer.writeln('• الفرضيات المولدة بواسطة الذكاء الاصطناعي هي نماذج فكرية استكشافية للتأمل وليست استنتاجات طبية سريرية.');
       buffer.writeln('• المحفزات، الأفكار التلقائية، والخلاصات الواردة تمثل تقارير ذاتية دقيقة سجلها المستعمل بكلماته الشخصية.');
       buffer.writeln('• النظام لا يتنبأ بالانتكاس النفسي ولا يقيم شخصية المستعمل.');
     } else if (isFr) {
-      buffer.writeln('• Mind Forensics est un outil d’auto-réflexion cognitive inspiré des approches TCC.');
+      buffer.writeln('• Mindora est un outil d’auto-réflexion cognitive inspiré des approches TCC.');
       buffer.writeln('• L’application ne fournit aucun traitement médical, diagnostic psychiatrique ni psychothérapie.');
       buffer.writeln('• Les hypothèses générées par l’IA sont des modèles cognitifs exploratoires de réflexion, et NON des conclusions cliniques.');
       buffer.writeln('• Les stimuli, pensées automatiques et conclusions reflètent l’auto-évaluation authentique de l’utilisateur.');
       buffer.writeln('• L’application ne prédit jamais de rechute et ne porte aucun jugement sur la personne.');
     } else {
-      buffer.writeln('• Mind Forensics is a cognitive self-reflection instrument inspired by CBT principles.');
+      buffer.writeln('• Mindora is a cognitive self-reflection instrument inspired by CBT principles.');
       buffer.writeln('• The application does NOT provide psychiatric treatment, medical diagnoses, or formal psychotherapy.');
       buffer.writeln('• AI-assisted hypotheses are exploratory cognitive possibilities for patient self-reflection, NOT clinical findings or diagnoses.');
       buffer.writeln('• Patient narrative, observable triggers, automatic thoughts, and conclusions represent authentic patient self-reports.');
-      buffer.writeln('• Mind Forensics never predicts relapse or judges psychological character.');
+      buffer.writeln('• Mindora never predicts relapse or judges psychological character.');
     }
 
     buffer.writeln('\n----------------------------------------------------------------------');
@@ -154,10 +154,10 @@ class ClinicalExportService {
     }
 
     buffer.writeln(isAr
-        ? '--- نهاية ملخص الجلسات السريري • Mind Forensics ---'
+        ? '--- نهاية ملخص الجلسات السريري • Mindora ---'
         : (isFr
-            ? '--- FIN DU BILAN DE SESSIONS CLINIQUES • Mind Forensics ---'
-            : '--- END OF CLINICAL SESSION BRIEF • Mind Forensics ---'));
+            ? '--- FIN DU BILAN DE SESSIONS CLINIQUES • Mindora ---'
+            : '--- END OF CLINICAL SESSION BRIEF • Mindora ---'));
 
     return buffer.toString();
   }

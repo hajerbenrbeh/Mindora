@@ -100,8 +100,8 @@ class _EditPersonalContextSheetState
 
                 Text(
                   strings.isArabic
-                      ? 'ما الذي ترغب أن يدركه Mind Forensics عنك؟'
-                      : 'What would you like Mind Forensics to understand about you?',
+                      ? 'ما الذي ترغب أن يدركه Mindora عنك؟'
+                      : 'What would you like Mindora to understand about you?',
                   style: LabTheme.serifStyle(
                     fontSize: 16,
                     height: 1.3,

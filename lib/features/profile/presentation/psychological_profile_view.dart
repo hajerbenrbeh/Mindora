@@ -688,7 +688,7 @@ class PsychologicalProfileView extends ConsumerWidget {
 
     if (contextText.isEmpty) {
       return Text(
-        'Tap to write what you would like Mind Forensics to understand about your journey.',
+        'Tap to write what you would like Mindora to understand about your journey.',
         style: TextStyle(fontSize: 11.5, color: textSecondary, fontStyle: FontStyle.italic),
       );
     }
@@ -798,7 +798,7 @@ class PsychologicalProfileView extends ConsumerWidget {
           Divider(color: borderColor, height: 1),
           const SizedBox(height: 12),
 
-          // 1. External AI processing and data sharing toggle
+          // 1. On-Device AI processing status card
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -808,21 +808,30 @@ class PsychologicalProfileView extends ConsumerWidget {
                   style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textPrimary),
                 ),
               ),
-              Switch.adaptive(
-                value: profile.shareWithAiCompanion,
-                activeTrackColor: context.tokens.accent,
-                onChanged: (val) {
-                  HapticFeedback.lightImpact();
-                  ref.read(profileControllerProvider.notifier).setShareWithAiCompanion(val);
-                },
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: context.tokens.accentSoft,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: context.tokens.accent.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Text(
+                  'ON-DEVICE AI PROCESSING',
+                  style: TextStyle(
+                    fontSize: 9.5,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                    color: context.tokens.accent,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            profile.shareWithAiCompanion
-                ? strings.aiDataSharingDescEnabled
-                : strings.aiDataSharingDescDisabled,
+            strings.aiDataSharingDescEnabled,
             style: TextStyle(fontSize: 11, height: 1.35, color: textSecondary),
           ),
           const SizedBox(height: 12),

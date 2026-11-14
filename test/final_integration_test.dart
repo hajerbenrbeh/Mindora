@@ -285,7 +285,7 @@ void main() {
       // Return home
       AppRouter.router.go(AppRouter.home);
       await tester.pumpAndSettle();
-      expect(find.textContaining('Mind Forensics'), findsWidgets);
+      expect(find.textContaining('Mindora'), findsWidgets);
     });
   });
 }

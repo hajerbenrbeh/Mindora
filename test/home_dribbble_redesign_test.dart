@@ -36,7 +36,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // 1. App bar & greeting
-      expect(find.text('Mind Forensics'), findsOneWidget);
+      expect(find.text('Mindora'), findsOneWidget);
       expect(find.textContaining('Dear'), findsOneWidget);
 
       // 2. Redundant Analytics/Switchers removed from Home

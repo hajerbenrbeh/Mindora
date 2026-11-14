@@ -106,8 +106,8 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
               const SizedBox(height: 4),
               Text(
                 strings.isArabic
-                    ? 'ما الذي ترغب في استيعابه أو تطويره من خلال Mind Forensics؟'
-                    : 'What would you like to understand or improve through Mind Forensics?',
+                    ? 'ما الذي ترغب في استيعابه أو تطويره من خلال Mindora؟'
+                    : 'What would you like to understand or improve through Mindora?',
                 style: TextStyle(fontSize: 11.5, color: textSecondary),
               ),
 

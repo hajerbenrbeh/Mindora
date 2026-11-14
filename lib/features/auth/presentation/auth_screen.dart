@@ -98,7 +98,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     HapticFeedback.selectionClick();
     final lockNotifier = ref.read(appLockProvider.notifier);
     final unlocked = await lockNotifier.unlock(
-      reason: 'Authenticate to access Mind Forensics',
+      reason: 'Authenticate to access Mindora',
     );
     if (unlocked && mounted) {
       context.go(AppRouter.home);
@@ -127,7 +127,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       backgroundColor: bg,
       appBar: AppBar(
         title: Text(
-          'Mind Forensics',
+          'Mindora',
           style: LabTheme.serifStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,

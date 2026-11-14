@@ -1,4 +1,4 @@
-# Mind Forensics
+# Mindora
 
 > **Calm, Intelligent Mental Health Companion & Cognitive Self-Awareness Platform**
 
@@ -12,7 +12,7 @@
 
 ## 🌿 Overview
 
-**Mind Forensics** is a privacy-first psychological self-awareness and management platform engineered for two audiences:
+**Mindora** is a privacy-first psychological self-awareness and management platform engineered for two audiences:
 1. Individuals living with diagnosed mental health conditions seeking a structured, objective, non-stigmatizing tracking and reflection companion.
 2. Anyone seeking to deconstruct their emotions, recurring thought patterns, stress triggers, and somatic well-being.
 
@@ -22,7 +22,7 @@ The application combines structured self-observation, epistemic cognitive decons
 
 ## 🎨 Design System: Calm Earth & Botanical Sage
 
-Mind Forensics abandons harsh clinical pitch-black interfaces and cold analytics in favor of an organic, calming, and human visual identity:
+Mindora abandons harsh clinical pitch-black interfaces and cold analytics in favor of an organic, calming, and human visual identity:
 
 * **Daylight Linen Theme:**
   * Background: `#F7F8F5` (Natural parchment linen)
@@ -160,7 +160,7 @@ flutter test test/screenshot_generator_test.dart
 
 ## ⚖️ Clinical & Ethical Disclaimer
 
-**Mind Forensics** is an educational and self-awareness platform inspired by cognitive behavioral principles. It is **not** a licensed medical provider, diagnostic instrument, or a replacement for professional clinical care.
+**Mindora** is an educational and self-awareness platform inspired by cognitive behavioral principles. It is **not** a licensed medical provider, diagnostic instrument, or a replacement for professional clinical care.
 
 * The application **never** predicts relapse or provides dietary/weight advice.
 * In cases of acute psychological crisis or self-harm ideation, the offline safety interceptor immediately directs users to professional human emergency helplines.
