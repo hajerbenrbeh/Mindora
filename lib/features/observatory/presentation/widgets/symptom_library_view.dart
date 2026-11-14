@@ -28,15 +28,31 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
     bool isDark,
   ) async {
     final isAr = strings.isArabic;
+    final dialogBg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
+    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
+    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
+    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final deleteColor = isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth;
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: dialogBg,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: borderColor),
+        ),
         title: Text(
           isAr
               ? 'حذف سجل العرض؟'
               : (strings.isFrench
                   ? 'Supprimer ce bilan ?'
                   : 'Delete symptom log?'),
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: textPrimary,
+          ),
         ),
         content: Text(
           isAr
@@ -44,17 +60,28 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
               : (strings.isFrench
                   ? 'Ce rapport sera supprimé définitivement de votre historique local.'
                   : 'This logged symptom check will be permanently removed from local history.'),
+          style: TextStyle(
+            fontSize: 13,
+            height: 1.45,
+            color: textSecondary,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(strings.cancelBtn),
+            child: Text(
+              strings.cancelBtn,
+              style: TextStyle(color: textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             child: Text(
               strings.deleteEntryBtn,
-              style: const TextStyle(color: LabColors.cherryRed),
+              style: TextStyle(
+                color: deleteColor,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],

@@ -205,7 +205,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.auto_awesome, size: 20, color: isDark ? LabColors.sageGreenGlow : LabColors.forestGreen),
+                Icon(Icons.auto_awesome, size: 20, color: isDark ? LabColors.sageGreenGlow : LabColors.daylightAccent),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -222,9 +222,14 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: aiConfig.isLiveActive
-                        ? LabColors.sageGreenGlow.withValues(alpha: 0.15)
-                        : LabColors.warmBeige.withValues(alpha: 0.15),
+                        ? LabColors.sageBackground(isDark: isDark)
+                        : LabColors.beigeBackground(isDark: isDark),
                     borderRadius: BorderRadius.circular(6),
+                    border: Border.all(
+                      color: aiConfig.isLiveActive
+                          ? LabColors.sageBorder(isDark: isDark)
+                          : LabColors.beigeBorder(isDark: isDark),
+                    ),
                   ),
                   child: Text(
                     aiConfig.isLiveActive
@@ -236,7 +241,9 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                       fontSize: 9.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.4,
-                      color: aiConfig.isLiveActive ? LabColors.sageGreenGlow : LabColors.warmBeige,
+                      color: aiConfig.isLiveActive
+                          ? (isDark ? LabColors.sageGreenGlow : LabColors.daylightAccent)
+                          : (isDark ? LabColors.warmBeige : LabColors.warmBeigeDark),
                     ),
                   ),
                 ),
@@ -391,40 +398,45 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
 
             if (_testResult != null) ...[
               const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: (_testSuccess == true ? LabColors.sageGreenGlow : LabColors.safetyWarmth).withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: _testSuccess == true ? LabColors.sageGreenGlow : LabColors.safetyWarmth,
-                    width: 1,
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      _testSuccess == true ? Icons.check_circle_outline : Icons.error_outline,
-                      size: 16,
-                      color: _testSuccess == true ? LabColors.sageGreenGlow : LabColors.safetyWarmth,
+              Builder(builder: (_) {
+                final statusColor = _testSuccess == true
+                    ? (isDark ? LabColors.sageGreenGlow : LabColors.daylightAccent)
+                    : (isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth);
+                return Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: statusColor,
+                      width: 1,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _testResult!,
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          fontWeight: FontWeight.w600,
-                          color: _testSuccess == true ? LabColors.sageGreenGlow : LabColors.safetyWarmth,
-                          height: 1.3,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        _testSuccess == true ? Icons.check_circle_outline : Icons.error_outline,
+                        size: 16,
+                        color: statusColor,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          _testResult!,
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: statusColor,
+                            height: 1.3,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
+                    ],
+                  ),
+                );
+              }),
             ],
 
             const SizedBox(height: 16),
@@ -479,7 +491,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 child: TextButton(
                   style: TextButton.styleFrom(
                     minimumSize: const Size(48, 48),
-                    foregroundColor: LabColors.safetyWarmth,
+                    foregroundColor: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
                   ),
                   onPressed: _clearKey,
                   child: Text(
