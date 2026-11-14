@@ -89,19 +89,38 @@ class SecureKeyManager {
       return _staticMasterKey!;
     }
 
-    try {
-      final storedB64 = await _readSecure(keyMasterStorage);
-      if (storedB64 != null && storedB64.isNotEmpty) {
-        final keyBytes = base64Url.decode(storedB64);
-        if (keyBytes.length == 32) {
-          _cachedMasterKey = keyBytes;
-          _staticMasterKey = keyBytes;
-          return keyBytes;
+    String? storedB64;
+    if (_isTestEnvironment) {
+      storedB64 = _memoryFallbackStore[keyMasterStorage];
+    } else {
+      try {
+        storedB64 = await _storage.read(key: keyMasterStorage);
+        if (storedB64 != null) {
+          _memoryFallbackStore[keyMasterStorage] = storedB64;
+        }
+      } catch (e) {
+        storedB64 = _memoryFallbackStore[keyMasterStorage];
+        if (storedB64 == null) {
+          throw StateError(
+            'Unable to read master storage key safely; refusing to regenerate and orphan encrypted records: $e',
+          );
         }
       }
-    } catch (_) {}
+    }
 
-    // Generate new CSPRNG 256-bit key and persist to platform secure storage
+    if (storedB64 != null && storedB64.isNotEmpty) {
+      final keyBytes = base64Url.decode(storedB64);
+      if (keyBytes.length != 32) {
+        throw const FormatException(
+          'Corrupted master storage key length in secure storage; refusing to overwrite.',
+        );
+      }
+      _cachedMasterKey = keyBytes;
+      _staticMasterKey = keyBytes;
+      return keyBytes;
+    }
+
+    // Generate new CSPRNG 256-bit key only on genuine first-run empty storage
     final freshKey = LocalDataCipher.generateRandom256BitKey();
     final freshB64 = base64Url.encode(freshKey);
     await _writeSecure(keyMasterStorage, freshB64);
@@ -203,6 +222,7 @@ class SecureKeyManager {
     _cachedMasterKey = null;
     _staticMasterKey = null;
     _memoryFallbackStore.clear();
+    if (_isTestEnvironment) return;
     try {
       await _storage.deleteAll();
     } catch (_) {}

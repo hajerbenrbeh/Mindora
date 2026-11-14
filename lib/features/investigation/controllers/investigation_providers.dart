@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../app/localization/app_strings.dart';
 import '../../../core/security/secure_key_manager.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../journal/controllers/journal_memory_controller.dart';
+import '../../profile/controllers/profile_controller.dart';
 import '../data/direct_gemini_investigator_service.dart';
 import '../data/direct_groq_investigator_service.dart';
 import '../data/local_case_repository.dart';
@@ -628,7 +630,74 @@ class ActiveCaseController extends Notifier<AsyncValue<CaseModel?>> {
     ref.read(journalMemoryControllerProvider.notifier).recalculateMemories();
     ref.invalidate(savedCasesProvider);
   }
+
+  /// Generates the initial companion reply when a conversation starts from a
+  /// starter prompt or mood handoff. Runs safely inside the provider lifecycle
+  /// with MockInvestigatorService fallback so widget unmounts cannot drop the reply.
+  Future<void> requestAiReply() async {
+    final current = state.value;
+    if (current == null || current.isPausedForSafety) return;
+
+    ref.read(companionReplyPendingProvider.notifier).setPending(true);
+    try {
+      final profile = ref.read(profileControllerProvider).value;
+      final includeProfile = profile?.shareWithAiCompanion ?? false;
+      final langCode = ref.read(appStringsProvider).languageCode;
+      final service = ref.read(investigatorServiceProvider);
+
+      String reply;
+      try {
+        reply = await service.getNextQuestion(
+          currentCase: current,
+          conversationHistory: current.statements,
+          includePastCaseSummaries: includeProfile,
+          languageCode: langCode,
+          profile: includeProfile ? profile : null,
+          conversationMode: current.conversationMode,
+          sessionSummary: current.sessionSummary,
+        );
+      } catch (_) {
+        reply = await MockInvestigatorService().getNextQuestion(
+          currentCase: current,
+          conversationHistory: current.statements,
+          includePastCaseSummaries: includeProfile,
+          languageCode: langCode,
+          profile: includeProfile ? profile : null,
+          conversationMode: current.conversationMode,
+          sessionSummary: current.sessionSummary,
+        );
+      }
+
+      if (state.value?.id == current.id && reply.trim().isNotEmpty) {
+        await addStatement(reply, StatementSpeaker.investigator);
+      }
+    } finally {
+      ref.read(companionReplyPendingProvider.notifier).setPending(false);
+    }
+  }
 }
+
+class CompanionReplyPendingNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+  void setPending(bool pending) => state = pending;
+}
+
+final companionReplyPendingProvider =
+    NotifierProvider<CompanionReplyPendingNotifier, bool>(
+  CompanionReplyPendingNotifier.new,
+);
+
+class CompanionHubSignalNotifier extends Notifier<int> {
+  @override
+  int build() => 0;
+  void trigger() => state++;
+}
+
+final companionHubSignalProvider =
+    NotifierProvider<CompanionHubSignalNotifier, int>(
+  CompanionHubSignalNotifier.new,
+);
 
 final activeCaseControllerProvider =
     NotifierProvider<ActiveCaseController, AsyncValue<CaseModel?>>(ActiveCaseController.new);

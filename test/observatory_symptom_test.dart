@@ -12,7 +12,6 @@ import 'package:mind_forensics/features/observatory/presentation/inner_observato
 import 'package:mind_forensics/features/observatory/presentation/widgets/add_discovery_sheet.dart';
 import 'package:mind_forensics/features/observatory/presentation/widgets/custom_perspective_sheet.dart';
 import 'package:mind_forensics/features/observatory/presentation/widgets/custom_symptom_sheet.dart';
-import 'package:mind_forensics/features/observatory/presentation/widgets/longitudinal_analysis_view.dart';
 import 'package:mind_forensics/features/observatory/presentation/widgets/symptom_assessment_sheet.dart';
 import 'package:mind_forensics/features/observatory/presentation/widgets/symptom_library_view.dart';
 import 'package:mind_forensics/features/profile/domain/psychological_profile_model.dart';
@@ -273,7 +272,7 @@ void main() {
       expect(afterDelete.activities.any((a) => a.id == newDiscovery.id), isFalse);
     });
 
-    testWidgets('LongitudinalAnalysisView renders time windows and baseline card', (tester) async {
+    testWidgets('SymptomLibraryView shows empty state in Saved Logs tab before assessments', (tester) async {
       tester.view.physicalSize = const Size(1000, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -283,22 +282,17 @@ void main() {
         const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
-              body: LongitudinalAnalysisView(),
+              body: SymptomLibraryView(),
             ),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('LONGITUDINAL SYMPTOM ANALYSIS'), findsOneWidget);
-      expect(find.text('7d'), findsOneWidget);
-      expect(find.text('14d'), findsOneWidget);
-      expect(find.text('30d'), findsOneWidget);
-      expect(find.text('PERSONAL BASELINE TELEMETRY'), findsOneWidget);
-
-      // Switch to 30d window
-      await tester.tap(find.text('30d'));
+      expect(find.text('Saved Logs (0)'), findsOneWidget);
+      await tester.tap(find.text('Saved Logs (0)'));
       await tester.pumpAndSettle();
+      expect(find.textContaining('No symptom logs saved yet'), findsOneWidget);
     });
 
     testWidgets('AddDiscoverySheet allows selecting category and saving custom discovery', (tester) async {
@@ -523,7 +517,7 @@ void main() {
       expect(state.activities.any((a) => a.purpose == 'Daily Routine Anchor'), isTrue);
     });
 
-    testWidgets('LongitudinalAnalysisView dynamically computes frequency distributions from actual multiple reports', (tester) async {
+    testWidgets('SymptomLibraryView Saved Logs displays saved SymptomReport history and deletes with confirmation', (tester) async {
       tester.view.physicalSize = const Size(1000, 2400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -540,6 +534,7 @@ void main() {
         id: 'rep_101',
         symptomIds: ['sym_persistent_heaviness', 'sym_mental_scatter'],
         intensity: 8,
+        aiAnalysis: 'Heavy day noted calmly.',
         createdAt: now.subtract(const Duration(hours: 2)),
       ));
 
@@ -555,18 +550,20 @@ void main() {
           container: container,
           child: const MaterialApp(
             home: Scaffold(
-              body: LongitudinalAnalysisView(),
+              body: SymptomLibraryView(),
             ),
           ),
         ),
       );
       await tester.pumpAndSettle();
 
-      // Frequencies: Persistent Heaviness appeared twice, Mental Scatter appeared once
-      expect(find.text('2 times'), findsOneWidget);
-      expect(find.text('1 times'), findsOneWidget);
-      expect(find.text('Persistent Heaviness'), findsOneWidget);
-      expect(find.text('Mental Scatter & Brain Fog'), findsOneWidget);
+      await tester.tap(find.text('Saved Logs (2)'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('8/10'), findsOneWidget);
+      expect(find.text('6/10'), findsOneWidget);
+      expect(find.text('Heavy day noted calmly.'), findsOneWidget);
+      expect(find.textContaining('Persistent Heaviness'), findsNWidgets(2));
     });
 
     test('ObservatoryAiService respects explicit consent and remains non-pathologizing', () async {

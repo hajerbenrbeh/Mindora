@@ -1,4 +1,7 @@
+import '../../insights/data/pattern_awareness_service.dart';
+import '../../insights/domain/personal_baseline_model.dart';
 import '../../investigation/domain/case_model.dart';
+import '../../mind_trace/domain/mind_trace_model.dart';
 import '../../../app/localization/app_strings.dart';
 
 /// Clinical Session Brief generator formatting cognitive deconstructions for clinician review.
@@ -7,17 +10,28 @@ import '../../../app/localization/app_strings.dart';
 /// Working concept: the Session Brief, a summary of selected cases and patterns
 /// the user brings to a professional."
 class ClinicalExportService {
-  /// Generates a structured clinical session brief from selected cases.
+  /// Generates a structured clinical session brief from selected cases and optional
+  /// mood/baseline tracking summaries.
   ///
   /// Any case marked `isPrivate == true` is strictly filtered out.
   static String generateSessionBrief({
     required List<CaseModel> cases,
     required AppStrings strings,
     String recipientOrNote = '',
+    PersonalBaseline? baseline,
+    WeeklySummaryReport? weeklySummary,
+    List<MindTraceModel>? traces,
   }) {
     // Strictly filter out private shielded cases (Principle 2)
     final shareableCases = cases.where((c) => !c.isPrivate).toList();
-    if (shareableCases.isEmpty) {
+    final traceList = traces ?? const <MindTraceModel>[];
+    final hasBaselineData = baseline != null && baseline.totalRecordedDays > 0;
+    final hasWeeklyData =
+        weeklySummary != null && weeklySummary.totalEntriesThisWeek > 0;
+    final hasTrackingData =
+        hasBaselineData || hasWeeklyData || traceList.isNotEmpty;
+
+    if (shareableCases.isEmpty && !hasTrackingData) {
       return strings.isArabic
           ? 'لا توجد جلسات قابلة للمشاركة. جميع الجلسات المحددة موسومة بدرع السرية (خاصة).'
           : (strings.isFrench
@@ -81,6 +95,74 @@ class ClinicalExportService {
               : 'Clinician / Session Note: ${recipientOrNote.trim()}'));
     }
     buffer.writeln('----------------------------------------------------------------------\n');
+
+    if (hasTrackingData) {
+      buffer.writeln(isAr
+          ? '[المرجع الشخصي واتجاهات المزاج والأعراض]'
+          : (isFr
+              ? '[LIGNE DE BASE PERSONNELLE & TENDANCES DE SUIVI]'
+              : '[PERSONAL BASELINE & WEEKLY TRACKING SUMMARY]'));
+      if (hasBaselineData) {
+        buffer.writeln(isAr
+            ? '• أيام الملاحظة المسجلة: ${baseline.totalRecordedDays}'
+            : (isFr
+                ? '• Jours d’observation enregistrés : ${baseline.totalRecordedDays}'
+                : '• Recorded observation days: ${baseline.totalRecordedDays}'));
+        if (baseline.averageMoodIntensity != null) {
+          buffer.writeln(isAr
+              ? '• متوسط شدة المزاج: ${baseline.averageMoodIntensity!.toStringAsFixed(1)}/10'
+              : (isFr
+                  ? '• Intensité moyenne de l’humeur : ${baseline.averageMoodIntensity!.toStringAsFixed(1)}/10'
+                  : '• Average mood intensity: ${baseline.averageMoodIntensity!.toStringAsFixed(1)}/10'));
+        }
+        if (baseline.averageSleepHours != null) {
+          buffer.writeln(isAr
+              ? '• متوسط النوم المبلغ عنه ذاتياً: ${baseline.averageSleepHours!.toStringAsFixed(1)} س'
+              : (isFr
+                  ? '• Sommeil moyen déclaré : ${baseline.averageSleepHours!.toStringAsFixed(1)} h'
+                  : '• Self-reported average sleep: ${baseline.averageSleepHours!.toStringAsFixed(1)} hrs'));
+        }
+        if (baseline.commonEmotions.isNotEmpty) {
+          buffer.writeln(
+              '• ${isAr ? "المشاعر المتكررة" : (isFr ? "Émotions fréquentes" : "Recurring emotions")}: ${baseline.commonEmotions.take(4).join(', ')}');
+        }
+        if (baseline.recurringTriggers.isNotEmpty) {
+          buffer.writeln(
+              '• ${isAr ? "المحفزات المتكررة" : (isFr ? "Déclencheurs fréquents" : "Recurring triggers")}: ${baseline.recurringTriggers.take(4).join(', ')}');
+        }
+      }
+      if (hasWeeklyData) {
+        buffer.writeln(isAr
+            ? '• التغيرات الأسبوعية (${weeklySummary.weekRange}): ${weeklySummary.whatChangedSummary}'
+            : (isFr
+                ? '• Évolution hebdomadaire (${weeklySummary.weekRange}) : ${weeklySummary.whatChangedSummary}'
+                : '• Weekly shifts (${weeklySummary.weekRange}): ${weeklySummary.whatChangedSummary}'));
+        buffer.writeln('• ${weeklySummary.sleepTrend}');
+        if (weeklySummary.topSymptoms.isNotEmpty) {
+          buffer.writeln(
+              '• ${isAr ? "الأعراض المسجلة" : (isFr ? "Ressentis notés" : "Noted symptoms")}: ${weeklySummary.topSymptoms.join(', ')}');
+        }
+        if (weeklySummary.suggestedTherapyTopics.isNotEmpty) {
+          buffer.writeln(isAr
+              ? '• محاور مقترحة للنقاش العلاجي:'
+              : (isFr
+                  ? '• Thèmes suggérés pour la séance :'
+                  : '• Suggested discussion themes for session:'));
+          for (final topic in weeklySummary.suggestedTherapyTopics) {
+            buffer.writeln('   - $topic');
+          }
+        }
+      } else if (traceList.isNotEmpty) {
+        final avgIntensity = traceList.fold<int>(0, (s, t) => s + t.moodIntensity) /
+            traceList.length;
+        buffer.writeln(isAr
+            ? '• إجمالي التسجيلات المشمولة: ${traceList.length} (متوسط الشدة: ${avgIntensity.toStringAsFixed(1)}/10)'
+            : (isFr
+                ? '• Total des entrées incluses : ${traceList.length} (intensité moyenne : ${avgIntensity.toStringAsFixed(1)}/10)'
+                : '• Total traces included: ${traceList.length} (avg intensity: ${avgIntensity.toStringAsFixed(1)}/10)'));
+      }
+      buffer.writeln('----------------------------------------------------------------------\n');
+    }
 
     // Chronological Sessions Deconstruction
     for (int i = 0; i < shareableCases.length; i++) {

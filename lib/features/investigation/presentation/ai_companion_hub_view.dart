@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,7 +25,9 @@ import 'widgets/mode_chooser_sheet.dart';
 /// - Luxury Vercel Dark & Master Burgundy aesthetics
 /// - Strictly 0 emojis
 class AiCompanionHubView extends ConsumerStatefulWidget {
-  const AiCompanionHubView({super.key});
+  const AiCompanionHubView({super.key, this.onSessionSelected});
+
+  final VoidCallback? onSessionSelected;
 
   @override
   ConsumerState<AiCompanionHubView> createState() => _AiCompanionHubViewState();
@@ -224,10 +228,13 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
 
   Future<void> _startConversation([String? initialPrompt]) async {
     HapticFeedback.mediumImpact();
+    final controller = ref.read(activeCaseControllerProvider.notifier);
     final activeMode = ref.read(currentConversationModeProvider);
-    await ref
-        .read(activeCaseControllerProvider.notifier)
-        .startNewCase(initialPrompt ?? '', mode: activeMode);
+    await controller.startNewCase(initialPrompt ?? '', mode: activeMode);
+    widget.onSessionSelected?.call();
+    if (initialPrompt != null && initialPrompt.trim().isNotEmpty) {
+      unawaited(controller.requestAiReply());
+    }
   }
 
   @override
@@ -590,6 +597,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                           ref
                               .read(activeCaseControllerProvider.notifier)
                               .resumeCase(c);
+                          widget.onSessionSelected?.call();
                         },
                         leading: Container(
                           padding: const EdgeInsets.all(8),

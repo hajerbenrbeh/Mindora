@@ -15,19 +15,29 @@ import 'widgets/live_dialogue_view.dart';
 /// Main conversational AI Guide screen combining direct session dialogue with
 /// the mode/session library hub.
 class FlashCaseScreen extends ConsumerStatefulWidget {
-  const FlashCaseScreen({super.key});
+  const FlashCaseScreen({super.key, this.initialHubView = false});
+
+  final bool initialHubView;
 
   @override
   ConsumerState<FlashCaseScreen> createState() => _FlashCaseScreenState();
 }
 
 class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
-  bool _showHubView = false;
+  late bool _showHubView = widget.initialHubView;
 
   @override
   void initState() {
     super.initState();
     _ensureActiveCase();
+  }
+
+  @override
+  void didUpdateWidget(covariant FlashCaseScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialHubView && !oldWidget.initialHubView && !_showHubView) {
+      setState(() => _showHubView = true);
+    }
   }
 
   Future<void> _ensureActiveCase() async {
@@ -61,6 +71,11 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
         if (_showHubView) {
           setState(() => _showHubView = false);
         }
+      }
+    });
+    ref.listen<int>(companionHubSignalProvider, (prev, next) {
+      if (prev != next && !_showHubView && mounted) {
+        setState(() => _showHubView = true);
       }
     });
 
@@ -210,7 +225,15 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
         ],
       ),
       body: _showHubView
-          ? const SafeArea(child: AiCompanionHubView())
+          ? SafeArea(
+              child: AiCompanionHubView(
+                onSessionSelected: () {
+                  if (mounted && _showHubView) {
+                    setState(() => _showHubView = false);
+                  }
+                },
+              ),
+            )
           : (caseModel != null
               ? SafeArea(child: LiveDialogueView(caseModel: caseModel))
               : SafeArea(

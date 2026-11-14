@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/localization/locale_controller.dart';
+import '../../../app/router/app_router.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../app/theme/theme_controller.dart';
+import '../../../core/notifications/gentle_reminder_service.dart';
 import '../../../core/safety/support_button.dart';
 import '../../../core/security/app_lock_provider.dart';
+import '../../../core/security/biometric_service.dart';
+import '../../../core/security/secure_key_manager.dart';
 import '../../../core/widgets/botanical_emblem.dart';
 import '../../../core/widgets/mind_badge.dart';
 import '../../../core/widgets/mind_button.dart';
@@ -19,12 +24,13 @@ import '../../auth/controllers/auth_controller.dart';
 import '../../backup/data/unified_backup_service.dart';
 import '../../case_file/presentation/clinical_export_preview_sheet.dart';
 import '../../investigation/controllers/investigation_providers.dart';
-import '../../investigation/data/cloud_sync_service.dart';
 import '../../investigation/presentation/widgets/ai_engine_config_sheet.dart';
 import '../../journal/controllers/journal_memory_controller.dart';
 import '../../journal/presentation/widgets/journal_memory_sheet.dart';
 import '../../journey/controllers/journey_controller.dart';
 import '../../mind_trace/controllers/mind_trace_controller.dart';
+import '../../observatory/controllers/observatory_controllers.dart';
+import '../../observatory/data/local_symptom_repository.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../profile/presentation/psychological_profile_screen.dart';
 import 'clinical_sharing_history_sheet.dart';
@@ -47,7 +53,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   static const String _prefNotifFreq = 'mf_notification_freq';
 
   bool _aiHistoryAccess = true;
-  bool _cloudSyncEnabled = true;
   bool _gentleNotifications = false;
   String _notificationFrequency = 'daily';
 
@@ -59,11 +64,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _loadPersistedSettings() async {
     final prefs = await SharedPreferences.getInstance();
-    final syncEnabled = await ref.read(cloudSyncServiceProvider).isSyncEnabled();
     if (mounted) {
+      final profileConsent =
+          ref.read(profileControllerProvider).value?.shareWithAiCompanion;
       setState(() {
-        _aiHistoryAccess = prefs.getBool(_prefAiHistory) ?? true;
-        _cloudSyncEnabled = syncEnabled;
+        _aiHistoryAccess =
+            profileConsent ?? (prefs.getBool(_prefAiHistory) ?? true);
         _gentleNotifications = prefs.getBool(_prefGentleNotif) ?? false;
         _notificationFrequency = prefs.getString(_prefNotifFreq) ?? 'daily';
       });
@@ -72,9 +78,32 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
   Future<void> _setGentleNotifications(bool val) async {
     HapticFeedback.lightImpact();
-    setState(() => _gentleNotifications = val);
+    final strings = ref.read(appStringsProvider);
+    final scheduled = await ref.read(gentleReminderServiceProvider).syncSchedule(
+          enabled: val,
+          frequency: _notificationFrequency,
+          strings: strings,
+        );
+    final effectiveEnabled = val && scheduled;
+    if (mounted) {
+      setState(() => _gentleNotifications = effectiveEnabled);
+    }
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_prefGentleNotif, val);
+    await prefs.setBool(_prefGentleNotif, effectiveEnabled);
+    if (val && !scheduled && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            strings.isArabic
+                ? 'تعذر تفعيل التنبيهات لأن إذن الإشعارات غير ممنوح.'
+                : (strings.isFrench
+                    ? 'Autorisation de notification refusée ; les rappels restent désactivés.'
+                    : 'Notification permission was denied; gentle reminders remain off.'),
+          ),
+        ),
+      );
+    }
   }
 
   Future<void> _setNotificationFrequency(String freq) async {
@@ -82,6 +111,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     setState(() => _notificationFrequency = freq);
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefNotifFreq, freq);
+    if (_gentleNotifications) {
+      await ref.read(gentleReminderServiceProvider).syncSchedule(
+            enabled: true,
+            frequency: freq,
+            strings: ref.read(appStringsProvider),
+          );
+    }
   }
 
   Future<void> _setAiHistory(bool val) async {
@@ -92,10 +128,302 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     await ref.read(profileControllerProvider.notifier).setAiPersonalization(val);
   }
 
-  Future<void> _setCloudSync(bool val) async {
+  Future<void> _promptEncryptedVaultExport(
+    BuildContext context,
+    AppStrings strings,
+    MindTokens tokens,
+  ) async {
+    final passCtrl = TextEditingController();
+    final confirmCtrl = TextEditingController();
+    String? errorMsg;
+
+    final password = await showDialog<String>(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) => AlertDialog(
+          backgroundColor: tokens.surface,
+          title: Text(
+            strings.isArabic
+                ? 'تصدير خزينة مشفرة بكلمة سر'
+                : (strings.isFrench
+                    ? 'Exporter un coffre chiffré'
+                    : 'Export Encrypted Vault'),
+            style: TextStyle(
+              color: tokens.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.isArabic
+                      ? 'أدخل كلمة سر لحماية النسخة المصدرة (6 أحرف على الأقل). بدونها لا يمكن فك التشفير.'
+                      : (strings.isFrench
+                          ? 'Choisissez un mot de passe pour chiffrer votre sauvegarde (6 caractères minimum).'
+                          : 'Enter a passphrase to encrypt your backup (min 6 characters). Required later to restore.'),
+                  style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: passCtrl,
+                  obscureText: true,
+                  style: TextStyle(color: tokens.textPrimary, fontSize: 13.5),
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic
+                        ? 'كلمة السر'
+                        : (strings.isFrench ? 'Mot de passe' : 'Passphrase'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: confirmCtrl,
+                  obscureText: true,
+                  style: TextStyle(color: tokens.textPrimary, fontSize: 13.5),
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic
+                        ? 'تأكيد كلمة السر'
+                        : (strings.isFrench ? 'Confirmer' : 'Confirm password'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                if (errorMsg != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    errorMsg!,
+                    style: TextStyle(
+                      color: tokens.safetyWarmth,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(),
+              child: Text(strings.cancelBtn),
+            ),
+            FilledButton(
+              onPressed: () {
+                final p1 = passCtrl.text;
+                final p2 = confirmCtrl.text;
+                if (p1.length < 6) {
+                  setDialogState(() {
+                    errorMsg = strings.isArabic
+                        ? 'يجب أن تكون كلمة السر 6 أحرف على الأقل.'
+                        : (strings.isFrench
+                            ? 'Le mot de passe doit contenir au moins 6 caractères.'
+                            : 'Passphrase must be at least 6 characters.');
+                  });
+                  return;
+                }
+                if (p1 != p2) {
+                  setDialogState(() {
+                    errorMsg = strings.isArabic
+                        ? 'كلمتا السر غير متطابقتين.'
+                        : (strings.isFrench
+                            ? 'Les mots de passe ne correspondent pas.'
+                            : 'Passphrases do not match.');
+                  });
+                  return;
+                }
+                Navigator.of(dialogCtx).pop(p1);
+              },
+              child: Text(strings.exportVaultBtn),
+            ),
+          ],
+        ),
+      ),
+    );
+    passCtrl.dispose();
+    confirmCtrl.dispose();
+
+    if (password == null || !mounted) return;
     HapticFeedback.lightImpact();
-    setState(() => _cloudSyncEnabled = val);
-    await ref.read(cloudSyncServiceProvider).setSyncEnabled(val);
+    final result = await ref
+        .read(unifiedBackupServiceProvider)
+        .createPasswordEncryptedBackup(password);
+    if (!result.success || result.rawJson == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            content: Text(result.message),
+          ),
+        );
+      }
+      return;
+    }
+
+    await Clipboard.setData(ClipboardData(text: result.rawJson!));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(
+            strings.isArabic
+                ? 'تم نسخ الخزينة المشفرة إلى الحافظة بأمان.'
+                : (strings.isFrench
+                    ? 'Coffre chiffré copié dans le presse-papiers.'
+                    : 'Password-encrypted vault backup copied to clipboard.'),
+          ),
+        ),
+      );
+    }
+  }
+
+  Future<void> _promptEncryptedVaultRestore(
+    BuildContext context,
+    AppStrings strings,
+    MindTokens tokens,
+  ) async {
+    final jsonCtrl = TextEditingController();
+    final passCtrl = TextEditingController();
+    String? errorMsg;
+
+    final payload = await showDialog<({String json, String password})>(
+      context: context,
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (dialogCtx, setDialogState) => AlertDialog(
+          backgroundColor: tokens.surface,
+          title: Text(
+            strings.isArabic
+                ? 'استعادة خزينة مشفرة'
+                : (strings.isFrench
+                    ? 'Restaurer un coffre chiffré'
+                    : 'Restore Encrypted Vault'),
+            style: TextStyle(
+              color: tokens.textPrimary,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  strings.isArabic
+                      ? 'ألصق نص النسخة الاحتياطية المشفرة وأدخل كلمة السر لاستعادة السجلات دون فقدان البيانات الحالية.'
+                      : (strings.isFrench
+                          ? 'Collez la sauvegarde chiffrée et saisissez le mot de passe associé.'
+                          : 'Paste your exported vault backup JSON and enter the passphrase used to lock it.'),
+                  style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: jsonCtrl,
+                  minLines: 3,
+                  maxLines: 5,
+                  style: TextStyle(color: tokens.textPrimary, fontSize: 12),
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic
+                        ? 'محتوى النسخة الاحتياطية (JSON)'
+                        : (strings.isFrench
+                            ? 'Contenu de sauvegarde (JSON)'
+                            : 'Encrypted Backup JSON'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: passCtrl,
+                  obscureText: true,
+                  style: TextStyle(color: tokens.textPrimary, fontSize: 13.5),
+                  decoration: InputDecoration(
+                    labelText: strings.isArabic
+                        ? 'كلمة السر'
+                        : (strings.isFrench ? 'Mot de passe' : 'Passphrase'),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                if (errorMsg != null) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    errorMsg!,
+                    style: TextStyle(
+                      color: tokens.safetyWarmth,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogCtx).pop(),
+              child: Text(strings.cancelBtn),
+            ),
+            FilledButton(
+              onPressed: () {
+                final raw = jsonCtrl.text.trim();
+                final pwd = passCtrl.text;
+                if (raw.isEmpty) {
+                  setDialogState(() {
+                    errorMsg = strings.isArabic
+                        ? 'الرجاء لصق نص النسخة الاحتياطية أولاً.'
+                        : (strings.isFrench
+                            ? 'Veuillez coller la sauvegarde.'
+                            : 'Please paste your backup payload first.');
+                  });
+                  return;
+                }
+                Navigator.of(dialogCtx).pop((json: raw, password: pwd));
+              },
+              child: Text(
+                strings.isArabic
+                    ? 'استعادة'
+                    : (strings.isFrench ? 'Restaurer' : 'Restore'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+    jsonCtrl.dispose();
+    passCtrl.dispose();
+
+    if (payload == null || !mounted) return;
+    HapticFeedback.mediumImpact();
+    final result = await ref
+        .read(unifiedBackupServiceProvider)
+        .restoreFromPasswordEncryptedBackup(payload.json, payload.password);
+    if (result.success) {
+      ref.invalidate(savedCasesProvider);
+      ref.invalidate(activeCaseControllerProvider);
+      ref.invalidate(mindTraceControllerProvider);
+      ref.invalidate(journalMemoryControllerProvider);
+      ref.invalidate(profileControllerProvider);
+      ref.invalidate(symptomReportsControllerProvider);
+      ref.invalidate(symptomListControllerProvider);
+      ref.invalidate(journeyControllerProvider);
+    }
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text(result.message),
+        ),
+      );
+    }
   }
 
   Future<void> _showEditPreferredNameDialog(
@@ -389,12 +717,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     await ref.read(journalMemoryControllerProvider.notifier).clearAll();
     await ref.read(profileControllerProvider.notifier).clearProfile();
     await ref.read(journeyControllerProvider.notifier).resetJourney();
+    await ref.read(symptomRepositoryProvider).clearAllData();
+    ref.invalidate(symptomReportsControllerProvider);
+    ref.invalidate(symptomListControllerProvider);
     await ref.read(authControllerProvider.notifier).deleteAccount();
+    await ref.read(appLockProvider.notifier).toggleBiometrics(false);
+    await ref.read(gentleReminderServiceProvider).cancelReminders();
+    await ref.read(secureKeyManagerProvider).wipeAllKeys();
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_prefAiHistory);
     await prefs.remove(_prefGentleNotif);
     await prefs.remove(_prefNotifFreq);
+    await prefs.remove(BiometricSecurityService.prefKeyBiometric);
+    await prefs.remove('mind_forensics_clinical_export_history_v1');
+    await prefs.remove(UnifiedBackupService.prefLastBackupTime);
+    await prefs.remove(UnifiedBackupService.prefLastBackupJson);
+    await prefs.remove(UnifiedBackupService.prefLastBackupCount);
+    ref.invalidate(aiConfigProvider);
 
     if (mounted) {
       setState(() {
@@ -402,6 +742,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         _gentleNotifications = false;
         _notificationFrequency = 'daily';
       });
+      final router = GoRouter.maybeOf(context);
+      if (router != null) {
+        router.go(AppRouter.auth);
+      }
     }
   }
 
@@ -697,6 +1041,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final profileAsync = ref.watch(profileControllerProvider);
     final cases = ref.watch(savedCasesProvider).value ?? [];
     final profile = profileAsync.value;
+    final aiHistoryEnabled =
+        profile?.shareWithAiCompanion ?? _aiHistoryAccess;
 
     final preferredName = profile?.preferredName.trim() ?? '';
     final authUser = authState.user;
@@ -1046,7 +1392,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   icon: Icons.memory_rounded,
                   title: strings.aiHistoryTitle,
                   subtitle: strings.aiHistoryDesc,
-                  value: _aiHistoryAccess,
+                  value: aiHistoryEnabled,
                   onChanged: _setAiHistory,
                 ),
                 Divider(height: 1, thickness: 1, color: tokens.border),
@@ -1112,71 +1458,72 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onTap: () => ClinicalSharingHistorySheet.show(context),
                 ),
                 Divider(height: 1, thickness: 1, color: tokens.border),
-                _buildSwitchRow(
-                  tokens: tokens,
-                  icon: Icons.sync_outlined,
-                  title: strings.cloudSyncTitle,
-                  subtitle: strings.cloudSyncDesc,
-                  value: _cloudSyncEnabled,
-                  onChanged: _setCloudSync,
-                ),
+                const SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: MindButton(
-                          text: strings.backupNowBtn,
-                          variant: MindButtonVariant.soft,
-                          leadingIcon: Icons.cloud_upload_outlined,
-                          onPressed: () async {
-                            HapticFeedback.mediumImpact();
-                            final result = await ref
-                                .read(unifiedBackupServiceProvider)
-                                .createFullBackup();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    strings.isArabic
-                                        ? 'اكتمل النسخ الاحتياطي: ${result.tracesCount} أثر، ${result.sessionsCount} جلسات، ${result.memoriesCount} خلاصات محفوظة.'
-                                        : (strings.isFrench
-                                            ? 'Sauvegarde terminée : ${result.tracesCount} empreintes, ${result.sessionsCount} sessions, ${result.memoriesCount} souvenirs préservés.'
-                                            : 'Backup complete: ${result.tracesCount} traces, ${result.sessionsCount} sessions, ${result.memoriesCount} memories preserved.'),
-                                  ),
-                                  behavior: SnackBarBehavior.floating,
-                                ),
-                              );
-                            }
-                          },
-                        ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: MindButton(
+                              text: strings.backupNowBtn,
+                              variant: MindButtonVariant.soft,
+                              leadingIcon: Icons.cloud_upload_outlined,
+                              onPressed: () async {
+                                HapticFeedback.mediumImpact();
+                                final result = await ref
+                                    .read(unifiedBackupServiceProvider)
+                                    .createFullBackup();
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        strings.isArabic
+                                            ? 'اكتمل النسخ الاحتياطي: ${result.tracesCount} أثر، ${result.sessionsCount} جلسات، ${result.memoriesCount} خلاصات محفوظة.'
+                                            : (strings.isFrench
+                                                ? 'Sauvegarde terminée : ${result.tracesCount} empreintes, ${result.sessionsCount} sessions, ${result.memoriesCount} souvenirs préservés.'
+                                                : 'Backup complete: ${result.tracesCount} traces, ${result.sessionsCount} sessions, ${result.memoriesCount} memories preserved.'),
+                                      ),
+                                      behavior: SnackBarBehavior.floating,
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: MindButton(
+                              text: strings.exportVaultBtn,
+                              variant: MindButtonVariant.secondary,
+                              leadingIcon: Icons.enhanced_encryption_outlined,
+                              onPressed: () => _promptEncryptedVaultExport(
+                                context,
+                                strings,
+                                tokens,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: double.infinity,
                         child: MindButton(
-                          text: strings.exportVaultBtn,
+                          text: strings.isArabic
+                              ? 'استعادة خزينة مشفرة'
+                              : (strings.isFrench
+                                  ? 'Restaurer un coffre chiffré'
+                                  : 'Restore Encrypted Vault'),
                           variant: MindButtonVariant.secondary,
-                          leadingIcon: Icons.file_download_outlined,
-                          onPressed: () async {
-                            HapticFeedback.lightImpact();
-                            final result = await ref
-                                .read(unifiedBackupServiceProvider)
-                                .createFullBackup();
-                            if (result.rawJson != null) {
-                              await Clipboard.setData(
-                                ClipboardData(text: result.rawJson!),
-                              );
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(strings.exportVaultSuccess),
-                                    duration: const Duration(seconds: 2),
-                                    behavior: SnackBarBehavior.floating,
-                                  ),
-                                );
-                              }
-                            }
-                          },
+                          isFullWidth: true,
+                          leadingIcon: Icons.restore_page_outlined,
+                          onPressed: () => _promptEncryptedVaultRestore(
+                            context,
+                            strings,
+                            tokens,
+                          ),
                         ),
                       ),
                     ],

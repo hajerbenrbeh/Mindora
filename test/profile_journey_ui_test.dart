@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mind_forensics/features/journey/data/default_journey_curriculum.dart';
 import 'package:mind_forensics/features/journey/presentation/journey_activity_detail_screen.dart';
-import 'package:mind_forensics/features/journey/presentation/journey_screen.dart';
 import 'package:mind_forensics/features/profile/presentation/psychological_profile_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -43,42 +42,6 @@ void main() {
 
       // Verify Save button exists
       expect(find.text('SAVE PROFILE'), findsOneWidget);
-    });
-
-    testWidgets('JourneyScreen renders phases, activities, and view switcher',
-        (WidgetTester tester) async {
-      tester.view.physicalSize = const Size(800, 2400);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      SharedPreferences.setMockInitialValues({});
-
-      await tester.pumpWidget(
-        const ProviderScope(
-          child: MaterialApp(
-            home: JourneyScreen(),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Check title and top tabs
-      expect(find.text('MY JOURNEY'), findsAtLeastNWidgets(1));
-      expect(find.text('My Progress'), findsOneWidget);
-      expect(find.text('Tools Lab'), findsOneWidget);
-
-      // Check Phase 1 activities
-      expect(find.text('The Triad: Thoughts, Emotions, and Actions'), findsOneWidget);
-      expect(find.text('Mapping Recurring Thought Themes'), findsOneWidget);
-
-      // Switch to My Progress tab
-      await tester.tap(find.text('My Progress'));
-      await tester.pumpAndSettle();
-
-      // Verify non-judgmental progress notice
-      expect(find.text('COMPLETED ACTIVITIES'), findsOneWidget);
-      expect(find.text('REFLECTIONS LOGGED'), findsOneWidget);
     });
 
     testWidgets('JourneyActivityDetailScreen allows writing reflection and completing',

@@ -13,6 +13,8 @@ import '../../../core/widgets/bouncing_widget.dart';
 import '../../mind_trace/controllers/mind_trace_controller.dart';
 import '../../mind_trace/domain/mind_trace_model.dart';
 import '../../mind_trace/presentation/widgets/trace_entry_detail_sheet.dart';
+import '../../track/presentation/widgets/track_entry_detail_sheet.dart'
+    show EditPastTraceSheet;
 import '../data/progress_analytics_service.dart';
 import '../domain/progress_analytics_model.dart';
 
@@ -1488,10 +1490,11 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                           // Open full trace detail
                           ElevatedButton(
                             onPressed: () {
+                              final selected = _selectedCalendarTrace!;
                               TraceEntryDetailSheet.show(
                                 context,
-                                trace: _selectedCalendarTrace!,
-                                onEdit: () => context.push(AppRouter.mindTrace),
+                                trace: selected,
+                                onEdit: () => EditPastTraceSheet.show(context, selected),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -1619,7 +1622,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                       TraceEntryDetailSheet.show(
                         context,
                         trace: trace,
-                        onEdit: () => context.push(AppRouter.mindTrace),
+                        onEdit: () => EditPastTraceSheet.show(context, trace),
                       );
                     },
                   ),
@@ -1837,10 +1840,11 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                               alignment: AlignmentDirectional.centerEnd,
                               child: InkWell(
                                 onTap: () {
+                                  final original = item.originalTrace!;
                                   TraceEntryDetailSheet.show(
                                     context,
-                                    trace: item.originalTrace!,
-                                    onEdit: () => context.push(AppRouter.mindTrace),
+                                    trace: original,
+                                    onEdit: () => EditPastTraceSheet.show(context, original),
                                   );
                                 },
                                 child: Text(

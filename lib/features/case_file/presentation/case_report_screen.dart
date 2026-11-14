@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/localization/app_strings.dart';
+import '../../../app/router/app_router.dart';
 import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/crisis_keywords.dart';
@@ -12,6 +13,7 @@ import '../../../core/safety/support_button.dart';
 import '../../../core/widgets/label_badge.dart';
 import '../../investigation/controllers/investigation_providers.dart';
 import '../../investigation/domain/case_model.dart';
+import '../../investigation/domain/statement.dart';
 import 'clinical_export_preview_sheet.dart';
 
 /// The official Case File in Report View: Vercel Luxury Dark & Minimalist Precision.
@@ -213,11 +215,21 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
             onPressed: () async {
               HapticFeedback.heavyImpact();
               await ref.read(caseRepositoryProvider).deleteCase(widget.caseId);
+              ref.invalidate(savedCasesProvider);
+              final currentActive = ref.read(activeCaseControllerProvider).value;
+              if (currentActive?.id == widget.caseId) {
+                ref.invalidate(activeCaseControllerProvider);
+              }
               if (ctx.mounted) {
                 Navigator.of(ctx).pop();
               }
               if (mounted) {
-                context.go('/journal');
+                final router = GoRouter.maybeOf(context);
+                if (router != null && router.canPop()) {
+                  router.pop();
+                } else {
+                  context.go(AppRouter.home);
+                }
               }
             },
             child: Text(strings.deletePermanentlyBtn, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 11, letterSpacing: 0.5)),
@@ -493,6 +505,97 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                 const SizedBox(height: 18),
               ],
 
+              // Section 3b: Findings Summary (synthesized insights)
+              if (c.findingsSummary != null && c.findingsSummary!.trim().isNotEmpty) ...[
+                _reportSectionHeader(
+                  strings.isArabic
+                      ? 'خلاصة الملاحظات'
+                      : (strings.isFrench ? 'SYNTHÈSE DES OBSERVATIONS' : 'KEY FINDINGS SUMMARY'),
+                  textSecondary,
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: surfaceColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: borderColor, width: 1),
+                  ),
+                  child: Text(
+                    c.findingsSummary!.trim(),
+                    style: TextStyle(color: textPrimary, fontSize: 13, height: 1.45),
+                  ),
+                ),
+                const SizedBox(height: 18),
+              ],
+
+              // Section 3c: Session Dialogue Excerpt (important when chain/hypotheses are empty)
+              if (c.statements.isNotEmpty) ...[
+                _reportSectionHeader(
+                  strings.isArabic
+                      ? 'مقتطفات الحوار التأملي'
+                      : (strings.isFrench ? 'EXTRAITS DU DIALOGUE' : 'SESSION DIALOGUE'),
+                  textSecondary,
+                ),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: surfaceColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: borderColor, width: 1),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: c.statements.take(12).map((st) {
+                      final isUser = st.speaker == StatementSpeaker.user;
+                      final speakerLabel = isUser
+                          ? (strings.isArabic ? 'أنت' : (strings.isFrench ? 'VOUS' : 'YOU'))
+                          : (strings.isArabic
+                              ? 'الرفيق'
+                              : (strings.isFrench ? 'COMPAGNON' : 'COMPANION'));
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  speakerLabel,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.6,
+                                    color: isUser
+                                        ? (isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark)
+                                        : context.tokens.accent,
+                                  ),
+                                ),
+                                if (st.label != null) ...[
+                                  const SizedBox(width: 8),
+                                  LabelBadge(label: st.label!, compact: true),
+                                ],
+                              ],
+                            ),
+                            const SizedBox(height: 3),
+                            Text(
+                              st.text,
+                              style: TextStyle(
+                                color: textPrimary,
+                                fontSize: 12.5,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 18),
+              ],
+
               // Section 4: My Conclusion
               _reportSectionHeader(strings.groundedVerdictHeader, textSecondary),
               Container(
@@ -570,10 +673,15 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                   ),
                   onPressed: () {
                     HapticFeedback.lightImpact();
-                    context.go('/journal');
+                    final router = GoRouter.maybeOf(context);
+                    if (router != null && router.canPop()) {
+                      router.pop();
+                    } else {
+                      context.go(AppRouter.home);
+                    }
                   },
                   child: Text(
-                    strings.navJournal.toUpperCase(),
+                    strings.navHome.toUpperCase(),
                     style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 0.5),
                   ),
                 ),

@@ -494,7 +494,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     const SizedBox(width: 8),
                     InkWell(
-                      onTap: () => context.go(AppRouter.companion),
+                      onTap: () {
+                        ref.read(companionHubSignalProvider.notifier).trigger();
+                        context.go('${AppRouter.companion}?view=hub');
+                      },
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         constraints: const BoxConstraints(minHeight: 48, minWidth: 48),

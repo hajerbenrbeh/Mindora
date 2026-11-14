@@ -11,7 +11,6 @@ import 'package:mind_forensics/features/investigation/domain/case_model.dart';
 import 'package:mind_forensics/features/investigation/domain/case_stage.dart';
 import 'package:mind_forensics/features/investigation/presentation/flash_case_screen.dart';
 import 'package:mind_forensics/features/investigation/presentation/widgets/live_dialogue_view.dart';
-import 'package:mind_forensics/features/journey/presentation/journey_screen.dart';
 import 'package:mind_forensics/features/observatory/presentation/inner_observatory_screen.dart';
 import 'package:mind_forensics/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:mind_forensics/features/settings/presentation/settings_screen.dart';
@@ -112,7 +111,6 @@ void main() {
       (name: 'InsightsScreen', build: () => const InsightsScreen()),
       (name: 'SettingsScreen', build: () => const SettingsScreen()),
       (name: 'FlashCaseScreen', build: () => const FlashCaseScreen()),
-      (name: 'JourneyScreen', build: () => const JourneyScreen()),
       (name: 'OnboardingScreen', build: () => const OnboardingScreen()),
       (
         name: 'ContextualSupportSheet',

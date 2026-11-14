@@ -12,22 +12,54 @@ import 'app_lock_provider.dart';
 /// Luxury Vercel Dark aesthetic:
 /// OLED pitch black (#000000), 1.0px hairline borders, monochrome action button,
 /// and zero emoji clutter.
-class LockOverlay extends ConsumerWidget {
+class LockOverlay extends ConsumerStatefulWidget {
   const LockOverlay({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LockOverlay> createState() => _LockOverlayState();
+}
+
+class _LockOverlayState extends ConsumerState<LockOverlay>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      ref.read(appLockProvider.notifier).lockManually();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final lockState = ref.watch(appLockProvider);
     final strings = ref.watch(appStringsProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
 
-    if (!lockState.isLocked) {
-      return child;
+    if (!lockState.isInitialized) {
+      return ColoredBox(
+        color: bg,
+        child: const SizedBox.expand(),
+      );
     }
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
+    if (!lockState.isLocked) {
+      return widget.child;
+    }
+
     final surface = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
     final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
     final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;

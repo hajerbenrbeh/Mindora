@@ -20,7 +20,6 @@ import 'package:mind_forensics/features/observatory/presentation/inner_observato
 import 'package:mind_forensics/features/profile/controllers/profile_controller.dart';
 import 'package:mind_forensics/features/progress/data/progress_analytics_service.dart';
 import 'package:mind_forensics/features/settings/presentation/settings_screen.dart';
-import 'package:mind_forensics/features/tools/presentation/tools_screen.dart';
 import 'package:mind_forensics/features/tools/presentation/widgets/reframe_drill_card.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -149,7 +148,7 @@ void main() {
       }
     });
 
-    testWidgets('ToolsScreen removes v1 SCOPE micro-badge & passes tap target guidelines', (tester) async {
+    testWidgets('InnerObservatoryScreen removes v1 SCOPE micro-badge & passes tap target guidelines', (tester) async {
       final handle = tester.ensureSemantics();
       try {
         tester.view.physicalSize = const Size(900, 1800);
@@ -160,7 +159,7 @@ void main() {
           ProviderScope(
             child: MaterialApp(
               theme: LabTheme.daylightTheme,
-              home: const ToolsScreen(),
+              home: const InnerObservatoryScreen(),
             ),
           ),
         );

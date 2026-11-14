@@ -7,14 +7,68 @@ import '../../../../app/theme/lab_colors.dart';
 import '../../../profile/controllers/profile_controller.dart';
 import '../../controllers/observatory_controllers.dart';
 import '../../domain/symptom_entry.dart';
+import '../../domain/symptom_report.dart';
 import 'custom_symptom_sheet.dart';
 import 'symptom_assessment_sheet.dart';
 
-class SymptomLibraryView extends ConsumerWidget {
+class SymptomLibraryView extends ConsumerStatefulWidget {
   const SymptomLibraryView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SymptomLibraryView> createState() => _SymptomLibraryViewState();
+}
+
+class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
+  bool _showHistory = false;
+
+  Future<void> _confirmDeleteReport(
+    BuildContext context,
+    SymptomReport report,
+    AppStrings strings,
+    bool isDark,
+  ) async {
+    final isAr = strings.isArabic;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(
+          isAr
+              ? 'حذف سجل العرض؟'
+              : (strings.isFrench
+                  ? 'Supprimer ce bilan ?'
+                  : 'Delete symptom log?'),
+        ),
+        content: Text(
+          isAr
+              ? 'سيتم حذف هذا التقييم من سجلك المحلي بشكل نهائي.'
+              : (strings.isFrench
+                  ? 'Ce rapport sera supprimé définitivement de votre historique local.'
+                  : 'This logged symptom check will be permanently removed from local history.'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(strings.cancelBtn),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              strings.deleteEntryBtn,
+              style: const TextStyle(color: LabColors.cherryRed),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref
+          .read(symptomReportsControllerProvider.notifier)
+          .deleteReport(report.id);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
@@ -29,9 +83,199 @@ class SymptomLibraryView extends ConsumerWidget {
     final selectedIds = ref.watch(selectedSymptomIdsProvider);
     final activeDomain = ref.watch(selectedDomainFilterProvider);
     final profile = ref.watch(profileControllerProvider).value;
+    final reports = ref.watch(symptomReportsControllerProvider).value ?? const <SymptomReport>[];
+    final allSymptoms = ref.watch(symptomListControllerProvider).value ?? const <SymptomEntry>[];
 
     return Column(
       children: [
+        // 0. Library vs Saved Reports Switcher
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: ChoiceChip(
+                  label: Text(
+                    isAr
+                        ? 'مكتبة الأعراض'
+                        : (strings.isFrench ? 'Bibliothèque' : 'Symptom Library'),
+                  ),
+                  selected: !_showHistory,
+                  onSelected: (_) => setState(() => _showHistory = false),
+                  labelStyle: TextStyle(
+                    fontSize: 12,
+                    fontWeight: !_showHistory ? FontWeight.w700 : FontWeight.w500,
+                    color: !_showHistory ? textPrimary : textSecondary,
+                  ),
+                  backgroundColor: surfaceColor,
+                  selectedColor: LabColors.sageGreen.withValues(alpha: 0.22),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: !_showHistory ? LabColors.sageGreen : borderColor,
+                    ),
+                  ),
+                  showCheckmark: false,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ChoiceChip(
+                  label: Text(
+                    isAr
+                        ? 'السجل المحفوظ (${reports.length})'
+                        : (strings.isFrench
+                            ? 'Historique (${reports.length})'
+                            : 'Saved Logs (${reports.length})'),
+                  ),
+                  selected: _showHistory,
+                  onSelected: (_) => setState(() => _showHistory = true),
+                  labelStyle: TextStyle(
+                    fontSize: 12,
+                    fontWeight: _showHistory ? FontWeight.w700 : FontWeight.w500,
+                    color: _showHistory ? textPrimary : textSecondary,
+                  ),
+                  backgroundColor: surfaceColor,
+                  selectedColor: LabColors.sageGreen.withValues(alpha: 0.22),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(
+                      color: _showHistory ? LabColors.sageGreen : borderColor,
+                    ),
+                  ),
+                  showCheckmark: false,
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (_showHistory) ...[
+          const SizedBox(height: 10),
+          Expanded(
+            child: reports.isEmpty
+                ? Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        isAr
+                            ? 'لم يتم حفظ أي تقييم للأعراض بعد. اختر عرضاً من المكتبة لتسجيل ملاحظة.'
+                            : (strings.isFrench
+                                ? 'Aucun bilan enregistré pour le moment. Sélectionnez un ressenti dans la bibliothèque pour le noter.'
+                                : 'No symptom logs saved yet. Select one or more items from the library to record an observation.'),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: textSecondary, fontSize: 12.5, height: 1.45),
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 32),
+                    itemCount: reports.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    itemBuilder: (context, index) {
+                      final r = reports[index];
+                      final symptomTitles = r.symptomIds.map((id) {
+                        final match = allSymptoms.where((s) => s.id == id);
+                        return match.isNotEmpty ? match.first.title(strings) : id;
+                      }).join(', ');
+                      final timeStr =
+                          '${r.createdAt.hour.toString().padLeft(2, '0')}:${r.createdAt.minute.toString().padLeft(2, '0')}';
+
+                      return Container(
+                        padding: const EdgeInsets.all(14),
+                        decoration: BoxDecoration(
+                          color: surfaceColor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '${r.dateKey} • $timeStr',
+                                    style: TextStyle(
+                                      fontSize: 11.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: textSecondary,
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                  decoration: BoxDecoration(
+                                    color: LabColors.sageGreen.withValues(alpha: 0.16),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Text(
+                                    '${r.intensity}/10',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w800,
+                                      color: LabColors.sageGreen,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  tooltip: strings.deleteEntryBtn,
+                                  icon: Icon(Icons.delete_outline_rounded, size: 18, color: textSecondary),
+                                  onPressed: () => _confirmDeleteReport(context, r, strings, isDark),
+                                ),
+                              ],
+                            ),
+                            if (symptomTitles.isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                symptomTitles,
+                                style: TextStyle(
+                                  fontSize: 13.5,
+                                  fontWeight: FontWeight.w700,
+                                  color: textPrimary,
+                                ),
+                              ),
+                            ],
+                            if (r.aiAnalysis != null && r.aiAnalysis!.trim().isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                r.aiAnalysis!.trim(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  height: 1.4,
+                                  color: textSecondary,
+                                ),
+                              ),
+                            ],
+                            if (r.stabilizingStrategy != null &&
+                                r.stabilizingStrategy!.trim().isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: LabColors.sageGreen.withValues(alpha: 0.10),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: LabColors.sageGreen.withValues(alpha: 0.35),
+                                  ),
+                                ),
+                                child: Text(
+                                  r.stabilizingStrategy!.trim(),
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    height: 1.35,
+                                    color: textPrimary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ] else ...[
         // 1. Search Bar & Add Custom Button
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -363,6 +607,7 @@ class SymptomLibraryView extends ConsumerWidget {
               ),
             ),
           ),
+        ],
       ],
     );
   }

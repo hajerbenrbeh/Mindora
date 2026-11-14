@@ -6,18 +6,26 @@ class AppLockState {
   const AppLockState({
     required this.isEnabled,
     required this.isLocked,
+    this.isInitialized = false,
+    this.isAuthenticating = false,
   });
 
   final bool isEnabled;
   final bool isLocked;
+  final bool isInitialized;
+  final bool isAuthenticating;
 
   AppLockState copyWith({
     bool? isEnabled,
     bool? isLocked,
+    bool? isInitialized,
+    bool? isAuthenticating,
   }) {
     return AppLockState(
       isEnabled: isEnabled ?? this.isEnabled,
       isLocked: isLocked ?? this.isLocked,
+      isInitialized: isInitialized ?? this.isInitialized,
+      isAuthenticating: isAuthenticating ?? this.isAuthenticating,
     );
   }
 }
@@ -29,34 +37,59 @@ class AppLockNotifier extends Notifier<AppLockState> {
   @override
   AppLockState build() {
     _init();
-    return const AppLockState(isEnabled: false, isLocked: false);
+    return const AppLockState(
+      isEnabled: false,
+      isLocked: false,
+      isInitialized: false,
+    );
   }
 
   Future<void> _init() async {
     final enabled = await BiometricSecurityService.isBiometricEnabled();
-    if (enabled) {
-      state = const AppLockState(isEnabled: true, isLocked: true);
-    } else {
-      state = const AppLockState(isEnabled: false, isLocked: false);
-    }
+    state = AppLockState(
+      isEnabled: enabled,
+      isLocked: enabled,
+      isInitialized: true,
+    );
   }
 
   /// Attempts biometric unlock.
   Future<bool> unlock({String? reason}) async {
     final enabled = state.isEnabled || await BiometricSecurityService.isBiometricEnabled();
     if (!enabled) {
-      state = state.copyWith(isLocked: false);
+      state = state.copyWith(isLocked: false, isInitialized: true);
       return true;
     }
 
-    final success = await _securityService.authenticate(
-      reason: reason ?? 'Authenticate to unlock your Mind Forensics vault',
-    );
-    if (success) {
-      state = state.copyWith(isEnabled: true, isLocked: false);
-      return true;
-    } else {
-      state = state.copyWith(isEnabled: true, isLocked: true);
+    state = state.copyWith(isAuthenticating: true);
+    try {
+      final success = await _securityService.authenticate(
+        reason: reason ?? 'Authenticate to unlock your Mind Forensics vault',
+      );
+      if (success) {
+        state = state.copyWith(
+          isEnabled: true,
+          isLocked: false,
+          isInitialized: true,
+          isAuthenticating: false,
+        );
+        return true;
+      } else {
+        state = state.copyWith(
+          isEnabled: true,
+          isLocked: true,
+          isInitialized: true,
+          isAuthenticating: false,
+        );
+        return false;
+      }
+    } catch (_) {
+      state = state.copyWith(
+        isEnabled: true,
+        isLocked: true,
+        isInitialized: true,
+        isAuthenticating: false,
+      );
       return false;
     }
   }
@@ -67,25 +100,42 @@ class AppLockNotifier extends Notifier<AppLockState> {
       final canAuth = await _securityService.canAuthenticate();
       if (!canAuth) return false;
 
-      final success = await _securityService.authenticate(
-        reason: 'Confirm biometrics to enable session vault lock',
-      );
-      if (success) {
-        await BiometricSecurityService.setBiometricEnabled(true);
-        state = state.copyWith(isEnabled: true, isLocked: false);
-        return true;
+      state = state.copyWith(isAuthenticating: true);
+      try {
+        final success = await _securityService.authenticate(
+          reason: 'Confirm biometrics to enable session vault lock',
+        );
+        if (success) {
+          await BiometricSecurityService.setBiometricEnabled(true);
+          state = state.copyWith(
+            isEnabled: true,
+            isLocked: false,
+            isInitialized: true,
+            isAuthenticating: false,
+          );
+          return true;
+        }
+        state = state.copyWith(isAuthenticating: false);
+        return false;
+      } catch (_) {
+        state = state.copyWith(isAuthenticating: false);
+        return false;
       }
-      return false;
     } else {
       await BiometricSecurityService.setBiometricEnabled(false);
-      state = state.copyWith(isEnabled: false, isLocked: false);
+      state = state.copyWith(
+        isEnabled: false,
+        isLocked: false,
+        isInitialized: true,
+        isAuthenticating: false,
+      );
       return true;
     }
   }
 
-  /// Locks the app manually.
+  /// Locks the app manually or when backgrounded.
   void lockManually() {
-    if (state.isEnabled) {
+    if (state.isEnabled && !state.isAuthenticating) {
       state = state.copyWith(isLocked: true);
     }
   }

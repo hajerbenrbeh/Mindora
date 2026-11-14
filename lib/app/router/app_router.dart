@@ -13,8 +13,6 @@ import '../../features/profile/presentation/psychological_profile_screen.dart';
 import '../../features/progress/presentation/progress_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/track/presentation/track_screen.dart';
-import '../../features/splash/presentation/splash_screen.dart';
-import '../../features/journey/presentation/journey_screen.dart';
 import 'scaffold_with_nav_bar.dart';
 
 /// App router configuration using GoRouter with 5 persistent bottom tabs:
@@ -22,7 +20,6 @@ import 'scaffold_with_nav_bar.dart';
 class AppRouter {
   static const String onboarding = '/onboarding';
   static const String auth = '/auth';
-  static const String splash = '/splash';
   static const String home = '/home';
   static const String journal = '/journal';
   static const String investigator = '/investigation';
@@ -35,7 +32,6 @@ class AppRouter {
   static const String track = '/track';
   static const String insights = '/insights';
   static const String companion = '/companion';
-  static const String journey = '/journey';
 
   /// Whether first-launch gating redirects new users to /onboarding.
   static bool enableFirstLaunchGating = true;
@@ -75,11 +71,6 @@ class AppRouter {
     },
     routes: [
       GoRoute(
-        path: splash,
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
-      ),
-      GoRoute(
         path: onboarding,
         name: 'onboarding',
         builder: (context, state) => const OnboardingScreen(),
@@ -88,12 +79,6 @@ class AppRouter {
         path: auth,
         name: 'auth',
         builder: (context, state) => const AuthScreen(),
-      ),
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: journey,
-        name: 'journey',
-        builder: (context, state) => const JourneyScreen(),
       ),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,
@@ -200,7 +185,9 @@ class AppRouter {
               GoRoute(
                 path: companion,
                 name: 'companion',
-                builder: (context, state) => const FlashCaseScreen(),
+                builder: (context, state) => FlashCaseScreen(
+                  initialHubView: state.uri.queryParameters['view'] == 'hub',
+                ),
               ),
             ],
           ),

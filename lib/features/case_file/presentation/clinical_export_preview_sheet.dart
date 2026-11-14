@@ -5,7 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../app/localization/app_strings.dart';
 import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
+import '../../insights/data/pattern_awareness_service.dart';
+import '../../insights/domain/personal_baseline_model.dart';
 import '../../investigation/domain/case_model.dart';
+import '../../mind_trace/domain/mind_trace_model.dart';
 import '../data/clinical_export_log_service.dart';
 import '../data/clinical_export_service.dart';
 
@@ -17,17 +20,34 @@ class ClinicalExportPreviewSheet extends ConsumerStatefulWidget {
   const ClinicalExportPreviewSheet({
     super.key,
     required this.cases,
+    this.baseline,
+    this.weeklySummary,
+    this.traces,
   });
 
   final List<CaseModel> cases;
+  final PersonalBaseline? baseline;
+  final WeeklySummaryReport? weeklySummary;
+  final List<MindTraceModel>? traces;
 
   /// Shows the preview modal sheet.
-  static Future<void> show(BuildContext context, List<CaseModel> cases) {
+  static Future<void> show(
+    BuildContext context,
+    List<CaseModel> cases, {
+    PersonalBaseline? baseline,
+    WeeklySummaryReport? weeklySummary,
+    List<MindTraceModel>? traces,
+  }) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => ClinicalExportPreviewSheet(cases: cases),
+      builder: (ctx) => ClinicalExportPreviewSheet(
+        cases: cases,
+        baseline: baseline,
+        weeklySummary: weeklySummary,
+        traces: traces,
+      ),
     );
   }
 
@@ -60,6 +80,9 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
       cases: widget.cases,
       strings: strings,
       recipientOrNote: _noteController.text,
+      baseline: widget.baseline,
+      weeklySummary: widget.weeklySummary,
+      traces: widget.traces,
     );
   }
 
@@ -101,6 +124,11 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
     final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
 
     final shareableCases = widget.cases.where((c) => !c.isPrivate).toList();
+    final hasTrackingData =
+        (widget.baseline != null && widget.baseline!.totalRecordedDays > 0) ||
+            (widget.weeklySummary != null &&
+                widget.weeklySummary!.totalEntriesThisWeek > 0) ||
+            (widget.traces?.isNotEmpty ?? false);
 
     return Container(
       constraints: BoxConstraints(
@@ -321,7 +349,8 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                     strings.copySessionBriefBtn,
                     style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, letterSpacing: 0.6),
                   ),
-                  onPressed: shareableCases.isEmpty ? null : _handleCopy,
+                  onPressed:
+                      (shareableCases.isEmpty && !hasTrackingData) ? null : _handleCopy,
                 ),
               ),
             ),

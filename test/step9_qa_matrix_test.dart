@@ -24,7 +24,6 @@ import 'package:mind_forensics/features/mind_trace/domain/mind_trace_model.dart'
 import 'package:mind_forensics/features/observatory/presentation/inner_observatory_screen.dart';
 import 'package:mind_forensics/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:mind_forensics/features/settings/presentation/settings_screen.dart';
-import 'package:mind_forensics/features/tools/presentation/tools_screen.dart';
 import 'package:mind_forensics/features/track/presentation/track_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -273,7 +272,7 @@ void main() {
       expect(tester.takeException(), isNull);
       await _maybeCapture(tester, darkKey, 'qa_07_shell_insights_dark_en.png');
 
-      // Capture InnerObservatoryScreen & ToolsScreen
+      // Capture InnerObservatoryScreen (Light & Dark)
       final toolKey = GlobalKey();
       await tester.pumpWidget(
         ProviderScope(
@@ -299,7 +298,7 @@ void main() {
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
               theme: LabTheme.nightTheme,
-              home: const ToolsScreen(),
+              home: const InnerObservatoryScreen(),
             ),
           ),
         ),

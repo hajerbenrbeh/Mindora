@@ -95,7 +95,7 @@ class HomeDailyCheckInCard extends StatelessWidget {
                     ),
                   ),
                   MindPressable(
-                    onPressed: () => context.go(AppRouter.track),
+                    onPressed: () => context.go('${AppRouter.track}?tab=1'),
                     semanticLabel: viewLabel,
                     borderRadius: BorderRadius.circular(10),
                     child: ConstrainedBox(

@@ -162,7 +162,13 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             tooltip: strings.exportSummaryButton,
             onPressed: () {
               HapticFeedback.lightImpact();
-              ClinicalExportPreviewSheet.show(context, cases);
+              ClinicalExportPreviewSheet.show(
+                context,
+                cases,
+                baseline: baseline,
+                weeklySummary: weeklySummary,
+                traces: allTraces,
+              );
             },
           ),
           const SupportButton(),
@@ -1105,7 +1111,13 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             leadingIcon: Icons.description_outlined,
             onPressed: () {
               HapticFeedback.lightImpact();
-              ClinicalExportPreviewSheet.show(context, cases);
+              ClinicalExportPreviewSheet.show(
+                context,
+                cases,
+                baseline: ref.read(personalBaselineProvider),
+                weeklySummary: report,
+                traces: ref.read(mindTraceControllerProvider).value ?? const [],
+              );
             },
           ),
         ],

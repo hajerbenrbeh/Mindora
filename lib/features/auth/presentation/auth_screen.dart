@@ -101,7 +101,27 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       reason: 'Authenticate to access Mind Forensics',
     );
     if (unlocked && mounted) {
-      context.go(AppRouter.home);
+      final authState = ref.read(authControllerProvider);
+      if (authState.user != null) {
+        if (!authState.hasCompletedOnboarding) {
+          context.go(AppRouter.onboarding);
+        } else {
+          context.go(AppRouter.home);
+        }
+      } else {
+        final strings = ref.read(appStringsProvider);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              strings.isArabic
+                  ? 'الرجاء تسجيل الدخول أو فتح الخزينة للمتابعة.'
+                  : (strings.isFrench
+                      ? 'Veuillez vous connecter ou ouvrir un espace privé pour continuer.'
+                      : 'Sign in or continue to a vault session to enter.'),
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -409,8 +429,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   ),
                 ),
 
-                // Biometrics Quick Unlock Option (if enabled)
-                if (lockState.isEnabled) ...[
+                // Biometrics Quick Unlock Option (when enabled & a vault session exists)
+                if (lockState.isEnabled && authState.user != null) ...[
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,

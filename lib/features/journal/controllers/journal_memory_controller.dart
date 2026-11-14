@@ -38,10 +38,15 @@ class JournalMemoryNotifier extends AsyncNotifier<List<JournalMemoryModel>> {
     final compression = ref.read(journalMemoryCompressionServiceProvider);
     final authUser = ref.read(authControllerProvider).user;
 
-    final effectiveTraces = traces ?? (ref.read(mindTraceControllerProvider).value ?? []);
+    final effectiveTraces =
+        traces ?? (await ref.read(mindTraceControllerProvider.future) ?? const []);
+    if (!ref.mounted) return [];
     final effectiveCases = cases ?? (await ref.read(caseRepositoryProvider).getAllCases());
+    if (!ref.mounted) return [];
     final currentMemories = state.value ?? await repo.getAllMemories();
+    if (!ref.mounted) return [];
     final suppressedKeys = await repo.getSuppressedKeys();
+    if (!ref.mounted) return [];
 
     final compressed = compression.compress(
       traces: effectiveTraces,
@@ -62,6 +67,7 @@ class JournalMemoryNotifier extends AsyncNotifier<List<JournalMemoryModel>> {
     final repo = ref.read(journalMemoryRepositoryProvider);
     final compression = ref.read(journalMemoryCompressionServiceProvider);
     final current = state.value ?? await repo.getAllMemories();
+    if (!ref.mounted) return;
 
     final pruned = compression.pruneAfterDeletion(
       deletedEntryId: entryId,

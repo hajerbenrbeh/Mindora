@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -359,7 +361,12 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                       Navigator.of(sheetCtx).pop();
                       if (mounted) _tabController.animateTo(1);
                     },
-                    onReturnHome: () => Navigator.of(sheetCtx).pop(),
+                    onReturnHome: () {
+                      Navigator.of(sheetCtx).pop();
+                      if (mounted) {
+                        GoRouter.maybeOf(context)?.go(AppRouter.home);
+                      }
+                    },
                   ),
                 ),
               ],
@@ -393,10 +400,12 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
         final handoffPrompt =
             '${strings.exploreMoodContextPrefix} $moodText (${trace.moodIntensity}/10)$notePart';
 
-        await ref.read(activeCaseControllerProvider.notifier).startNewCase(
-              handoffPrompt,
-              mode: ConversationMode.understandEmotion,
-            );
+        final controller = ref.read(activeCaseControllerProvider.notifier);
+        await controller.startNewCase(
+          handoffPrompt,
+          mode: ConversationMode.understandEmotion,
+        );
+        unawaited(controller.requestAiReply());
         if (!mounted) return;
         final router = GoRouter.maybeOf(context);
         if (router != null) {
@@ -1310,7 +1319,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
       padding: const EdgeInsets.only(bottom: 8),
       child: MindCard(
         padding: const EdgeInsets.all(12),
-        onTap: () => GoRouter.maybeOf(context)?.go('/case/${c.id}'),
+        onTap: () => GoRouter.maybeOf(context)?.push('/case/${c.id}'),
         child: Row(
           children: [
             Container(

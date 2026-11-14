@@ -544,6 +544,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
     final hasUserMessages =
         statements.any((s) => s.speaker == StatementSpeaker.user);
     final isLive = aiConfig.isLiveActive;
+    final showTypingIndicator =
+        _isInvestigatorTyping || ref.watch(companionReplyPendingProvider);
 
     return Column(
       children: [
@@ -564,9 +566,9 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   controller: _scrollController,
                   padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                   itemCount:
-                      statements.length + (_isInvestigatorTyping ? 1 : 0),
+                      statements.length + (showTypingIndicator ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index == statements.length && _isInvestigatorTyping) {
+                    if (index == statements.length && showTypingIndicator) {
                       return _CalmTypingIndicator(
                         tokens: tokens,
                         label: strings.investigatorTyping,

@@ -380,12 +380,29 @@ class AuthService {
       final uid = current.id;
       await prefs.remove('mind_forensics_cases_$uid');
       await prefs.remove('mf_mind_traces_$uid');
+      await prefs.remove('mf_psychological_profile_$uid');
       await prefs.remove('mf_profile_$uid');
       await prefs.remove('mf_journal_memories_$uid');
+      await prefs.remove('mf_journal_suppressed_keys_$uid');
+      await prefs.remove('mf_journey_progress_$uid');
       await prefs.remove('mf_journey_state_$uid');
       await prefs.remove('mf_symptom_reports_$uid');
       await prefs.remove('mf_custom_symptoms_$uid');
     }
+
+    await prefs.remove('mind_forensics_cases_store_v1');
+    await prefs.remove('mind_forensics_case_counter_v1');
+    await prefs.remove('mf_mind_traces_v1');
+    await prefs.remove('mf_psychological_profile_v1');
+    await prefs.remove('mf_journal_memories_v1');
+    await prefs.remove('mf_journal_suppressed_keys_v1');
+    await prefs.remove('mf_journey_progress_v1');
+    await prefs.remove('mf_symptom_reports_v1');
+    await prefs.remove('mf_custom_symptoms_v1');
+    await prefs.remove('mind_forensics_clinical_export_history_v1');
+    await prefs.remove('mf_unified_backup_last_time');
+    await prefs.remove('mf_unified_backup_last_json');
+    await prefs.remove('mf_unified_backup_last_count');
 
     await prefs.remove(_keyCurrentUser);
     await prefs.remove(_keyOnboardingDone);

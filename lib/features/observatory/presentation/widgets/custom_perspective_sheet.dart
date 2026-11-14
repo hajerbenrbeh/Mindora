@@ -28,9 +28,6 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
   String? _selectedFact;
   String? _selectedAssumption;
   String? _selectedAlternative;
-  final TextEditingController _customFactCtrl = TextEditingController();
-  final TextEditingController _customAssumptionCtrl = TextEditingController();
-  final TextEditingController _customAlternativeCtrl = TextEditingController();
 
   final List<({String en, String fr, String ar})> _commonFacts = const [
     (en: 'Unanswered message or silence', fr: 'Message sans réponse ou silence temporaire', ar: 'رسالة لم يُرد عليها أو صمت مؤقت'),
@@ -76,18 +73,10 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
     ),
   ];
 
-  @override
-  void dispose() {
-    _customFactCtrl.dispose();
-    _customAssumptionCtrl.dispose();
-    _customAlternativeCtrl.dispose();
-    super.dispose();
-  }
-
   Future<void> _saveAsDiscovery() async {
-    final fact = _selectedFact ?? _customFactCtrl.text.trim();
-    final assumption = _selectedAssumption ?? _customAssumptionCtrl.text.trim();
-    final alternative = _selectedAlternative ?? _customAlternativeCtrl.text.trim();
+    final fact = _selectedFact ?? '';
+    final assumption = _selectedAssumption ?? '';
+    final alternative = _selectedAlternative ?? '';
 
     if (alternative.isEmpty) return;
 

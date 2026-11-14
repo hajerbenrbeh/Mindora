@@ -3,11 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mind_forensics/features/home/presentation/home_screen.dart';
-import 'package:mind_forensics/features/home/presentation/widgets/home_metric_sparkline.dart';
 import 'package:mind_forensics/features/home/presentation/widgets/home_organic_exercise_art.dart';
-import 'package:mind_forensics/features/home/presentation/widgets/home_stress_bar_chart.dart';
-import 'package:mind_forensics/features/home/presentation/widgets/home_time_segmented_switcher.dart';
-import 'package:mind_forensics/features/home/presentation/widgets/home_week_mood_tracker.dart';
 import 'package:mind_forensics/features/mind_trace/controllers/mind_trace_controller.dart';
 import 'package:mind_forensics/features/mind_trace/domain/mind_trace_model.dart';
 import 'package:mind_forensics/features/support/presentation/contextual_support_sheet.dart';
@@ -39,13 +35,7 @@ void main() {
       expect(find.text('Mind Forensics'), findsOneWidget);
       expect(find.textContaining('Dear'), findsOneWidget);
 
-      // 2. Redundant Analytics/Switchers removed from Home
-      expect(find.byType(HomeTimeSegmentedSwitcher), findsNothing);
-      expect(find.byType(HomeWeekMoodTracker), findsNothing);
-      expect(find.byType(HomeMetricSparkline), findsNothing);
-      expect(find.byType(HomeStressBarChart), findsNothing);
-
-      // 3. Step 6 Daily check-in card (plain human affect labels + intensity, zero telemetry waveform)
+      // 2. Step 6 Daily check-in card (plain human affect labels + intensity, zero telemetry waveform)
       expect(find.textContaining('INTENSITY'), findsOneWidget);
       expect(find.text('Calm'), findsOneWidget);
       expect(find.text('Anxious'), findsOneWidget);
