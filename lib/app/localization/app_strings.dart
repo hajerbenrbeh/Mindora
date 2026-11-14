@@ -466,6 +466,7 @@ class AppStrings {
 
   // Safety & Crisis Dialog / Bottom Sheet
   String get needSupportBtn => isArabic ? 'دعم نفسي وطوارئ' : (isFrench ? 'Lignes d’urgence' : 'Crisis Support');
+  String get supportTitle => isArabic ? 'مساعدة' : (isFrench ? 'Aide' : 'Support');
   String get callBtn => isArabic ? 'اتصال مباشر' : (isFrench ? 'Appeler' : 'CALL');
   String get supportModalTitle => isArabic ? 'Aide & Urgences • الدعم والمساعدة السريرية' : (isFrench ? 'Lignes Cliniques & Urgences' : 'Clinical Support & Emergency');
   String get supportModalSub => isArabic ? 'أرقام النجدة والمساندة النفسية الرسمية في تونس' : (isFrench ? 'Numéros d’urgence officiels en Tunisie' : 'Official emergency hotlines in Tunisia');

@@ -6,6 +6,7 @@ import '../../../../app/localization/app_strings.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/safety/crisis_keywords.dart';
 import '../../../../core/safety/safety_interceptor.dart';
+import '../../../../core/safety/support_button.dart';
 import '../../../../core/widgets/mind_button.dart';
 import '../../../../core/widgets/mind_pressable.dart';
 import '../../../mind_trace/controllers/mind_trace_controller.dart';
@@ -447,22 +448,50 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
 
   Future<void> _save() async {
     final text = _noteCtrl.text.trim();
-    if (text.isNotEmpty && CrisisKeywords.evaluateText(text) == 2) {
+    final level = text.isNotEmpty ? CrisisKeywords.evaluateText(text) : 0;
+    if (level == 2) {
       if (mounted) SafetyInterceptor.showCrisisPauseDialog(context);
       return;
     }
     setState(() => _saving = true);
     try {
+      final existingEmotions = widget.trace.selectedEmotions;
+      final mergedEmotions = existingEmotions.isEmpty
+          ? [_mood]
+          : <String>[
+              _mood,
+              ...existingEmotions.where((e) => e != _mood),
+            ];
       final updated = widget.trace.copyWith(
         overallMood: _mood,
-        selectedEmotions: [_mood],
+        selectedEmotions: mergedEmotions,
         moodIntensity: _intensity.round(),
         journalText: text.isNotEmpty ? text : null,
+        clearJournalText: text.isEmpty,
+        updatedAt: DateTime.now(),
       );
       await ref
           .read(mindTraceControllerProvider.notifier)
           .updateCheckIn(updated);
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) {
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        final strings = ref.read(appStringsProvider);
+        final rootCtx = context;
+        Navigator.of(context).pop();
+        if (level == 1 && messenger != null) {
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(strings.needSupportBtn),
+              action: SnackBarAction(
+                label: strings.supportTitle,
+                onPressed: () {
+                  if (rootCtx.mounted) SupportModalSheet.show(rootCtx);
+                },
+              ),
+            ),
+          );
+        }
+      }
     } finally {
       if (mounted) setState(() => _saving = false);
     }

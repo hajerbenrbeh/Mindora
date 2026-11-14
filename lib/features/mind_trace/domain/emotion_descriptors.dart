@@ -132,15 +132,35 @@ class EmotionDescriptor {
     ),
   ];
 
-  static IconData iconForLabel(String label) {
+  static EmotionDescriptor? findByAny(String raw) {
+    final normalized = raw.trim().toLowerCase();
+    if (normalized.isEmpty) return null;
     for (final desc in library) {
-      if (desc.englishLabel.toLowerCase() == label.toLowerCase() ||
-          desc.arabicLabel == label ||
-          desc.frenchLabel.toLowerCase() == label.toLowerCase() ||
-          desc.key.toLowerCase() == label.toLowerCase()) {
-        return desc.icon;
+      if (desc.key.toLowerCase() == normalized ||
+          desc.englishLabel.toLowerCase() == normalized ||
+          desc.frenchLabel.toLowerCase() == normalized ||
+          desc.arabicLabel.trim().toLowerCase() == normalized) {
+        return desc;
       }
     }
+    return null;
+  }
+
+  static String canonicalKey(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return trimmed;
+    return findByAny(trimmed)?.key ?? trimmed;
+  }
+
+  static String localizedLabel(String raw, AppStrings strings) {
+    final match = findByAny(raw);
+    if (match != null) return match.localized(strings);
+    return raw;
+  }
+
+  static IconData iconForLabel(String label) {
+    final match = findByAny(label);
+    if (match != null) return match.icon;
     return Icons.bubble_chart_outlined;
   }
 }

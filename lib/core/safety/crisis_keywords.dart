@@ -9,8 +9,11 @@ class CrisisKeywords {
   static const List<String> level2CrisisPhrases = [
     // English
     'kill myself',
+    'kill me',
     'suicide',
+    'suicidal',
     'end my life',
+    'end it all',
     'want to die',
     'better off dead',
     'self harm',
@@ -22,7 +25,10 @@ class CrisisKeywords {
 
     // French
     'me suicider',
+    'je veux mourir',
     'envie de mourir',
+    'envie de me tuer',
+    'me tuer',
     'mettre fin à mes jours',
     'me faire du mal',
     'plus envie de vivre',
@@ -31,6 +37,9 @@ class CrisisKeywords {
 
     // Arabic / Tunisian Dialect & Arabizi
     'انتحار',
+    'ننتحر',
+    'بش ننتحر',
+    'نقتل النفس',
     'نموت',
     'نقتل روحي',
     'نحب نموت',
@@ -51,6 +60,17 @@ class CrisisKeywords {
     'nente7er',
     'bch nente7er',
     'ma 3adch n7eb n3ich',
+    'ma3adch n7eb n3ich',
+  ];
+
+  /// Innocent Tunisian affection idioms containing "نموت" ("I adore you")
+  /// that should not trigger crisis interception on their own.
+  static const List<String> _benignIdioms = [
+    'نموت عليك',
+    'نموت فيك',
+    'نموت على',
+    'nmout 3lik',
+    'nmout fik',
   ];
 
   /// Level 1 Elevated Distress Keywords: Soft redirect, gentle validation, fewer hypotheses.
@@ -77,7 +97,9 @@ class CrisisKeywords {
 
     // Arabic / Tunisian Dialect & Arabizi
     'فقدت الأمل',
-    'تعبت',
+    'تعبت برشا',
+    'تعبت نفسيا',
+    'تعبت من كل شي',
     'حاسس روحي وحدي',
     'ماعادش عندي جهد',
     'الدنيا ضاقت بيا',
@@ -92,10 +114,12 @@ class CrisisKeywords {
       level2CrisisPhrases.map(normalize).toList();
   static final List<String> _normalizedLevel1 =
       level1DistressPhrases.map(normalize).toList();
+  static final List<String> _normalizedBenignIdioms =
+      _benignIdioms.map(normalize).toList();
 
   /// Normalizes Arabic and Latin characters: strips Tashkeel (diacritics),
   /// Tatweel (Kashida), unifies Alef variants, converts Alef Maksura to Yaa,
-  /// Teh Marbuta to Ha, and cleans smart quotes and whitespace.
+  /// Teh Marbuta to Ha, folds Latin diacritics, and cleans smart quotes and whitespace.
   static String normalize(String text) {
     if (text.isEmpty) return '';
 
@@ -109,21 +133,30 @@ class CrisisKeywords {
         .replaceAll('“', '"')
         .replaceAll('”', '"');
 
-    // 2. Strip Arabic diacritics / Tashkeel & Tatweel (Kashida)
+    // 2. Fold common Latin/French diacritics to plain ASCII
+    s = s
+        .replaceAll(RegExp(r'[àáâäãå]'), 'a')
+        .replaceAll(RegExp(r'[èéêë]'), 'e')
+        .replaceAll(RegExp(r'[ìíîï]'), 'i')
+        .replaceAll(RegExp(r'[òóôöõ]'), 'o')
+        .replaceAll(RegExp(r'[ùúûü]'), 'u')
+        .replaceAll('ç', 'c');
+
+    // 3. Strip Arabic diacritics / Tashkeel & Tatweel (Kashida)
     // Range \u064B - \u065F covers Fathatan, Dammatan, Kasratan, Fatha, Damma, Kasra, Shadda, Sukun
     // \u0670 is superscript alef; \u0640 is tatweel
     s = s.replaceAll(RegExp(r'[\u064B-\u065F\u0670\u0640]'), '');
 
-    // 3. Normalize Arabic Alef variants [أ, إ, آ, ٱ] -> ا
+    // 4. Normalize Arabic Alef variants [أ, إ, آ, ٱ] -> ا
     s = s.replaceAll(RegExp(r'[أإآٱ]'), 'ا');
 
-    // 4. Normalize Arabic Alef Maksura (ى) -> Yaa (ي)
+    // 5. Normalize Arabic Alef Maksura (ى) -> Yaa (ي)
     s = s.replaceAll('ى', 'ي');
 
-    // 5. Normalize Arabic Teh Marbuta (ة) -> Ha (ه)
+    // 6. Normalize Arabic Teh Marbuta (ة) -> Ha (ه)
     s = s.replaceAll('ة', 'ه');
 
-    // 6. Collapse multiple spaces and trim
+    // 7. Collapse multiple spaces and trim
     s = s.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     return s;
@@ -136,7 +169,11 @@ class CrisisKeywords {
   static int evaluateText(String text) {
     if (text.trim().isEmpty) return 0;
 
-    final norm = normalize(text);
+    var norm = normalize(text);
+    for (final idiom in _normalizedBenignIdioms) {
+      norm = norm.replaceAll(idiom, ' ');
+    }
+    norm = norm.replaceAll(RegExp(r'\s+'), ' ').trim();
 
     // Check Level 2 first (highest risk)
     for (final phrase in _normalizedLevel2) {

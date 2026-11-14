@@ -126,7 +126,13 @@ class PsychologicalProfileModel {
   final String professionalSupport;
   final int onboardingStep;
 
-  bool get isMinor => ageRange == 'under_18' || ageRange == '<18';
+  bool get isMinor {
+    final normalized = ageRange.trim().toLowerCase();
+    return normalized == 'under_18' ||
+        normalized == '<18' ||
+        normalized == 'under 18' ||
+        normalized == 'moins de 18 ans';
+  }
 
   // Section 2: Psychological Experiences
   final List<UserConditionEntry> conditions;

@@ -193,7 +193,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
     }
   }
 
-  void _cycleStatementLabel(Statement statement) {
+  Future<void> _cycleStatementLabel(Statement statement) async {
     HapticFeedback.selectionClick();
     final nextLabel = switch (statement.label) {
       null => LabelType.assumption,
@@ -205,47 +205,47 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
     final currentCase = ref.read(activeCaseControllerProvider).value;
     if (currentCase == null) return;
 
+    final now = DateTime.now();
     final updatedStatements = currentCase.statements.map((s) {
       if (s.id == statement.id) {
-        return s.copyWith(label: nextLabel);
+        return s.copyWith(label: nextLabel, clearLabel: nextLabel == null);
       }
       return s;
     }).toList();
 
-    ref.read(caseRepositoryProvider).saveCase(
-          currentCase.copyWith(
-            statements: updatedStatements,
-            updatedAt: DateTime.now(),
-          ),
-        );
-
-    ref.read(activeCaseControllerProvider.notifier).resumeCase(
-          currentCase.copyWith(statements: updatedStatements),
-        );
+    final updatedCase = currentCase.copyWith(
+      statements: updatedStatements,
+      updatedAt: now,
+    );
+    ref.read(activeCaseControllerProvider.notifier).resumeCase(updatedCase);
+    await ref.read(caseRepositoryProvider).saveCase(updatedCase);
   }
 
-  void _updateStatementDistortion(Statement statement, String? distortion) {
+  Future<void> _updateStatementDistortion(
+    Statement statement,
+    String? distortion,
+  ) async {
     HapticFeedback.selectionClick();
     final currentCase = ref.read(activeCaseControllerProvider).value;
     if (currentCase == null) return;
 
+    final now = DateTime.now();
     final updatedStatements = currentCase.statements.map((s) {
       if (s.id == statement.id) {
-        return s.copyWith(distortionTag: distortion);
+        return s.copyWith(
+          distortionTag: distortion,
+          clearDistortionTag: distortion == null,
+        );
       }
       return s;
     }).toList();
 
-    ref.read(caseRepositoryProvider).saveCase(
-          currentCase.copyWith(
-            statements: updatedStatements,
-            updatedAt: DateTime.now(),
-          ),
-        );
-
-    ref.read(activeCaseControllerProvider.notifier).resumeCase(
-          currentCase.copyWith(statements: updatedStatements),
-        );
+    final updatedCase = currentCase.copyWith(
+      statements: updatedStatements,
+      updatedAt: now,
+    );
+    ref.read(activeCaseControllerProvider.notifier).resumeCase(updatedCase);
+    await ref.read(caseRepositoryProvider).saveCase(updatedCase);
   }
 
   void _showCognitiveDistortionsSheet(Statement statement) {

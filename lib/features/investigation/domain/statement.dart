@@ -32,15 +32,18 @@ class Statement {
     String? text,
     StatementSpeaker? speaker,
     LabelType? label,
+    bool clearLabel = false,
     String? distortionTag,
+    bool clearDistortionTag = false,
     DateTime? timestamp,
   }) {
     return Statement(
       id: id ?? this.id,
       text: text ?? this.text,
       speaker: speaker ?? this.speaker,
-      label: label ?? this.label,
-      distortionTag: distortionTag ?? this.distortionTag,
+      label: clearLabel ? null : (label ?? this.label),
+      distortionTag:
+          clearDistortionTag ? null : (distortionTag ?? this.distortionTag),
       timestamp: timestamp ?? this.timestamp,
     );
   }

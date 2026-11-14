@@ -121,7 +121,6 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                               ? 'تعديل'
                               : (strings.isFrench ? 'Modifier' : 'Edit'),
                           color: tokens.accent,
-                          visualDensity: VisualDensity.compact,
                           onPressed: () {
                             Navigator.pop(context);
                             onEdit!();
@@ -133,8 +132,58 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                             ? 'حذف'
                             : (strings.isFrench ? 'Supprimer' : 'Delete'),
                         color: textSecondary,
-                        visualDensity: VisualDensity.compact,
                         onPressed: () async {
+                          final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (dialogCtx) {
+                              return AlertDialog(
+                                backgroundColor: tokens.surface,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(tokens.cardRadius),
+                                  side: BorderSide(color: tokens.border),
+                                ),
+                                title: Text(
+                                  strings.deleteTraceConfirmTitle,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
+                                    color: textPrimary,
+                                  ),
+                                ),
+                                content: Text(
+                                  strings.deleteTraceConfirmBody,
+                                  style: TextStyle(
+                                    fontSize: 13.5,
+                                    height: 1.45,
+                                    color: textSecondary,
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(dialogCtx).pop(false),
+                                    child: Text(
+                                      strings.cancelActionLabel,
+                                      style: TextStyle(color: textSecondary),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(dialogCtx).pop(true),
+                                    child: Text(
+                                      strings.deleteEntryBtn,
+                                      style: TextStyle(
+                                        color: tokens.safetyWarmth,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                          if (confirmed != true || !context.mounted) return;
                           HapticFeedback.heavyImpact();
                           await ref
                               .read(mindTraceControllerProvider.notifier)

@@ -92,24 +92,41 @@ class MindTraceModel {
     List<String>? selectedEmotions,
     int? moodIntensity,
     int? energyLevel,
+    bool clearEnergyLevel = false,
     int? anxietyLevel,
+    bool clearAnxietyLevel = false,
     double? sleepHours,
+    bool clearSleepHours = false,
     int? sleepQuality,
+    bool clearSleepQuality = false,
     int? concentrationLevel,
+    bool clearConcentrationLevel = false,
     int? mentalClarity,
+    bool clearMentalClarity = false,
     int? physicalTension,
+    bool clearPhysicalTension = false,
     int? racingThoughts,
+    bool clearRacingThoughts = false,
     int? intrusiveThoughts,
+    bool clearIntrusiveThoughts = false,
     int? emotionalDisconnection,
+    bool clearEmotionalDisconnection = false,
     String? symptomsAndExperiences,
+    bool clearSymptomsAndExperiences = false,
     String? situation,
+    bool clearSituation = false,
     String? behavioralResponse,
+    bool clearBehavioralResponse = false,
     String? journalText,
+    bool clearJournalText = false,
     String? voiceNotePath,
+    bool clearVoiceNotePath = false,
     Map<String, String>? dynamicAnswers,
     Map<String, String>? investigationAnswers,
     String? aiReflection,
+    bool clearAiReflection = false,
     String? suggestedJourneyActivityId,
+    bool clearSuggestedJourneyActivityId = false,
     bool? isCompleted,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -121,28 +138,47 @@ class MindTraceModel {
       overallMood: overallMood ?? this.overallMood,
       selectedEmotions: selectedEmotions ?? this.selectedEmotions,
       moodIntensity: moodIntensity ?? this.moodIntensity,
-      energyLevel: energyLevel ?? this.energyLevel,
-      anxietyLevel: anxietyLevel ?? this.anxietyLevel,
-      sleepHours: sleepHours ?? this.sleepHours,
-      sleepQuality: sleepQuality ?? this.sleepQuality,
-      concentrationLevel: concentrationLevel ?? this.concentrationLevel,
-      mentalClarity: mentalClarity ?? this.mentalClarity,
-      physicalTension: physicalTension ?? this.physicalTension,
-      racingThoughts: racingThoughts ?? this.racingThoughts,
-      intrusiveThoughts: intrusiveThoughts ?? this.intrusiveThoughts,
-      emotionalDisconnection:
-          emotionalDisconnection ?? this.emotionalDisconnection,
-      symptomsAndExperiences:
-          symptomsAndExperiences ?? this.symptomsAndExperiences,
-      situation: situation ?? this.situation,
-      behavioralResponse: behavioralResponse ?? this.behavioralResponse,
-      journalText: journalText ?? this.journalText,
-      voiceNotePath: voiceNotePath ?? this.voiceNotePath,
+      energyLevel:
+          clearEnergyLevel ? null : (energyLevel ?? this.energyLevel),
+      anxietyLevel:
+          clearAnxietyLevel ? null : (anxietyLevel ?? this.anxietyLevel),
+      sleepHours: clearSleepHours ? null : (sleepHours ?? this.sleepHours),
+      sleepQuality:
+          clearSleepQuality ? null : (sleepQuality ?? this.sleepQuality),
+      concentrationLevel: clearConcentrationLevel
+          ? null
+          : (concentrationLevel ?? this.concentrationLevel),
+      mentalClarity:
+          clearMentalClarity ? null : (mentalClarity ?? this.mentalClarity),
+      physicalTension: clearPhysicalTension
+          ? null
+          : (physicalTension ?? this.physicalTension),
+      racingThoughts: clearRacingThoughts
+          ? null
+          : (racingThoughts ?? this.racingThoughts),
+      intrusiveThoughts: clearIntrusiveThoughts
+          ? null
+          : (intrusiveThoughts ?? this.intrusiveThoughts),
+      emotionalDisconnection: clearEmotionalDisconnection
+          ? null
+          : (emotionalDisconnection ?? this.emotionalDisconnection),
+      symptomsAndExperiences: clearSymptomsAndExperiences
+          ? null
+          : (symptomsAndExperiences ?? this.symptomsAndExperiences),
+      situation: clearSituation ? null : (situation ?? this.situation),
+      behavioralResponse: clearBehavioralResponse
+          ? null
+          : (behavioralResponse ?? this.behavioralResponse),
+      journalText: clearJournalText ? null : (journalText ?? this.journalText),
+      voiceNotePath:
+          clearVoiceNotePath ? null : (voiceNotePath ?? this.voiceNotePath),
       dynamicAnswers: dynamicAnswers ?? this.dynamicAnswers,
       investigationAnswers: investigationAnswers ?? this.investigationAnswers,
-      aiReflection: aiReflection ?? this.aiReflection,
-      suggestedJourneyActivityId:
-          suggestedJourneyActivityId ?? this.suggestedJourneyActivityId,
+      aiReflection:
+          clearAiReflection ? null : (aiReflection ?? this.aiReflection),
+      suggestedJourneyActivityId: clearSuggestedJourneyActivityId
+          ? null
+          : (suggestedJourneyActivityId ?? this.suggestedJourneyActivityId),
       isCompleted: isCompleted ?? this.isCompleted,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

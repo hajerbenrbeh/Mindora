@@ -77,18 +77,62 @@ class SupportModalSheet extends ConsumerWidget {
     );
   }
 
-  Future<void> _makeCall(String phone) async {
+  Future<void> _makeCall(
+    BuildContext context,
+    AppStrings strings,
+    String phone,
+  ) async {
     HapticFeedback.mediumImpact();
     final uri = Uri.parse('tel:$phone');
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
+    var launched = false;
+    try {
+      if (await canLaunchUrl(uri)) {
+        launched = await launchUrl(uri);
+      }
+    } catch (_) {
+      launched = false;
+    }
+    if (!launched) {
+      await Clipboard.setData(ClipboardData(text: _formatPhone(phone)));
+      if (context.mounted) {
+        final msg = strings.isArabic
+            ? 'تعذر فتح الاتصال — تم نسخ الرقم: ${_formatPhone(phone)}'
+            : (strings.isFrench
+                ? 'Appel indisponible — numéro copié : ${_formatPhone(phone)}'
+                : 'Dialer unavailable — number copied: ${_formatPhone(phone)}');
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(msg)),
+        );
+      }
     }
   }
 
-  Future<void> _openWeb(String url) async {
+  Future<void> _openWeb(
+    BuildContext context,
+    AppStrings strings,
+    String url,
+  ) async {
     final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    var launched = false;
+    try {
+      if (await canLaunchUrl(uri)) {
+        launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (_) {
+      launched = false;
+    }
+    if (!launched) {
+      await Clipboard.setData(ClipboardData(text: url));
+      if (context.mounted) {
+        final msg = strings.isArabic
+            ? 'تم نسخ الرابط: $url'
+            : (strings.isFrench
+                ? 'Lien copié : $url'
+                : 'Link copied: $url');
+        ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+          SnackBar(content: Text(msg)),
+        );
+      }
     }
   }
 
@@ -188,7 +232,7 @@ class SupportModalSheet extends ConsumerWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              res.name,
+                              res.localizedName(strings),
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 13,
@@ -197,7 +241,7 @@ class SupportModalSheet extends ConsumerWidget {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              res.description,
+                              res.localizedDescription(strings),
                               style: TextStyle(
                                 fontSize: 11.5,
                                 color: textSecondary,
@@ -205,9 +249,13 @@ class SupportModalSheet extends ConsumerWidget {
                             ),
                             if (res.isTollFree) ...[
                               const SizedBox(height: 2),
-                              const Text(
-                                'Gratuit / مجاني 24/7',
-                                style: TextStyle(
+                              Text(
+                                strings.isArabic
+                                    ? 'مجاني 24/7'
+                                    : (strings.isFrench
+                                        ? 'Gratuit 24/7'
+                                        : 'Toll-free 24/7'),
+                                style: const TextStyle(
                                   fontSize: 11,
                                   color: LabColors.factBlue,
                                   fontWeight: FontWeight.w600,
@@ -231,7 +279,7 @@ class SupportModalSheet extends ConsumerWidget {
                             _formatPhone(res.phone),
                             style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 11),
                           ),
-                          onPressed: () => _makeCall(res.phone),
+                          onPressed: () => _makeCall(context, strings, res.phone),
                         )
                       else if (res.website != null)
                         OutlinedButton(
@@ -240,9 +288,11 @@ class SupportModalSheet extends ConsumerWidget {
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                           ),
-                          onPressed: () => _openWeb(res.website!),
+                          onPressed: () => _openWeb(context, strings, res.website!),
                           child: Text(
-                            'INFO',
+                            strings.isArabic
+                                ? 'معلومات'
+                                : (strings.isFrench ? 'INFO' : 'INFO'),
                             style: TextStyle(color: textPrimary, fontSize: 11, fontWeight: FontWeight.w700),
                           ),
                         ),

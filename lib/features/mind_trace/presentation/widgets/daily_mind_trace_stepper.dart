@@ -9,6 +9,7 @@ import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/safety/crisis_keywords.dart';
 import '../../../../core/safety/safety_interceptor.dart';
+import '../../../../core/safety/support_button.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
 import '../../../../core/widgets/fingerprint_thread_signature.dart';
 import '../../../profile/controllers/profile_controller.dart';
@@ -68,7 +69,6 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
   double _sleepHours = 7.0;
   int _sleepQuality = 4; // 1-5
   double _physicalTension = 4.0;
-  bool _hasVoiceNote = false;
 
   // Completed saved trace cache
   MindTraceModel? _completedTrace;
@@ -82,9 +82,11 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
   }
 
   void _hydrateFromTrace(MindTraceModel trace) {
-    _overallMood = trace.overallMood;
+    _overallMood = EmotionDescriptor.canonicalKey(trace.overallMood);
     _selectedEmotions.clear();
-    _selectedEmotions.addAll(trace.selectedEmotions);
+    _selectedEmotions.addAll(
+      trace.selectedEmotions.map(EmotionDescriptor.canonicalKey),
+    );
     _moodIntensity = trace.moodIntensity.toDouble();
     _racingThoughts = (trace.racingThoughts ?? 4).toDouble();
     _concentrationLevel = (trace.concentrationLevel ?? 6).toDouble();
@@ -95,9 +97,6 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
     _sleepHours = trace.sleepHours ?? 7.0;
     _sleepQuality = trace.sleepQuality ?? 4;
     _physicalTension = (trace.physicalTension ?? 4).toDouble();
-    if (trace.voiceNotePath != null) {
-      _hasVoiceNote = true;
-    }
     for (final entry in trace.dynamicAnswers.entries) {
       _dynamicQuestionControllers[entry.key] =
           TextEditingController(text: entry.value);
@@ -135,29 +134,37 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
     }
 
     // Layer 1 crisis pre-scan: Intercept Level 2 phrases immediately
-    for (final answer in mergedDynamicAnswers.values) {
-      if (CrisisKeywords.evaluateText(answer) == 2) {
+    var highestLevel = 0;
+    for (final answer in [
+      ...mergedDynamicAnswers.values,
+      ..._selectedEmotions,
+    ]) {
+      final level = CrisisKeywords.evaluateText(answer);
+      if (level == 2) {
         setState(() => _isSaving = false);
         if (mounted) {
           SafetyInterceptor.showCrisisPauseDialog(context);
         }
         return;
       }
+      if (level > highestLevel) highestLevel = level;
     }
 
     final effectiveMood = _selectedEmotions.isNotEmpty
-        ? _selectedEmotions.first.toLowerCase()
-        : _overallMood;
+        ? EmotionDescriptor.canonicalKey(_selectedEmotions.first)
+        : EmotionDescriptor.canonicalKey(_overallMood);
 
-    final voicePath = _hasVoiceNote
-        ? (widget.initialTrace?.voiceNotePath ??
-            'memo_${now.millisecondsSinceEpoch}.m4a')
-        : widget.initialTrace?.voiceNotePath;
+    final canonicalEmotions = _selectedEmotions
+        .map(EmotionDescriptor.canonicalKey)
+        .toSet()
+        .toList();
+
+    final voicePath = widget.initialTrace?.voiceNotePath;
 
     final trace = widget.initialTrace != null
         ? widget.initialTrace!.copyWith(
             overallMood: effectiveMood,
-            selectedEmotions: _selectedEmotions.toList(),
+            selectedEmotions: canonicalEmotions,
             moodIntensity: _moodIntensity.toInt(),
             energyLevel: _energyLevel.toInt(),
             sleepHours: _sleepHours,
@@ -177,7 +184,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             id: todayKey,
             date: now,
             overallMood: effectiveMood,
-            selectedEmotions: _selectedEmotions.toList(),
+            selectedEmotions: canonicalEmotions,
             moodIntensity: _moodIntensity.toInt(),
             energyLevel: _energyLevel.toInt(),
             sleepHours: _sleepHours,
@@ -206,6 +213,19 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
           _completedTrace = trace;
           _currentStep = 4; // Move to Completion Screen
         });
+        if (highestLevel == 1) {
+          ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+            SnackBar(
+              content: Text(ref.read(appStringsProvider).needSupportBtn),
+              action: SnackBarAction(
+                label: ref.read(appStringsProvider).supportTitle,
+                onPressed: () {
+                  if (mounted) SupportModalSheet.show(context);
+                },
+              ),
+            ),
+          );
+        }
       }
     } finally {
       if (mounted) {
@@ -214,9 +234,9 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
     }
   }
 
-  void _promptCustomEmotion(AppStrings strings, bool isDark) {
+  Future<void> _promptCustomEmotion(AppStrings strings, bool isDark) async {
     final textController = TextEditingController();
-    showModalBottomSheet(
+    await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
@@ -306,8 +326,17 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       onPressed: () {
                         final val = textController.text.trim();
                         if (val.isNotEmpty) {
+                          final level = CrisisKeywords.evaluateText(val);
+                          if (level == 2) {
+                            Navigator.pop(ctx);
+                            if (mounted) {
+                              SafetyInterceptor.showCrisisPauseDialog(context);
+                            }
+                            return;
+                          }
+                          final canonical = EmotionDescriptor.canonicalKey(val);
                           setState(() {
-                            _selectedEmotions.add(val);
+                            _selectedEmotions.add(canonical);
                           });
                         }
                         Navigator.pop(ctx);
@@ -326,6 +355,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
         );
       },
     );
+    textController.dispose();
   }
 
   @override
@@ -500,8 +530,10 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
           itemBuilder: (context, index) {
             final desc = EmotionDescriptor.library[index];
             final isCustom = desc.key == 'custom';
-            final isSelected = _selectedEmotions.contains(desc.localized(strings)) ||
+            final isSelected = _selectedEmotions.contains(desc.key) ||
+                _selectedEmotions.contains(desc.localized(strings)) ||
                 _selectedEmotions.contains(desc.englishLabel) ||
+                _selectedEmotions.contains(desc.frenchLabel) ||
                 _selectedEmotions.contains(desc.arabicLabel);
 
             return InkWell(
@@ -510,14 +542,15 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                 if (isCustom) {
                   _promptCustomEmotion(strings, isDark);
                 } else {
-                  final label = desc.localized(strings);
                   setState(() {
                     if (isSelected) {
-                      _selectedEmotions.remove(label);
+                      _selectedEmotions.remove(desc.key);
+                      _selectedEmotions.remove(desc.localized(strings));
                       _selectedEmotions.remove(desc.englishLabel);
+                      _selectedEmotions.remove(desc.frenchLabel);
                       _selectedEmotions.remove(desc.arabicLabel);
                     } else {
-                      _selectedEmotions.add(label);
+                      _selectedEmotions.add(desc.key);
                     }
                   });
                 }
@@ -577,19 +610,13 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
         ),
 
         // Custom emotions chips if any added
-        if (_selectedEmotions.any((e) =>
-            !EmotionDescriptor.library.any((d) =>
-                d.englishLabel == e ||
-                d.arabicLabel == e ||
-                d.frenchLabel == e))) ...[
+        if (_selectedEmotions
+            .any((e) => EmotionDescriptor.findByAny(e) == null)) ...[
           const SizedBox(height: 12),
           Wrap(
             spacing: 6,
             children: _selectedEmotions
-                .where((e) => !EmotionDescriptor.library.any((d) =>
-                    d.englishLabel == e ||
-                    d.arabicLabel == e ||
-                    d.frenchLabel == e))
+                .where((e) => EmotionDescriptor.findByAny(e) == null)
                 .map((custom) => Chip(
                       label: Text(
                         custom,

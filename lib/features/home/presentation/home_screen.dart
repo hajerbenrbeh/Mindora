@@ -21,6 +21,7 @@ import '../../investigation/controllers/investigation_providers.dart';
 import '../../investigation/domain/case_model.dart';
 import '../../investigation/domain/case_stage.dart';
 import '../../mind_trace/controllers/mind_trace_controller.dart';
+import '../../mind_trace/domain/emotion_descriptors.dart';
 import '../../mind_trace/domain/mind_trace_model.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../support/presentation/contextual_support_sheet.dart';
@@ -43,7 +44,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   double _moodIntensity = 5.0;
   List<CaseModel> _recentCases = [];
   bool _isLoading = true;
-  bool _initializedFromTrace = false;
+  String? _hydratedTraceSignature;
   final TextEditingController _todayNoteController = TextEditingController();
 
   final List<({String key, IconData icon})> _moodOptions = const [
@@ -60,24 +61,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _loadRecentCases();
-      if (_initializedFromTrace) return;
       final today = ref.read(todayTraceProvider);
-      if (today != null) {
-        setState(() {
-          _hydrateFromTrace(today);
-        });
-      }
+      _syncFromTraceIfNeeded(today);
     });
   }
 
-  void _hydrateFromTrace(MindTraceModel trace) {
-    _initializedFromTrace = true;
-    final moodIdx = _moodOptions.indexWhere((m) => m.key == trace.overallMood);
-    if (moodIdx != -1) _selectedMoodIndex = moodIdx;
-    _moodIntensity = trace.moodIntensity.toDouble();
-    if (trace.journalText != null && trace.journalText!.isNotEmpty) {
-      _todayNoteController.text = trace.journalText!;
+  String _traceSignature(MindTraceModel trace) =>
+      '${trace.id}_${trace.updatedAt.millisecondsSinceEpoch}';
+
+  void _syncFromTraceIfNeeded(MindTraceModel? trace) {
+    if (trace == null) {
+      if (_hydratedTraceSignature == null) return;
+      setState(() {
+        _hydratedTraceSignature = null;
+        _selectedMoodIndex = 0;
+        _moodIntensity = 5.0;
+        _todayNoteController.clear();
+      });
+      return;
     }
+
+    final sig = _traceSignature(trace);
+    if (_hydratedTraceSignature == sig) return;
+    setState(() {
+      _hydratedTraceSignature = sig;
+      final canonicalMood =
+          EmotionDescriptor.canonicalKey(trace.overallMood).toLowerCase();
+      final moodIdx = _moodOptions.indexWhere((m) => m.key == canonicalMood);
+      if (moodIdx != -1) _selectedMoodIndex = moodIdx;
+      _moodIntensity = trace.moodIntensity.toDouble().clamp(1, 10);
+      final note = trace.journalText ?? '';
+      if (_todayNoteController.text != note) {
+        _todayNoteController.text = note;
+      }
+    });
   }
 
   @override
@@ -110,36 +127,57 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         : null;
 
     // Layer 1 crisis pre-scan: Intercept Level 2 phrases immediately
-    if (noteText != null && CrisisKeywords.evaluateText(noteText) == 2) {
+    final safetyLevel =
+        noteText != null ? CrisisKeywords.evaluateText(noteText) : 0;
+    if (safetyLevel == 2) {
       SafetyInterceptor.showCrisisPauseDialog(context);
       return;
     }
 
+    late final MindTraceModel savedTrace;
     if (todayTrace != null) {
-      // 1. Update existing trace for today
-      final updated = todayTrace.copyWith(
+      // 1. Update existing trace for today without erasing multi-emotion arrays
+      final existingEmotions = todayTrace.selectedEmotions;
+      final mergedEmotions = existingEmotions.isEmpty
+          ? [activeMood]
+          : <String>[
+              activeMood,
+              ...existingEmotions.where(
+                (e) =>
+                    EmotionDescriptor.canonicalKey(e).toLowerCase() !=
+                    activeMood,
+              ),
+            ];
+      savedTrace = todayTrace.copyWith(
         overallMood: activeMood,
         moodIntensity: intensity,
-        selectedEmotions: [activeMood],
-        journalText: noteText ?? todayTrace.journalText,
+        selectedEmotions: mergedEmotions,
+        journalText: noteText,
+        clearJournalText: noteText == null,
         updatedAt: now,
       );
-      await ref.read(mindTraceControllerProvider.notifier).updateCheckIn(updated);
+      _hydratedTraceSignature = _traceSignature(savedTrace);
+      await ref
+          .read(mindTraceControllerProvider.notifier)
+          .updateCheckIn(savedTrace);
     } else {
-      // 2. Create new options-first trace for today
-      final newTrace = MindTraceModel(
+      // 2. Create new options-first trace for today (unrecorded sliders stay null)
+      savedTrace = MindTraceModel(
         id: 'trace_${now.millisecondsSinceEpoch}',
         userId: ref.read(authControllerProvider).user?.id ?? 'local_user',
         date: now,
         overallMood: activeMood,
         moodIntensity: intensity,
-        energyLevel: (10 - intensity).clamp(1, 9),
+        energyLevel: null,
         selectedEmotions: [activeMood],
         journalText: noteText,
         createdAt: now,
         updatedAt: now,
       );
-      await ref.read(mindTraceControllerProvider.notifier).recordCheckIn(newTrace, generateAi: false);
+      _hydratedTraceSignature = _traceSignature(savedTrace);
+      await ref
+          .read(mindTraceControllerProvider.notifier)
+          .recordCheckIn(savedTrace, generateAi: false);
     }
 
     // 3. Keep cache synchronized with authenticated encryption at rest
@@ -165,7 +203,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         SnackBar(
           backgroundColor: context.tokens.accent,
           content: Text(
-            strings.checkInSavedSnackbar,
+            safetyLevel == 1
+                ? '${strings.checkInSavedSnackbar} ${strings.needSupportBtn}'
+                : strings.checkInSavedSnackbar,
             style: TextStyle(
               color: Theme.of(context).brightness == Brightness.dark
                   ? context.tokens.background
@@ -174,7 +214,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
-          duration: const Duration(seconds: 2),
+          action: safetyLevel == 1
+              ? SnackBarAction(
+                  label: strings.supportTitle,
+                  textColor: Theme.of(context).brightness == Brightness.dark
+                      ? context.tokens.background
+                      : Colors.white,
+                  onPressed: () {
+                    if (mounted) SupportModalSheet.show(context);
+                  },
+                )
+              : null,
+          duration: Duration(seconds: safetyLevel == 1 ? 4 : 2),
         ),
       );
     }
@@ -188,7 +239,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   String _getMoodLabel(String key, AppStrings strings) {
-    switch (key) {
+    switch (EmotionDescriptor.canonicalKey(key).toLowerCase()) {
       case 'calm':
         return strings.moodCalm;
       case 'anxious':
@@ -200,7 +251,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case 'restless':
         return strings.moodRestless;
       default:
-        return key;
+        return EmotionDescriptor.localizedLabel(key, strings);
     }
   }
 
@@ -236,13 +287,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final traces = ref.watch(mindTraceControllerProvider).value ?? [];
     final todayTrace = traces.todayTrace;
 
-    if (!_initializedFromTrace && todayTrace != null) {
-      _initializedFromTrace = true;
+    final nextSig = todayTrace != null ? _traceSignature(todayTrace) : null;
+    if (nextSig != _hydratedTraceSignature) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
-        setState(() {
-          _hydrateFromTrace(todayTrace);
-        });
+        _syncFromTraceIfNeeded(todayTrace);
       });
     }
 

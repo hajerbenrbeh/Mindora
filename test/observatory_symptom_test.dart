@@ -438,10 +438,12 @@ void main() {
       expect(find.text('Observatory Insight'), findsOneWidget);
       expect(find.text('Testing insight delete action'), findsOneWidget);
 
-      // Delete the discovery
+      // Delete the discovery and confirm in dialog
       final deleteBtn = find.bySemanticsLabel('Delete discovery');
       expect(deleteBtn, findsOneWidget);
       await tester.tap(deleteBtn);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete'));
       await tester.pumpAndSettle();
 
       // Verify discovery is removed from UI

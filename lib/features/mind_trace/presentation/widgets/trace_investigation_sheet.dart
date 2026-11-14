@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/theme/mind_tokens.dart';
+import '../../../../core/safety/crisis_keywords.dart';
+import '../../../../core/safety/safety_interceptor.dart';
+import '../../../../core/safety/support_button.dart';
 import '../../controllers/mind_trace_controller.dart';
 import '../../domain/mind_trace_model.dart';
 import '../../domain/thought_trace_investigation.dart';
@@ -62,20 +65,28 @@ class _TraceInvestigationSheetState
   }
 
   Future<void> _handleSave() async {
-    setState(() => _isSaving = true);
     final updatedAnswers = <String, String>{};
+    var highestSafety = 0;
     for (final entry in _controllers.entries) {
       final text = entry.value.text.trim();
       if (text.isNotEmpty) {
+        final level = CrisisKeywords.evaluateText(text);
+        if (level == 2) {
+          if (mounted) SafetyInterceptor.showCrisisPauseDialog(context);
+          return;
+        }
+        if (level > highestSafety) highestSafety = level;
         updatedAnswers[entry.key] = text;
       }
     }
 
+    setState(() => _isSaving = true);
     final updatedTrace = widget.trace.copyWith(
       investigationAnswers: updatedAnswers,
-      situation: updatedAnswers['trigger'] ?? widget.trace.situation,
-      behavioralResponse:
-          updatedAnswers['response'] ?? widget.trace.behavioralResponse,
+      situation: updatedAnswers['trigger'],
+      clearSituation: !updatedAnswers.containsKey('trigger'),
+      behavioralResponse: updatedAnswers['response'],
+      clearBehavioralResponse: !updatedAnswers.containsKey('response'),
       updatedAt: DateTime.now(),
     );
 
@@ -84,14 +95,34 @@ class _TraceInvestigationSheetState
           .read(mindTraceControllerProvider.notifier)
           .updateCheckIn(updatedTrace);
       if (mounted) {
+        final strings = ref.read(appStringsProvider);
+        final messenger = ScaffoldMessenger.maybeOf(context);
+        final parentContext = Navigator.of(context).context;
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
+        final savedMsg = strings.isArabic
+            ? 'تم حفظ التأمل في سجلّك.'
+            : (strings.isFrench
+                ? 'Réflexion enregistrée dans votre suivi.'
+                : 'Thought reflection saved to your record.');
+        messenger?.showSnackBar(
           SnackBar(
             backgroundColor: context.tokens.surfaceSecondary,
             content: Text(
-              'Thought reflection saved to your record.',
+              highestSafety == 1
+                  ? '$savedMsg ${strings.needSupportBtn}'
+                  : savedMsg,
               style: TextStyle(color: context.tokens.textPrimary, fontSize: 13),
             ),
+            action: highestSafety == 1
+                ? SnackBarAction(
+                    label: strings.supportTitle,
+                    onPressed: () {
+                      if (parentContext.mounted) {
+                        SupportModalSheet.show(parentContext);
+                      }
+                    },
+                  )
+                : null,
           ),
         );
       }

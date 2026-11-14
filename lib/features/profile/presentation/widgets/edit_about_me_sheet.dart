@@ -35,15 +35,35 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
   late String _selectedAgeRange;
   late String _selectedLanguage;
 
-  final List<String> _ageRanges = const [
-    'Under 18',
-    '18–24',
-    '25–34',
-    '35–44',
-    '45–54',
-    '55+',
-    'Prefer not to say',
+  static const List<String> _ageRanges = [
+    'under_18',
+    '18-24',
+    '25-34',
+    '35-44',
+    '45-54',
+    '55-64',
+    '65+',
+    'prefer_not_to_say',
   ];
+
+  static String _normalizeAgeRange(String raw) {
+    final normalized = raw.trim().toLowerCase().replaceAll('–', '-');
+    switch (normalized) {
+      case 'under 18':
+      case '<18':
+      case 'under_18':
+      case 'moins de 18 ans':
+        return 'under_18';
+      case '55+':
+        return '55-64';
+      case 'prefer not to say':
+      case 'prefer_not_to_say':
+      case '':
+        return 'prefer_not_to_say';
+      default:
+        return _ageRanges.contains(normalized) ? normalized : 'prefer_not_to_say';
+    }
+  }
 
   @override
   void initState() {
@@ -51,9 +71,7 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
     _nameController = TextEditingController(text: widget.profile.preferredName);
     _introController = TextEditingController(text: widget.profile.personalIntroduction);
     _additionalController = TextEditingController(text: widget.profile.additionalContext);
-    _selectedAgeRange = widget.profile.ageRange.isNotEmpty
-        ? widget.profile.ageRange
-        : 'Prefer not to say';
+    _selectedAgeRange = _normalizeAgeRange(widget.profile.ageRange);
     _selectedLanguage = widget.profile.preferredLanguage.isNotEmpty
         ? widget.profile.preferredLanguage
         : 'en';
@@ -211,7 +229,7 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                           ),
                         ),
                         child: Text(
-                          range,
+                          strings.ageRangeDisplayName(range),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,

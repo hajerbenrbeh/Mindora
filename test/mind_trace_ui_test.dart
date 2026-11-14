@@ -347,9 +347,9 @@ void main() {
 
       final saved = savedTraces.firstWhere((t) => t.id == 'trace_historical_step5');
 
-      // 1. Wizard-edited fields updated:
+      // 1. Wizard-edited fields updated (canonical key stored):
       expect(saved.overallMood, equals('calm'));
-      expect(saved.selectedEmotions.contains('Calm'), isTrue);
+      expect(saved.selectedEmotions.contains('calm'), isTrue);
       expect(saved.updatedAt.isAfter(historicalDate), isTrue);
 
       // 2. All 10 historical uncollected fields preserved 100%:

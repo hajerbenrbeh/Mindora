@@ -21,6 +21,7 @@ import '../../investigation/controllers/investigation_providers.dart';
 import '../../investigation/domain/case_model.dart';
 import '../../investigation/domain/conversation_mode.dart';
 import '../../mind_trace/controllers/mind_trace_controller.dart';
+import '../../mind_trace/domain/emotion_descriptors.dart';
 import '../../mind_trace/domain/mind_trace_model.dart';
 import '../../mind_trace/presentation/widgets/daily_mind_trace_stepper.dart';
 import '../../mind_trace/presentation/widgets/trace_investigation_sheet.dart';
@@ -76,7 +77,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
   final Set<String> _selectedHelped = {};
   bool _isSaving = false;
   bool _savedConfirmed = false;
-  bool _initializedFromTrace = false;
+  String? _hydratedTraceSignature;
   bool _showOptionalContext = false;
   String _lastSavedNote = '';
 
@@ -137,18 +138,43 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
     super.dispose();
   }
 
+  String _traceSignature(MindTraceModel trace) =>
+      '${trace.id}_${trace.updatedAt.millisecondsSinceEpoch}';
+
   void _hydrateFromTrace(MindTraceModel? trace, {bool force = false}) {
-    if ((!force && _initializedFromTrace) || trace == null) return;
-    _initializedFromTrace = true;
+    if (trace == null) {
+      if (_hydratedTraceSignature == null && !force) return;
+      _hydratedTraceSignature = null;
+      _lastSavedNote = '';
+      setState(() {
+        _selectedMood = 'calm';
+        _moodIntensity = 5.0;
+        _energyLevel = 5.0;
+        _anxietyLevel = 3.0;
+        _sleepHours = 7.5;
+        _noteController.clear();
+        _selectedTriggers.clear();
+        _selectedHelped.clear();
+        _savedConfirmed = false;
+      });
+      return;
+    }
+
+    final sig = _traceSignature(trace);
+    if (!force && _hydratedTraceSignature == sig) return;
+    _hydratedTraceSignature = sig;
     final hydratedNote = trace.journalText ?? '';
     _lastSavedNote = hydratedNote.trim();
     setState(() {
-      _selectedMood = trace.overallMood;
+      _selectedMood =
+          EmotionDescriptor.canonicalKey(trace.overallMood).toLowerCase();
       _moodIntensity = trace.moodIntensity.toDouble().clamp(1, 10);
       _energyLevel = (trace.energyLevel ?? 5).toDouble().clamp(1, 10);
       _anxietyLevel = (trace.anxietyLevel ?? 3).toDouble().clamp(0, 10);
       _sleepHours = (trace.sleepHours ?? 7.5).clamp(2, 14);
-      _noteController.text = hydratedNote;
+      if (_noteController.text != hydratedNote) {
+        _noteController.text = hydratedNote;
+      }
 
       _selectedTriggers.clear();
       if (trace.situation != null && trace.situation!.trim().isNotEmpty) {
@@ -209,7 +235,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
           : null;
 
       // Preserve Level 2 crisis pre-scan safeguard before saving any note.
-      if (noteText != null && CrisisKeywords.evaluateText(noteText) == 2) {
+      final safetyLevel =
+          noteText != null ? CrisisKeywords.evaluateText(noteText) : 0;
+      if (safetyLevel == 2) {
         setState(() => _isSaving = false);
         if (mounted) {
           SafetyInterceptor.showCrisisPauseDialog(context);
@@ -217,17 +245,32 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
         return;
       }
 
+      final existingEmotions = today?.selectedEmotions ?? const <String>[];
+      final mergedEmotions = existingEmotions.isEmpty
+          ? [_selectedMood]
+          : <String>[
+              _selectedMood,
+              ...existingEmotions.where(
+                (e) =>
+                    EmotionDescriptor.canonicalKey(e).toLowerCase() !=
+                    _selectedMood,
+              ),
+            ];
+
       final trace = today != null
           ? today.copyWith(
               overallMood: _selectedMood,
-              selectedEmotions: [_selectedMood],
+              selectedEmotions: mergedEmotions,
               moodIntensity: _moodIntensity.round(),
               energyLevel: _energyLevel.round(),
               anxietyLevel: _anxietyLevel.round(),
               sleepHours: _sleepHours,
               situation: situationStr,
+              clearSituation: situationStr == null,
               behavioralResponse: helpedStr,
+              clearBehavioralResponse: helpedStr == null,
               journalText: noteText,
+              clearJournalText: noteText == null,
               updatedAt: now,
             )
           : MindTraceModel(
@@ -247,7 +290,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
               updatedAt: now,
             );
 
-      _initializedFromTrace = true;
+      _hydratedTraceSignature = _traceSignature(trace);
       _lastSavedNote = noteText ?? '';
       await ref
           .read(mindTraceControllerProvider.notifier)
@@ -259,10 +302,20 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
           SnackBar(
             backgroundColor: tokens.surfaceSecondary,
             content: Text(
-              strings.checkInSavedSnackbar,
+              safetyLevel == 1
+                  ? '${strings.checkInSavedSnackbar} ${strings.needSupportBtn}'
+                  : strings.checkInSavedSnackbar,
               style: TextStyle(color: tokens.textPrimary, fontSize: 13),
             ),
-            duration: const Duration(seconds: 2),
+            action: safetyLevel == 1
+                ? SnackBarAction(
+                    label: strings.supportTitle,
+                    onPressed: () {
+                      if (mounted) SupportModalSheet.show(context);
+                    },
+                  )
+                : null,
+            duration: Duration(seconds: safetyLevel == 1 ? 4 : 2),
           ),
         );
       }
@@ -367,7 +420,8 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
     final todayTrace = ref.watch(todayTraceProvider);
 
     ref.listen<MindTraceModel?>(todayTraceProvider, (_, next) {
-      if (!_initializedFromTrace && next != null) {
+      final nextSig = next != null ? _traceSignature(next) : null;
+      if (nextSig != _hydratedTraceSignature) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _hydrateFromTrace(next);
         });

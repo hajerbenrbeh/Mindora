@@ -535,6 +535,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
     required Color textPrimary,
     required Color textSecondary,
   }) {
+    final strings = ref.watch(appStringsProvider);
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 12),
@@ -584,10 +585,66 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                 button: true,
                 label: 'Delete discovery',
                 child: InkWell(
-                  onTap: () {
-                    ref
-                        .read(journeyControllerProvider.notifier)
-                        .deleteDiscovery(activity.id);
+                  onTap: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (dialogCtx) {
+                        return AlertDialog(
+                          backgroundColor: context.tokens.surface,
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(context.tokens.cardRadius),
+                            side: BorderSide(color: borderColor),
+                          ),
+                          title: Text(
+                            strings.deleteTraceConfirmTitle,
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w700,
+                              color: textPrimary,
+                            ),
+                          ),
+                          content: Text(
+                            strings.isArabic
+                                ? 'هل تريد حذف هذه الملاحظة المحفوظة من سجلك؟'
+                                : (strings.isFrench
+                                    ? 'Voulez-vous vraiment supprimer cette note enregistrée ?'
+                                    : 'Remove this saved reflection note from your record?'),
+                            style: TextStyle(
+                              fontSize: 13.5,
+                              height: 1.45,
+                              color: textSecondary,
+                            ),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(dialogCtx).pop(false),
+                              child: Text(
+                                strings.cancelActionLabel,
+                                style: TextStyle(color: textSecondary),
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(dialogCtx).pop(true),
+                              child: Text(
+                                strings.deleteEntryBtn,
+                                style: TextStyle(
+                                  color: context.tokens.safetyWarmth,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    if (confirmed == true) {
+                      ref
+                          .read(journeyControllerProvider.notifier)
+                          .deleteDiscovery(activity.id);
+                    }
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: ConstrainedBox(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/theme/lab_colors.dart';
+import '../../../mind_trace/domain/emotion_descriptors.dart';
 
 /// Shared core mood definitions, icons, colors, and localized labels for Track.
 class TrackMoodOption {
@@ -45,19 +46,20 @@ const List<TrackMoodOption> trackCoreMoods = [
 ];
 
 TrackMoodOption trackMoodOptionFor(String key) {
-  final normalized = key.trim().toLowerCase();
+  final canonical = EmotionDescriptor.canonicalKey(key).toLowerCase();
   for (final option in trackCoreMoods) {
-    if (option.key == normalized) return option;
+    if (option.key == canonical) return option;
   }
   return TrackMoodOption(
-    key: normalized,
-    icon: Icons.circle_outlined,
+    key: canonical,
+    icon: EmotionDescriptor.iconForLabel(key),
     color: LabColors.moodCalm,
   );
 }
 
 String trackMoodLabel(String key, AppStrings strings) {
-  switch (key.trim().toLowerCase()) {
+  final canonical = EmotionDescriptor.canonicalKey(key).toLowerCase();
+  switch (canonical) {
     case 'calm':
       return strings.moodCalm;
     case 'anxious':
@@ -69,7 +71,7 @@ String trackMoodLabel(String key, AppStrings strings) {
     case 'restless':
       return strings.moodRestless;
     default:
-      return key;
+      return EmotionDescriptor.localizedLabel(key, strings);
   }
 }
 

@@ -8,6 +8,8 @@ import '../../../app/localization/locale_controller.dart';
 import '../../../app/router/app_router.dart';
 import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
+import '../../../core/safety/crisis_keywords.dart';
+import '../../../core/safety/safety_interceptor.dart';
 import '../../../core/safety/support_button.dart';
 import '../../../core/widgets/fingerprint_thread_signature.dart';
 import '../../../core/widgets/mind_intensity_picker.dart';
@@ -176,6 +178,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _nextStep() {
+    if (_currentStep == 1) {
+      final customGoalText = _customGoalController.text.trim();
+      if (customGoalText.isNotEmpty &&
+          CrisisKeywords.evaluateText(customGoalText) == 2) {
+        SafetyInterceptor.showCrisisPauseDialog(context);
+        return;
+      }
+    }
     if (_currentStep >= _totalSteps - 1) {
       _finishOnboarding(saveInitialTrace: true);
       return;
@@ -200,6 +210,12 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _finishOnboarding({required bool saveInitialTrace}) async {
     if (_isFinishing) return;
+    final customGoalText = _customGoalController.text.trim();
+    if (customGoalText.isNotEmpty &&
+        CrisisKeywords.evaluateText(customGoalText) == 2) {
+      SafetyInterceptor.showCrisisPauseDialog(context);
+      return;
+    }
     setState(() => _isFinishing = true);
     HapticFeedback.mediumImpact();
 
@@ -214,7 +230,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       await ref.read(mindTraceControllerProvider.future);
 
       final userId = ref.read(authControllerProvider).user?.id ?? 'local_user';
-      final customGoalText = _customGoalController.text.trim();
       final goalsList = _selectedGoals.toList();
       final fullGoals = [
         ...goalsList,
@@ -246,7 +261,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           date: now,
           overallMood: _selectedMood,
           moodIntensity: _firstIntensity,
-          energyLevel: (10 - _firstIntensity).clamp(1, 9),
+          energyLevel: null,
           selectedEmotions: [_selectedMood],
           createdAt: now,
           updatedAt: now,
