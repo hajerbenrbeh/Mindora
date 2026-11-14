@@ -30,7 +30,7 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
 
   static const List<({String id, String label, double normX, double normY, IconData icon})> _nodes = [
     (id: 'cranial', label: 'Cranial / Head', normX: 0.50, normY: 0.16, icon: Icons.psychology_outlined),
-    (id: 'jaw', label: 'Jaw / Cervical', normX: 0.50, normY: 0.30, icon: Icons.sentiment_neutral_outlined),
+    (id: 'jaw', label: 'Jaw / Cervical', normX: 0.50, normY: 0.30, icon: Icons.sensors_outlined),
     (id: 'throat', label: 'Throat / Larynx', normX: 0.50, normY: 0.42, icon: Icons.graphic_eq_rounded),
     (id: 'chest', label: 'Thoracic / Chest', normX: 0.50, normY: 0.58, icon: Icons.favorite_outline_rounded),
     (id: 'gut', label: 'Solar Plexus / Gut', normX: 0.50, normY: 0.74, icon: Icons.radio_button_checked_rounded),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../app/theme/lab_colors.dart';
+import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
 /// Rounded vertical Quick Action card matching Phone 2 ("Quick Actions").
@@ -21,12 +22,13 @@ class QuickActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.darkForestCard : LabColors.cardIvory;
-    final border = isDark ? LabColors.darkForestBorder : LabColors.borderIvory;
-    final iconBg = isDark ? LabColors.darkForestSurface : LabColors.secondaryIvory;
-    final iconColor = isDark ? LabColors.lightOlive : LabColors.forestGreen;
-    final textCol = isDark ? LabColors.darkTextPrimary : LabColors.primaryText;
+    final bg = tokens.surface;
+    final border = tokens.border;
+    final iconBg = tokens.surfaceSecondary;
+    final iconColor = isDark ? LabColors.sageGreen : LabColors.forestGreen;
+    final textCol = tokens.textPrimary;
 
     return Expanded(
       child: MindPressable(
@@ -34,20 +36,22 @@ class QuickActionCard extends StatelessWidget {
           HapticFeedback.lightImpact();
           onTap();
         },
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(tokens.cardRadius),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
           decoration: BoxDecoration(
             color: bg,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(tokens.cardRadius),
             border: Border.all(color: border, width: 1.0),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+            boxShadow: isDark
+                ? const []
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.03),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
           ),
           child: MergeSemantics(
             child: Column(

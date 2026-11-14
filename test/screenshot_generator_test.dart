@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mind_forensics/app/theme/lab_colors.dart';
 import 'package:mind_forensics/app/theme/lab_theme.dart';
 import 'package:mind_forensics/features/home/presentation/home_screen.dart';
 import 'package:mind_forensics/features/insights/presentation/insights_screen.dart';
@@ -251,9 +252,13 @@ void main() {
           child: MaterialApp(
             theme: LabTheme.nightTheme,
             home: Scaffold(
+              backgroundColor: LabColors.nightBackground,
               body: RepaintBoundary(
                 key: repaintKey,
-                child: const AiCompanionHubView(),
+                child: Container(
+                  color: LabColors.nightBackground,
+                  child: const AiCompanionHubView(),
+                ),
               ),
             ),
           ),

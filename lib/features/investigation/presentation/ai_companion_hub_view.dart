@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
+import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/lab_theme.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/widgets/fingerprint_thread_signature.dart';
@@ -230,6 +231,25 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
     );
   }
 
+  Color _accentForMode(ConversationMode mode, bool isDark) {
+    switch (mode) {
+      case ConversationMode.exploreThought:
+        return isDark ? LabColors.moodRestless : LabColors.factBorderDark;
+      case ConversationMode.understandEmotion:
+        return isDark ? LabColors.cherryRedGlow : LabColors.cherryRed;
+      case ConversationMode.psychologicalAnalysis:
+        return isDark ? LabColors.warmBeige : LabColors.warmBeigeDark;
+      case ConversationMode.guidedReflection:
+        return isDark ? LabColors.sageGreen : LabColors.forestGreen;
+      case ConversationMode.justTalk:
+        return isDark
+            ? LabColors.interpretationViolet
+            : LabColors.interpretationBorderDark;
+      case ConversationMode.grounding:
+        return isDark ? LabColors.sageGreenGlow : LabColors.secondaryOlive;
+    }
+  }
+
   Future<void> _startConversation([String? initialPrompt]) async {
     HapticFeedback.mediumImpact();
     final controller = ref.read(activeCaseControllerProvider.notifier);
@@ -303,6 +323,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             final isSelected = mode == selectedMode;
             final modeTitle = localizedModeName(mode, strings);
             final modeDesc = localizedModeDesc(mode, strings);
+            final modeColor = _accentForMode(mode, isDark);
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -319,13 +340,11 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? tokens.accentSoft
+                        ? modeColor.withValues(alpha: isDark ? 0.11 : 0.08)
                         : surfaceColor,
                     borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(
-                      color: isSelected
-                          ? tokens.accent
-                          : borderColor,
+                      color: isSelected ? modeColor : borderColor,
                       width: isSelected ? 1.5 : 1.0,
                     ),
                   ),
@@ -335,20 +354,18 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                       Container(
                         padding: const EdgeInsets.all(9),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? tokens.accent.withValues(alpha: 0.16)
-                              : tokens.surfaceSecondary,
-                          borderRadius: BorderRadius.circular(12),
+                          color: modeColor.withValues(
+                              alpha: isSelected ? 0.20 : (isDark ? 0.10 : 0.08)),
+                          borderRadius: BorderRadius.circular(tokens.buttonRadius),
                           border: Border.all(
-                            color: isSelected
-                                ? tokens.accent.withValues(alpha: 0.35)
-                                : borderColor,
+                            color: modeColor.withValues(
+                                alpha: isSelected ? 0.45 : 0.22),
                           ),
                         ),
                         child: Icon(
                           iconForConversationMode(mode),
                           size: 18,
-                          color: isSelected ? tokens.accent : textSecondary,
+                          color: modeColor,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -364,9 +381,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                                     style: TextStyle(
                                       fontSize: 13.5,
                                       fontWeight: FontWeight.w700,
-                                      color: isSelected
-                                          ? tokens.accent
-                                          : textPrimary,
+                                      color: isSelected ? modeColor : textPrimary,
                                     ),
                                   ),
                                 ),
@@ -375,7 +390,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
-                                      color: tokens.accent.withValues(alpha: 0.16),
+                                      color: modeColor.withValues(alpha: 0.16),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -384,7 +399,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                                         fontSize: 10,
                                         fontWeight: FontWeight.w800,
                                         letterSpacing: 0.5,
-                                        color: tokens.accent,
+                                        color: modeColor,
                                       ),
                                     ),
                                   ),
@@ -397,7 +412,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                                 fontSize: 12.5,
                                 height: 1.4,
                                 color: isSelected
-                                    ? textPrimary.withValues(alpha: 0.88)
+                                    ? textPrimary.withValues(alpha: 0.90)
                                     : textSecondary,
                               ),
                             ),
@@ -420,7 +435,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               fontSize: 11.5,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.8,
-              color: tokens.accent,
+              color: _accentForMode(selectedMode, isDark),
             ),
           ),
           const SizedBox(height: 8),
@@ -429,23 +444,30 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             spacing: 8,
             runSpacing: 8,
             children: strings.localizedStartersForMode(selectedMode.name).map((starter) {
+              final selectedModeColor = _accentForMode(selectedMode, isDark);
               return MindPressable(
                 semanticLabel: starter,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 onPressed: () => _startConversation(starter),
                 child: Container(
-                  constraints: const BoxConstraints(minHeight: 42),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
                     color: tokens.surfaceSecondary,
                     borderRadius: BorderRadius.circular(tokens.chipRadius),
-                    border: Border.all(color: tokens.border),
+                    border: Border.all(
+                      color: isDark ? borderColor : tokens.border,
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.arrow_forward_rounded, size: 14, color: tokens.accent),
-                      const SizedBox(width: 6),
+                      Icon(
+                        Icons.arrow_forward_rounded,
+                        size: 14,
+                        color: selectedModeColor,
+                      ),
+                      const SizedBox(width: 8),
                       Flexible(
                         child: Text(
                           starter,
@@ -760,9 +782,9 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: tokens.accent.withValues(alpha: 0.25)),
+                  color: LabColors.sageBackground(isDark: isDark),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: LabColors.sageBorder(isDark: isDark)),
                 ),
                 child: Text(
                   'CONFIDENTIAL & OFFLINE-FIRST',
@@ -770,7 +792,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                     fontSize: 8.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
-                    color: tokens.accent,
+                    color: isDark ? LabColors.sageGreen : LabColors.forestGreen,
                   ),
                 ),
               ),
@@ -780,9 +802,9 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
           Text(
             '“${strings.aiCompanionIntro}”',
             style: LabTheme.editorialSerif(
-              fontSize: 14.5,
-              fontStyle: FontStyle.italic,
-              height: 1.35,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              height: 1.38,
               color: textPrimary,
             ),
           ),
