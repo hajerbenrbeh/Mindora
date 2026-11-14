@@ -25,8 +25,9 @@ import 'mock_investigator_service.dart';
 /// or an optional user-hosted proxy URL (`proxyUrl`), with:
 /// - Specialist Mind Forensics prompting (non-diagnostic, options-first, 0 emojis)
 /// - Strict privacy gates ([DirectGeminiInvestigatorService.canTransmitCaseData])
-/// - 20 queries/day limiter ([DailyUsageLimiter])
-/// - Automatic silent fallback to [MockInvestigatorService] when offline/limited
+/// - 50 queries/day limiter ([DailyUsageLimiter])
+/// - Automatic fallback to [MockInvestigatorService] when offline/limited,
+///   reported via [onFallback] so the UI surfaces a clear status notice
 class DirectGroqInvestigatorService implements InvestigatorService {
   DirectGroqInvestigatorService({
     required this.apiKey,
@@ -34,6 +35,7 @@ class DirectGroqInvestigatorService implements InvestigatorService {
     this.proxyUrl = '',
     this.clientFactory,
     this.onRequestAttempted,
+    this.onFallback,
   });
 
   static const String defaultModel = 'llama-3.3-70b-versatile';
@@ -51,6 +53,7 @@ class DirectGroqInvestigatorService implements InvestigatorService {
   final String proxyUrl;
   final HttpClient Function()? clientFactory;
   final void Function(Uri url, Map<String, dynamic> payload)? onRequestAttempted;
+  final void Function(AiFallbackReason reason)? onFallback;
   final MockInvestigatorService _fallback = MockInvestigatorService();
 
   /// Counter tracking external network requests attempted.
@@ -147,13 +150,17 @@ class DirectGroqInvestigatorService implements InvestigatorService {
     if (!_hasProxy && isMockKey(cleanKey)) return null;
 
     final canProceed = await DailyUsageLimiter.canMakeRequest();
-    if (!canProceed) return DailyUsageLimiter.limitExceededMessage;
+    if (!canProceed) {
+      onFallback?.call(AiFallbackReason.dailyLimitReached);
+      return null;
+    }
 
     final modelsToTry = [
       modelName,
       ...fallbackModels.where((m) => m != modelName),
     ];
 
+    var networkUnavailable = false;
     for (final currentModel in modelsToTry) {
       final url = _resolvedEndpoint;
       final payload = <String, dynamic>{
@@ -195,8 +202,10 @@ class DirectGroqInvestigatorService implements InvestigatorService {
           }
         }
       } on SocketException {
+        networkUnavailable = true;
         break;
       } on HandshakeException {
+        networkUnavailable = true;
         break;
       } catch (_) {
         // Try fallback model on transient error
@@ -205,6 +214,11 @@ class DirectGroqInvestigatorService implements InvestigatorService {
       }
     }
 
+    onFallback?.call(
+      networkUnavailable
+          ? AiFallbackReason.offlineOrNetwork
+          : AiFallbackReason.apiError,
+    );
     return null;
   }
 

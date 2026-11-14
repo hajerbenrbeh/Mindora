@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 
+import '../../../app/localization/app_strings.dart';
+
 /// Categories of compressed journal memory in Mind Forensics.
 enum JournalMemoryCategory {
   /// Information explicitly shared by the user (preferences, personal context, goals).
@@ -36,6 +38,41 @@ enum JournalMemoryCategory {
         return 'Tentative Observation';
     }
   }
+  String localized(AppStrings strings) {
+    if (strings.isArabic) {
+      switch (this) {
+        case JournalMemoryCategory.userStatedContext:
+          return 'سياق مشارَك منك';
+        case JournalMemoryCategory.recurringTheme:
+          return 'موضوع متكرّر';
+        case JournalMemoryCategory.emotionalContext:
+          return 'سياق شعوري';
+        case JournalMemoryCategory.copingExperience:
+          return 'طريقة تأقلم';
+        case JournalMemoryCategory.openQuestion:
+          return 'سؤال مفتوح';
+        case JournalMemoryCategory.tentativeObservation:
+          return 'ملاحظة أولية';
+      }
+    }
+    if (strings.isFrench) {
+      switch (this) {
+        case JournalMemoryCategory.userStatedContext:
+          return 'Contexte déclaré';
+        case JournalMemoryCategory.recurringTheme:
+          return 'Thème récurrent';
+        case JournalMemoryCategory.emotionalContext:
+          return 'Contexte émotionnel';
+        case JournalMemoryCategory.copingExperience:
+          return 'Stratégie d’adaptation';
+        case JournalMemoryCategory.openQuestion:
+          return 'Question ouverte';
+        case JournalMemoryCategory.tentativeObservation:
+          return 'Observation provisoire';
+      }
+    }
+    return displayName;
+  }
 }
 
 /// Evidentiary classification of a compressed memory item.
@@ -59,6 +96,30 @@ enum MemoryEvidenceStatus {
         return 'Tentative Hypothesis';
     }
   }
+
+  String localized(AppStrings strings) {
+    if (strings.isArabic) {
+      switch (this) {
+        case MemoryEvidenceStatus.userExplicit:
+          return 'مذكور منك';
+        case MemoryEvidenceStatus.recurringReported:
+          return 'يتكرّر في ملاحظاتك';
+        case MemoryEvidenceStatus.tentativeHypothesis:
+          return 'فرضيّة أولية';
+      }
+    }
+    if (strings.isFrench) {
+      switch (this) {
+        case MemoryEvidenceStatus.userExplicit:
+          return 'Déclaré';
+        case MemoryEvidenceStatus.recurringReported:
+          return 'Récurrent';
+        case MemoryEvidenceStatus.tentativeHypothesis:
+          return 'Hypothèse provisoire';
+      }
+    }
+    return displayName;
+  }
 }
 
 /// User review status for transparent memory control.
@@ -81,6 +142,30 @@ enum MemoryConfirmationStatus {
       case MemoryConfirmationStatus.rejected:
         return 'Rejected';
     }
+  }
+
+  String localized(AppStrings strings) {
+    if (strings.isArabic) {
+      switch (this) {
+        case MemoryConfirmationStatus.unreviewed:
+          return 'بانتظار المراجعة';
+        case MemoryConfirmationStatus.confirmed:
+          return 'مؤكّد';
+        case MemoryConfirmationStatus.rejected:
+          return 'مرفوض';
+      }
+    }
+    if (strings.isFrench) {
+      switch (this) {
+        case MemoryConfirmationStatus.unreviewed:
+          return 'À vérifier';
+        case MemoryConfirmationStatus.confirmed:
+          return 'Confirmé';
+        case MemoryConfirmationStatus.rejected:
+          return 'Ignoré';
+      }
+    }
+    return displayName;
   }
 }
 

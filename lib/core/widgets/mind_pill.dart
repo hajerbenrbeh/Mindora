@@ -40,48 +40,55 @@ class MindPill extends StatelessWidget {
         onTap();
       },
       borderRadius: BorderRadius.circular(tokens.chipRadius),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOutCubic,
-        padding: padding,
-        decoration: BoxDecoration(
-          color: isSelected ? activeBg : inactiveBg,
-          borderRadius: BorderRadius.circular(tokens.chipRadius),
-          border: Border.all(
-            color: isSelected ? activeBg : borderColor,
-            width: 1.0,
-          ),
-          boxShadow: (isSelected && !isDark)
-              ? [
-                  BoxShadow(
-                    color: activeBg.withValues(alpha: 0.16),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : null,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (icon != null) ...[
-              Icon(
-                icon,
-                size: fontSize + 1,
-                color: isSelected ? activeFg : inactiveFg,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+        child: Center(
+          widthFactor: 1.0,
+          heightFactor: 1.0,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeOutCubic,
+            padding: padding,
+            decoration: BoxDecoration(
+              color: isSelected ? activeBg : inactiveBg,
+              borderRadius: BorderRadius.circular(tokens.chipRadius),
+              border: Border.all(
+                color: isSelected ? activeBg : borderColor,
+                width: 1.0,
               ),
-              const SizedBox(width: 6),
-            ],
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: fontSize,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? activeFg : inactiveFg,
-                letterSpacing: -0.1,
-              ),
+              boxShadow: (isSelected && !isDark)
+                  ? [
+                      BoxShadow(
+                        color: activeBg.withValues(alpha: 0.16),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : null,
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (icon != null) ...[
+                  Icon(
+                    icon,
+                    size: fontSize + 1,
+                    color: isSelected ? activeFg : inactiveFg,
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: isSelected ? activeFg : inactiveFg,
+                    letterSpacing: -0.1,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

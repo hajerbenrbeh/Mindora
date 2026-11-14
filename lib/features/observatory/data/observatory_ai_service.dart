@@ -15,7 +15,7 @@ import '../domain/symptom_entry.dart';
 class ObservatoryAiService {
   ObservatoryAiService({
     this.apiKey,
-    this.modelName = 'gemini-3.5-flash',
+    this.modelName = 'gemini-2.5-flash',
   });
 
   static const String kDevMockKey = 'DEV_MOCK_GEMINI_KEY';
@@ -210,7 +210,7 @@ class ObservatoryAiService {
     try {
       final symptomList = selectedSymptoms.map((s) => s.titleEn).join(', ');
       final uri = Uri.parse(
-        'https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent?key=$apiKey',
+        'https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent',
       );
 
       final prompt =
@@ -222,6 +222,7 @@ class ObservatoryAiService {
 
       final request = await client.postUrl(uri);
       request.headers.contentType = ContentType.json;
+      request.headers.set('x-goog-api-key', apiKey.trim());
       request.write(jsonEncode({
         'contents': [
           {

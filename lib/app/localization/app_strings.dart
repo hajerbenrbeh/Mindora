@@ -1847,6 +1847,158 @@ class AppStrings {
       ? 'نعم، امسح كل شيء'
       : (isFrench ? 'Tout effacer' : 'Erase Everything');
 
+  // Slice 3A: AI Engine Config & Non-Silent Runtime Notice
+  String get aiEngineSheetTitle => isArabic
+      ? 'محرك المساعد الذكي'
+      : (isFrench ? 'MOTEUR DE L’ASSISTANT IA' : 'MIND ASSISTANT ENGINE');
+  String get aiEngineLiveGroqBadge => isArabic
+      ? 'GROQ مباشر'
+      : (isFrench ? 'GROQ EN DIRECT' : 'LIVE GROQ');
+  String get aiEngineLiveGeminiBadge => isArabic
+      ? 'GEMINI مباشر'
+      : (isFrench ? 'GEMINI EN DIRECT' : 'LIVE GEMINI');
+  String get aiEngineTestModeBadge => isArabic
+      ? 'وضع التجربة (\$0.00)'
+      : (isFrench ? 'MODE TEST (\$0.00)' : 'TEST MODE (\$0.00)');
+  String get aiEngineSheetSubtitle => isArabic
+      ? 'يدعم التطبيق محرك Groq أو Google Gemini للحوار المباشر، أو الوضع المحلي المجاني بدون إرسال بيانات.'
+      : (isFrench
+          ? 'Prend en charge Groq (Llama 3.3 gratuit) ou Google Gemini en direct, ou le simulateur local sans transmission.'
+          : 'Mind Forensics supports Groq (Llama 3.3 free tier) or Google Gemini for live specialist dialogue, or offline mock mode with zero transmission.');
+  String get aiEngineGroqOption =>
+      isArabic ? 'Groq (Llama مجاني)' : (isFrench ? 'Groq (Llama gratuit)' : 'Groq (Free Llama)');
+  String get aiEngineGeminiOption => 'Google Gemini';
+  String get aiEngineDevTestModeTitle => isArabic
+      ? 'وضع التطوير والاختبار'
+      : (isFrench ? 'Mode développement / test' : 'Development / Test Mode');
+  String get aiEngineDevTestModeSubtitle => isArabic
+      ? 'تشغيل الوضع المحلي المجاني بدون أي اتصال خارجي.'
+      : (isFrench
+          ? 'Force le mode local hors ligne sans frais ni appel réseau.'
+          : 'Enforce offline mock mode for zero-cost and automated testing.');
+  String get aiEngineGroqKeyLabel => isArabic
+      ? 'مفتاح GROQ API (CONSOLE.GROQ.COM)'
+      : (isFrench
+          ? 'CLÉ API GROQ (CONSOLE.GROQ.COM)'
+          : 'GROQ API KEY (CONSOLE.GROQ.COM)');
+  String get aiEngineGeminiKeyLabel => isArabic
+      ? 'مفتاح GOOGLE GEMINI API'
+      : (isFrench ? 'CLÉ API GOOGLE GEMINI' : 'GOOGLE GEMINI API KEY');
+  String get aiEngineProxyLabel => isArabic
+      ? 'عنوان البروكسي الآمن (اختياري)'
+      : (isFrench ? 'URL DU PROXY SÉCURISÉ (OPTIONNEL)' : 'SECURE PROXY URL (OPTIONAL)');
+  String get aiEngineProxyHint => isArabic
+      ? 'https://your-proxy.example.com/v1/chat/completions'
+      : (isFrench
+          ? 'https://votre-proxy.example.com/v1/chat/completions'
+          : 'https://your-proxy.example.com/v1/chat/completions');
+  String get aiEngineTestConnBtn => isArabic
+      ? 'اختبار الاتصال'
+      : (isFrench ? 'TESTER LA CONNEXION' : 'TEST CONNECTION');
+  String get aiEngineSaveActivateBtn => isArabic
+      ? 'حفظ وتفعيل'
+      : (isFrench ? 'ENREGISTRER' : 'SAVE & ACTIVATE');
+  String get aiEngineRevertMockBtn => isArabic
+      ? 'العودة إلى الوضع المحلي'
+      : (isFrench ? 'Revenir au mode local hors ligne' : 'Revert to Offline Mock Mode');
+  String get aiEngineEmptyKeyPrompt => isArabic
+      ? 'أدخل مفتاح API أو عنوان بروكسي لاختبار الاتصال.'
+      : (isFrench
+          ? 'Saisissez une clé API ou une URL proxy pour tester.'
+          : 'Please enter an API key or proxy URL to test connection.');
+  String aiEngineSavedSnackbar(String providerLabel, bool hasLive) {
+    if (hasLive) {
+      if (isArabic) return 'تم حفظ وتفعيل محرك $providerLabel.';
+      if (isFrench) return 'Configuration $providerLabel enregistrée et activée.';
+      return '$providerLabel API configuration saved and activated.';
+    }
+    if (isArabic) return 'تم التحويل إلى الوضع المحلي المجاني.';
+    if (isFrench) return 'Bascule vers le simulateur clinique hors ligne.';
+    return 'Switched to offline clinical simulator.';
+  }
+
+  String get aiEngineClearedSnackbar => isArabic
+      ? 'تم مسح المفتاح. الوضع المحلي مفعّل.'
+      : (isFrench
+          ? 'Clé API supprimée. Mode local activé.'
+          : 'API key cleared. Offline mock mode active.');
+
+  String get aiNoticeDailyLimit => isArabic
+      ? 'وصلت للحد اليومي للمساعد الحي — مواصلة هادئة بالوضع المحلي.'
+      : (isFrench
+          ? 'Limite quotidienne atteinte — poursuite calme en mode local.'
+          : 'Daily live reflection limit reached — continuing gently in offline mode.');
+  String get aiNoticeOfflineFallback => isArabic
+      ? 'تعذر الاتصال بالمساعد الحي — تم التحويل تلقائياً إلى الوضع المحلي.'
+      : (isFrench
+          ? 'IA en direct hors ligne — bascule douce vers le mode local.'
+          : 'Live AI unavailable offline — switched gently to local mode.');
+  String get aiNoticeApiErrorFallback => isArabic
+      ? 'تعذر استجابة المزوّد الخارجي — يتم المتابعة بالوضع المحلي.'
+      : (isFrench
+          ? 'Le fournisseur externe n’a pas répondu — poursuite en mode local.'
+          : 'Live AI provider returned an error — continuing calmly in local mode.');
+  String get aiEngineSettingsAction =>
+      isArabic ? 'الإعدادات' : (isFrench ? 'Réglages' : 'Engine');
+
+  String get confirmAction =>
+      isArabic ? 'تأكيد' : (isFrench ? 'Confirmer' : 'Confirm');
+  String get dismissAction =>
+      isArabic ? 'تجاهل' : (isFrench ? 'Ignorer' : 'Dismiss');
+
+  String memoryObservationsSummary(int obsCount, int entryCount) {
+    if (isArabic) {
+      return '$obsCount ملاحظات • $entryCount تدوينات';
+    }
+    if (isFrench) {
+      return '$obsCount observations • $entryCount entrées';
+    }
+    return '$obsCount observations • $entryCount source entries';
+  }
+
+  String localizeAuthError(String raw) {
+    final cleaned = raw.replaceFirst(RegExp(r'^FormatException:\s*'), '').trim();
+    switch (cleaned) {
+      case 'Please enter a valid email address.':
+        return isArabic
+            ? 'الرجاء إدخال بريد إلكتروني صحيح.'
+            : (isFrench
+                ? 'Veuillez saisir une adresse e-mail valide.'
+                : cleaned);
+      case 'Password must be at least 6 characters.':
+        return isArabic
+            ? 'كلمة المرور يجب أن تحتوي على 6 أحرف على الأقل.'
+            : (isFrench
+                ? 'Le mot de passe doit contenir au moins 6 caractères.'
+                : cleaned);
+      case 'An account with this email already exists.':
+        return isArabic
+            ? 'يوجد حساب مسجّل بهذا البريد الإلكتروني بالفعل.'
+            : (isFrench
+                ? 'Un compte existe déjà avec cette adresse e-mail.'
+                : cleaned);
+      case 'Invalid email or password.':
+        return isArabic
+            ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
+            : (isFrench
+                ? 'E-mail ou mot de passe incorrect.'
+                : cleaned);
+      case 'Account profile not found.':
+        return isArabic
+            ? 'لم يتم العثور على ملف الحساب.'
+            : (isFrench
+                ? 'Profil du compte introuvable.'
+                : cleaned);
+      default:
+        if (cleaned.isNotEmpty) return cleaned;
+        return isArabic
+            ? 'تعذر إتمام العملية. يرجى المحاولة مجدداً.'
+            : (isFrench
+                ? 'Impossible de finaliser l’opération. Veuillez réessayer.'
+                : 'Unable to complete the request. Please try again.');
+    }
+  }
+
   // Helper factory
   static AppStrings of(BuildContext context) {
     final locale = Localizations.localeOf(context);

@@ -7,6 +7,14 @@ import 'conversation_mode.dart';
 import 'hypothesis.dart';
 import 'statement.dart';
 
+/// Reason why a live AI inference call fell back to offline local generation.
+enum AiFallbackReason {
+  none,
+  dailyLimitReached,
+  offlineOrNetwork,
+  apiError,
+}
+
 /// Abstract service defining interactions with the Psychological Companion AI.
 ///
 /// Section 4 & 11:

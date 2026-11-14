@@ -101,7 +101,9 @@ class _EditPersonalContextSheetState
                 Text(
                   strings.isArabic
                       ? 'ما الذي ترغب أن يدركه Mind Forensics عنك؟'
-                      : 'What would you like Mind Forensics to understand about you?',
+                      : (strings.isFrench
+                          ? 'Que souhaitez-vous que Mind Forensics comprenne de vous ?'
+                          : 'What would you like Mind Forensics to understand about you?'),
                   style: LabTheme.serifStyle(
                     fontSize: 16,
                     height: 1.3,
@@ -113,7 +115,9 @@ class _EditPersonalContextSheetState
                 Text(
                   strings.isArabic
                       ? 'يمكنك مشاركة أي شيء يجعل تجربتك أكثر عمقاً وأماناً: تاريخك الشخصي، ما يمر بك، ما يساعدك، أو أي سياق تراه مهماً.'
-                      : 'You can share anything that might help make your experience more meaningful. Your personal history, current challenges, what helps you, or anything you feel is important.',
+                      : (strings.isFrench
+                          ? 'Partagez tout ce qui donne du sens à votre suivi : votre parcours, vos défis actuels, ce qui vous aide ou ce qui compte pour vous.'
+                          : 'You can share anything that might help make your experience more meaningful. Your personal history, current challenges, what helps you, or anything you feel is important.'),
                   style: TextStyle(fontSize: 11.5, height: 1.4, color: textSecondary),
                 ),
 
@@ -126,7 +130,9 @@ class _EditPersonalContextSheetState
                   decoration: InputDecoration(
                     hintText: strings.isArabic
                         ? 'اكتب براحتك وسرية تامة... هذه المساحة آمنة وخاصة بجهازك.'
-                        : 'Share freely and without pressure... this space is private and stored only on your device.',
+                        : (strings.isFrench
+                            ? 'Écrivez librement sans pression... cet espace reste privé et uniquement sur votre appareil.'
+                            : 'Share freely and without pressure... this space is private and stored only on your device.'),
                     hintStyle: TextStyle(fontSize: 12, color: textSecondary.withValues(alpha: 0.6)),
                     filled: true,
                     fillColor: context.tokens.surfaceSecondary,

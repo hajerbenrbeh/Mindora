@@ -84,7 +84,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                 textPrimary: textPrimary,
                 textSecondary: textSecondary,
                 onEdit: () => EditAboutMeSheet.show(context, profile),
-                content: _buildAboutMeSummary(context, profile, isDark, textPrimary, textSecondary),
+                content: _buildAboutMeSummary(context, profile, isDark, textPrimary, textSecondary, strings),
               ),
 
               const SizedBox(height: 14),
@@ -122,7 +122,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                 textPrimary: textPrimary,
                 textSecondary: textSecondary,
                 onEdit: () => EditSymptomsSheet.show(context, profile),
-                content: _buildSymptomsSummary(context, profile, isDark, borderColor, textPrimary, textSecondary),
+                content: _buildSymptomsSummary(context, profile, isDark, borderColor, textPrimary, textSecondary, strings),
               ),
 
               const SizedBox(height: 14),
@@ -141,7 +141,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                 textPrimary: textPrimary,
                 textSecondary: textSecondary,
                 onEdit: () => EditGoalsSheet.show(context, profile),
-                content: _buildGoalsSummary(context, profile, isDark, borderColor, textPrimary, textSecondary),
+                content: _buildGoalsSummary(context, profile, isDark, borderColor, textPrimary, textSecondary, strings),
               ),
 
               const SizedBox(height: 14),
@@ -299,7 +299,6 @@ class PsychologicalProfileView extends ConsumerWidget {
             strings.profileIntroQuote,
             style: LabTheme.editorialSerif(
               fontSize: 13.5,
-              fontStyle: FontStyle.italic,
               height: 1.4,
               color: textPrimary,
             ),
@@ -430,11 +429,16 @@ class PsychologicalProfileView extends ConsumerWidget {
     bool isDark,
     Color textPrimary,
     Color textSecondary,
+    AppStrings strings,
   ) {
     if (!profile.hasAboutMe) {
       return Text(
-        'Tap to set your preferred name, age range, and brief self-introduction.',
-        style: TextStyle(fontSize: 11.5, color: textSecondary, fontStyle: FontStyle.italic),
+        strings.isArabic
+            ? 'انقر لتحديد اسمك المفضل، فئتك العمرية، ونبذة قصيرة عنك.'
+            : (strings.isFrench
+                ? 'Touchez pour définir votre prénom, votre tranche d’âge et une courte présentation.'
+                : 'Tap to set your preferred name, age range, and brief self-introduction.'),
+        style: TextStyle(fontSize: 11.5, color: textSecondary),
       );
     }
 
@@ -524,7 +528,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                 : (strings.isFrench
                     ? 'Touchez pour sélectionner et personnaliser vos expériences...'
                     : 'Tap to select and customize your experiences...'),
-            style: TextStyle(fontSize: 11, color: textSecondary, fontStyle: FontStyle.italic),
+            style: TextStyle(fontSize: 11, color: textSecondary),
           ),
         ],
       );
@@ -580,11 +584,16 @@ class PsychologicalProfileView extends ConsumerWidget {
     Color borderColor,
     Color textPrimary,
     Color textSecondary,
+    AppStrings strings,
   ) {
     if (!profile.hasSymptoms) {
       return Text(
-        'Tap to record current emotional, thought, or behavioral difficulties.',
-        style: TextStyle(fontSize: 11.5, color: textSecondary, fontStyle: FontStyle.italic),
+        strings.isArabic
+            ? 'انقر لتدوين الصعوبات الشعورية أو الفكرية أو السلوكية الحالية.'
+            : (strings.isFrench
+                ? 'Touchez pour noter vos difficultés émotionnelles, de pensée ou de comportement actuelles.'
+                : 'Tap to record current emotional, thought, or behavioral difficulties.'),
+        style: TextStyle(fontSize: 11.5, color: textSecondary),
       );
     }
 
@@ -639,11 +648,16 @@ class PsychologicalProfileView extends ConsumerWidget {
     Color borderColor,
     Color textPrimary,
     Color textSecondary,
+    AppStrings strings,
   ) {
     if (!profile.hasGoals) {
       return Text(
-        'Tap to select the personal insights and patterns you want to explore.',
-        style: TextStyle(fontSize: 11.5, color: textSecondary, fontStyle: FontStyle.italic),
+        strings.isArabic
+            ? 'انقر لاختيار الرؤى الشخصية والأنماط التي ترغب في استكشافها.'
+            : (strings.isFrench
+                ? 'Touchez pour choisir les pistes personnelles et schémas à explorer.'
+                : 'Tap to select the personal insights and patterns you want to explore.'),
+        style: TextStyle(fontSize: 11.5, color: textSecondary),
       );
     }
 
@@ -689,8 +703,12 @@ class PsychologicalProfileView extends ConsumerWidget {
 
     if (contextText.isEmpty) {
       return Text(
-        'Tap to write what you would like Mind Forensics to understand about your journey.',
-        style: TextStyle(fontSize: 11.5, color: textSecondary, fontStyle: FontStyle.italic),
+        strings.isArabic
+            ? 'انقر لكتابة ما ترغب أن يفهمه Mind Forensics عن مسارك.'
+            : (strings.isFrench
+                ? 'Touchez pour écrire ce que vous souhaitez partager sur votre parcours.'
+                : 'Tap to write what you would like Mind Forensics to understand about your journey.'),
+        style: TextStyle(fontSize: 11.5, color: textSecondary),
       );
     }
 

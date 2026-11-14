@@ -86,7 +86,9 @@ class JournalMemorySheet extends ConsumerWidget {
                     Text(
                       strings.isArabic
                           ? 'سياق ملخص ومحفوظ محلياً فقط على جهازك'
-                          : 'Compact context synthesized locally on-device',
+                          : (strings.isFrench
+                              ? 'Contexte condensé généré localement sur votre appareil'
+                              : 'Compact context synthesized locally on-device'),
                       style: TextStyle(
                         fontSize: 11,
                         color: textSecondary,
@@ -124,7 +126,9 @@ class JournalMemorySheet extends ConsumerWidget {
                   child: Text(
                     strings.isArabic
                         ? 'تساعد هذه الملخصات المساعد الذكي على فهم مسارك دون قراءة نصوصك الحرة كاملة. يمكنك تأكيد أو رفض أي ملخص.'
-                        : 'These summaries help the AI Companion understand your trajectory without transmitting raw journal texts. You have full sovereignty to affirm or dismiss any item.',
+                        : (strings.isFrench
+                            ? 'Ces résumés aident le compagnon IA à suivre votre parcours sans envoyer vos textes complets. Vous gardez le contrôle pour confirmer ou ignorer chaque élément.'
+                            : 'These summaries help the AI Companion understand your trajectory without transmitting raw journal texts. You have full sovereignty to affirm or dismiss any item.'),
                     style: TextStyle(fontSize: 11, height: 1.4, color: textSecondary),
                   ),
                 ),
@@ -146,7 +150,9 @@ class JournalMemorySheet extends ConsumerWidget {
                           Text(
                             strings.isArabic
                                 ? 'لا توجد ذاكرة مضغوطة بعد'
-                                : 'No compressed memories yet',
+                                : (strings.isFrench
+                                    ? 'Aucun résumé en mémoire pour le moment'
+                                    : 'No compressed memories yet'),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w700,
@@ -157,7 +163,9 @@ class JournalMemorySheet extends ConsumerWidget {
                           Text(
                             strings.isArabic
                                 ? 'سيتم استخلاص الأنماط المتكررة بعد تسجيل أكثر من أثر يومي.'
-                                : 'Recurring themes and context will be synthesized as you log daily check-ins.',
+                                : (strings.isFrench
+                                    ? 'Les thèmes récurrents seront synthétisés au fil de vos bilans quotidiens.'
+                                    : 'Recurring themes and context will be synthesized as you log daily check-ins.'),
                             textAlign: TextAlign.center,
                             style: TextStyle(fontSize: 11, color: textSecondary),
                           ),
@@ -201,6 +209,7 @@ class JournalMemorySheet extends ConsumerWidget {
     required Color accent,
     required bool isDark,
   }) {
+    final strings = ref.watch(appStringsProvider);
     final statusColor = item.isConfirmed
         ? (isDark ? LabColors.sageGreen : LabColors.daylightAccent)
         : (item.isRejected ? (isDark ? LabColors.cherryRedGlow : LabColors.cherryRed) : textSecondary);
@@ -227,7 +236,7 @@ class JournalMemorySheet extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  item.category.displayName.toUpperCase(),
+                  item.category.localized(strings).toUpperCase(),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -244,7 +253,7 @@ class JournalMemorySheet extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
-                  item.confirmationStatus.displayName.toUpperCase(),
+                  item.confirmationStatus.localized(strings).toUpperCase(),
                   style: TextStyle(
                     fontSize: 9,
                     fontWeight: FontWeight.w700,
@@ -271,11 +280,16 @@ class JournalMemorySheet extends ConsumerWidget {
             children: [
               Icon(Icons.history_toggle_off_rounded, size: 12, color: textSecondary),
               const SizedBox(width: 4),
-              Text(
-                '${item.observationCount} observations • ${item.sourceEntryIds.length} source entries',
-                style: TextStyle(fontSize: 10, color: textSecondary),
+              Expanded(
+                child: Text(
+                  strings.memoryObservationsSummary(
+                    item.observationCount,
+                    item.sourceEntryIds.length,
+                  ),
+                  style: TextStyle(fontSize: 10, color: textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(),
               // Actions
               if (!item.isConfirmed)
                 BouncingWidget(
@@ -283,11 +297,16 @@ class JournalMemorySheet extends ConsumerWidget {
                     HapticFeedback.lightImpact();
                     ref.read(journalMemoryControllerProvider.notifier).confirmMemory(item.id);
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: accent),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: Text(
+                          strings.confirmAction,
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: accent),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -297,19 +316,23 @@ class JournalMemorySheet extends ConsumerWidget {
                     HapticFeedback.lightImpact();
                     ref.read(journalMemoryControllerProvider.notifier).rejectMemory(item.id);
                   },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                    child: Text(
-                      'Dismiss',
-                      style: TextStyle(fontSize: 11, color: textSecondary),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: Text(
+                          strings.dismissAction,
+                          style: TextStyle(fontSize: 11, color: textSecondary),
+                        ),
+                      ),
                     ),
                   ),
                 ),
               IconButton(
-                tooltip: ref.read(appStringsProvider).deleteEntryBtn,
-                icon: const Icon(Icons.delete_outline_rounded, size: 16),
-                padding: EdgeInsets.zero,
-                visualDensity: VisualDensity.compact,
+                tooltip: strings.deleteEntryBtn,
+                icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                 color: textSecondary,
                 onPressed: () {
                   HapticFeedback.lightImpact();

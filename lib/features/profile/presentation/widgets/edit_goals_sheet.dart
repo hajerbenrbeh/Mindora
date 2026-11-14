@@ -123,6 +123,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                       final label = goal.localized(strings);
                       final isSelected = _selectedGoals.contains(label) ||
                           _selectedGoals.contains(goal.english) ||
+                          _selectedGoals.contains(goal.french) ||
                           _selectedGoals.contains(goal.arabic);
 
                       return Padding(
@@ -134,6 +135,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                               if (isSelected) {
                                 _selectedGoals.remove(label);
                                 _selectedGoals.remove(goal.english);
+                                _selectedGoals.remove(goal.french);
                                 _selectedGoals.remove(goal.arabic);
                               } else {
                                 _selectedGoals.add(label);

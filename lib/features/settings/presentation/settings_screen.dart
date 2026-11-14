@@ -577,7 +577,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       content: Text(
                         success
                             ? strings.vaultStatusCloud
-                            : strings.cancelBtn,
+                            : strings.localizeAuthError(
+                                ref.read(authControllerProvider).errorMessage ?? '',
+                              ),
                       ),
                       duration: const Duration(seconds: 2),
                     ),

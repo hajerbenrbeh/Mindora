@@ -190,7 +190,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: isSelected
-                        ? (isDark ? tokens.background : Colors.white)
+                        ? (isDark ? tokens.background : tokens.surface)
                         : Colors.transparent,
                     width: 1.5,
                   ),
@@ -205,7 +205,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                 child: Icon(
                   isSelected ? activeIcon : icon,
                   size: 19,
-                  color: isDark ? tokens.background : Colors.white,
+                  color: isDark ? tokens.background : tokens.surface,
                 ),
               )
             else

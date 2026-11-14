@@ -28,6 +28,22 @@ enum SymptomDomain {
           return 'الضغط والصدمات';
       }
     }
+    if (strings.isFrench) {
+      switch (this) {
+        case SymptomDomain.mood:
+          return 'Humeur & Émotion';
+        case SymptomDomain.anxiety:
+          return 'Anxiété & Tension';
+        case SymptomDomain.cognitive:
+          return 'Pensées & Cognition';
+        case SymptomDomain.attention:
+          return 'Attention & Concentration';
+        case SymptomDomain.somatic:
+          return 'Somatique & Corps';
+        case SymptomDomain.stress:
+          return 'Stress & Trauma';
+      }
+    }
     switch (this) {
       case SymptomDomain.mood:
         return 'Mood & Emotion';

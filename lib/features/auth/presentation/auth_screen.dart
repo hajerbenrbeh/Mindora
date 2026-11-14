@@ -304,7 +304,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            authState.errorMessage!,
+                            strings.localizeAuthError(authState.errorMessage!),
                             style: const TextStyle(
                               color: LabColors.safetyWarmth,
                               fontSize: 11.5,

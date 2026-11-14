@@ -70,7 +70,7 @@ class AiConfigState {
   static const String _defaultModel =
       (kPublicGroqApiKey != '' || kPublicAiProxyUrl != '')
           ? DirectGroqInvestigatorService.defaultModel
-          : 'gemini-3.5-flash';
+          : DirectGeminiInvestigatorService.defaultModel;
 
   final AiEngineProvider provider;
   final String apiKey;
@@ -99,7 +99,7 @@ class AiConfigState {
 
   String get defaultModelForProvider => provider == AiEngineProvider.groq
       ? DirectGroqInvestigatorService.defaultModel
-      : 'gemini-3.5-flash';
+      : DirectGeminiInvestigatorService.defaultModel;
 
   AiConfigState copyWith({
     AiEngineProvider? provider,
@@ -123,6 +123,7 @@ class AiConfigState {
 class AiConfigNotifier extends Notifier<AiConfigState> {
   static const String _prefUseLive = 'mf_use_live_gemini';
   static const String _prefProvider = 'mf_ai_provider';
+  static const String _prefProxyUrl = 'mf_ai_proxy_url';
 
   @override
   AiConfigState build() {
@@ -150,6 +151,7 @@ class AiConfigNotifier extends Notifier<AiConfigState> {
 
     if (!ref.mounted) return;
 
+    final savedProxy = (prefs.getString(_prefProxyUrl) ?? kPublicAiProxyUrl).trim();
     final savedProvider = prefs.getString(_prefProvider);
     final AiEngineProvider effectiveProvider;
     if (savedProvider == AiEngineProvider.groq.name) {
@@ -157,7 +159,7 @@ class AiConfigNotifier extends Notifier<AiConfigState> {
     } else if (savedProvider == AiEngineProvider.gemini.name) {
       effectiveProvider = AiEngineProvider.gemini;
     } else {
-      effectiveProvider = (secureGroq.isNotEmpty || kPublicAiProxyUrl.isNotEmpty)
+      effectiveProvider = (secureGroq.isNotEmpty || savedProxy.isNotEmpty)
           ? AiEngineProvider.groq
           : AiEngineProvider.gemini;
     }
@@ -172,11 +174,11 @@ class AiConfigNotifier extends Notifier<AiConfigState> {
       provider: effectiveProvider,
       apiKey: effectiveGemini,
       groqApiKey: effectiveGroq,
-      proxyUrl: kPublicAiProxyUrl,
+      proxyUrl: savedProxy,
       useLiveAi: useLive,
       modelName: effectiveProvider == AiEngineProvider.groq
           ? DirectGroqInvestigatorService.defaultModel
-          : 'gemini-3.5-flash',
+          : DirectGeminiInvestigatorService.defaultModel,
     );
   }
 
@@ -188,7 +190,7 @@ class AiConfigNotifier extends Notifier<AiConfigState> {
       provider: provider,
       modelName: provider == AiEngineProvider.groq
           ? DirectGroqInvestigatorService.defaultModel
-          : 'gemini-3.5-flash',
+          : DirectGeminiInvestigatorService.defaultModel,
     );
   }
 
@@ -199,30 +201,59 @@ class AiConfigNotifier extends Notifier<AiConfigState> {
     state = state.copyWith(useLiveAi: enabled);
   }
 
-  Future<void> setApiKey(String key, {AiEngineProvider? provider}) async {
+  Future<void> setApiKey(
+    String key, {
+    AiEngineProvider? provider,
+    String? proxyUrl,
+  }) async {
     final target = provider ?? state.provider;
     final keyManager = ref.read(secureKeyManagerProvider);
     final prefs = await SharedPreferences.getInstance();
     final clean = key.trim();
     await prefs.setString(_prefProvider, target.name);
 
+    String nextProxy = state.proxyUrl;
+    if (proxyUrl != null) {
+      nextProxy = proxyUrl.trim();
+      if (nextProxy.isEmpty) {
+        await prefs.remove(_prefProxyUrl);
+      } else {
+        await prefs.setString(_prefProxyUrl, nextProxy);
+      }
+    }
+
     if (target == AiEngineProvider.groq) {
-      await keyManager.saveGroqApiKey(clean);
+      if (clean.isEmpty) {
+        await keyManager.clearGroqApiKey();
+      } else {
+        await keyManager.saveGroqApiKey(clean);
+      }
+      final effectiveGroq = clean.isNotEmpty ? clean : '';
+      final hasLive = effectiveGroq.isNotEmpty || nextProxy.isNotEmpty;
+      await prefs.setBool(_prefUseLive, hasLive);
       if (!ref.mounted) return;
       state = state.copyWith(
         provider: target,
-        groqApiKey: clean.isNotEmpty ? clean : kPublicGroqApiKey,
-        useLiveAi: true,
+        groqApiKey: effectiveGroq,
+        proxyUrl: nextProxy,
+        useLiveAi: hasLive,
         modelName: DirectGroqInvestigatorService.defaultModel,
       );
     } else {
-      await keyManager.saveGeminiApiKey(clean);
+      if (clean.isEmpty) {
+        await keyManager.clearGeminiApiKey();
+      } else {
+        await keyManager.saveGeminiApiKey(clean);
+      }
+      final hasLive = clean.isNotEmpty && clean != kDevMockGeminiKey;
+      await prefs.setBool(_prefUseLive, hasLive);
       if (!ref.mounted) return;
       state = state.copyWith(
         provider: target,
-        apiKey: clean.isNotEmpty ? clean : kPublicGeminiApiKey,
-        useLiveAi: true,
-        modelName: 'gemini-3.5-flash',
+        apiKey: clean,
+        proxyUrl: nextProxy,
+        useLiveAi: hasLive,
+        modelName: DirectGeminiInvestigatorService.defaultModel,
       );
     }
   }
@@ -284,6 +315,21 @@ class CurrentConversationModeNotifier extends Notifier<ConversationMode> {
   }
 }
 
+class AiRuntimeNoticeNotifier extends Notifier<AiFallbackReason> {
+  @override
+  AiFallbackReason build() => AiFallbackReason.none;
+
+  void report(AiFallbackReason reason) => state = reason;
+  void clear() => state = AiFallbackReason.none;
+}
+
+/// Exposes whether the latest AI inquiry fell back from a live provider to local mode
+/// (e.g. offline/timeout, provider HTTP error, or daily rate limit).
+final aiRuntimeNoticeProvider =
+    NotifierProvider<AiRuntimeNoticeNotifier, AiFallbackReason>(
+  AiRuntimeNoticeNotifier.new,
+);
+
 /// Provider for the AI Investigator.
 ///
 /// Routes to [DirectGroqInvestigatorService] or [DirectGeminiInvestigatorService]
@@ -296,11 +342,15 @@ final investigatorServiceProvider = Provider<InvestigatorService>((ref) {
         apiKey: config.groqApiKey,
         modelName: config.modelName,
         proxyUrl: config.proxyUrl,
+        onFallback: (reason) =>
+            ref.read(aiRuntimeNoticeProvider.notifier).report(reason),
       );
     }
     return DirectGeminiInvestigatorService(
       apiKey: config.apiKey,
       modelName: config.modelName,
+      onFallback: (reason) =>
+          ref.read(aiRuntimeNoticeProvider.notifier).report(reason),
     );
   }
   return MockInvestigatorService();
@@ -638,6 +688,7 @@ class ActiveCaseController extends Notifier<AsyncValue<CaseModel?>> {
     final current = state.value;
     if (current == null || current.isPausedForSafety) return;
 
+    ref.read(aiRuntimeNoticeProvider.notifier).clear();
     ref.read(companionReplyPendingProvider.notifier).setPending(true);
     try {
       final profile = ref.read(profileControllerProvider).value;
@@ -657,6 +708,9 @@ class ActiveCaseController extends Notifier<AsyncValue<CaseModel?>> {
           sessionSummary: current.sessionSummary,
         );
       } catch (_) {
+        ref
+            .read(aiRuntimeNoticeProvider.notifier)
+            .report(AiFallbackReason.offlineOrNetwork);
         reply = await MockInvestigatorService().getNextQuestion(
           currentCase: current,
           conversationHistory: current.statements,

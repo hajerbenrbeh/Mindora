@@ -328,7 +328,9 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                               Text(
                                 strings.isArabic
                                     ? 'عرض ومراجعة المعلومات التي يتذكرها المساعد الذكي'
-                                    : 'Review what the AI companion remembers',
+                                    : (strings.isFrench
+                                        ? 'Consulter ce que le compagnon IA retient'
+                                        : 'Review what the AI companion remembers'),
                                 style: TextStyle(fontSize: 10.5, color: textSecondary),
                               ),
                             ],

@@ -22,9 +22,11 @@ import '../../controllers/investigation_providers.dart';
 import '../../data/mock_investigator_service.dart';
 import '../../domain/case_model.dart';
 import '../../domain/conversation_mode.dart';
+import '../../domain/investigator_service.dart';
 import '../../domain/label_type.dart';
 import '../../domain/session_memory_window.dart';
 import '../../domain/statement.dart';
+import 'ai_engine_config_sheet.dart';
 import 'custom_ai_instructions_sheet.dart';
 import 'mode_chooser_sheet.dart';
 
@@ -147,6 +149,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
       final traces = ref.read(mindTraceControllerProvider).value ?? [];
       final memories = ref.read(journalMemoryControllerProvider).value ?? [];
 
+      ref.read(aiRuntimeNoticeProvider.notifier).clear();
       final window =
           SessionMemoryWindowManager.partition(currentCase.statements);
       String reply;
@@ -164,6 +167,9 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
           compressedMemories: memories,
         );
       } catch (_) {
+        ref
+            .read(aiRuntimeNoticeProvider.notifier)
+            .report(AiFallbackReason.offlineOrNetwork);
         reply = await MockInvestigatorService().getNextQuestion(
           currentCase: currentCase,
           conversationHistory: window.verbatimStatements,
@@ -546,6 +552,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
     final isLive = aiConfig.isLiveActive;
     final showTypingIndicator =
         _isInvestigatorTyping || ref.watch(companionReplyPendingProvider);
+    final runtimeNotice = ref.watch(aiRuntimeNoticeProvider);
 
     return Column(
       children: [
@@ -554,6 +561,12 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
           strings: strings,
           hasUserMessages: hasUserMessages,
         ),
+        if (runtimeNotice != AiFallbackReason.none)
+          _buildRuntimeNoticeBanner(
+            tokens: tokens,
+            strings: strings,
+            reason: runtimeNotice,
+          ),
         Expanded(
           child: !hasUserMessages
               ? _buildWelcomeEmptyState(
@@ -598,6 +611,66 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
     );
   }
 
+  Widget _buildRuntimeNoticeBanner({
+    required MindTokens tokens,
+    required AppStrings strings,
+    required AiFallbackReason reason,
+  }) {
+    final msg = switch (reason) {
+      AiFallbackReason.dailyLimitReached => strings.aiNoticeDailyLimit,
+      AiFallbackReason.offlineOrNetwork => strings.aiNoticeOfflineFallback,
+      AiFallbackReason.apiError => strings.aiNoticeApiErrorFallback,
+      AiFallbackReason.none => '',
+    };
+    if (msg.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+      decoration: BoxDecoration(
+        color: tokens.safetyWarmthSoft,
+        border: Border(bottom: BorderSide(color: tokens.border)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline_rounded, size: 16, color: tokens.safetyWarmth),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              msg,
+              style: TextStyle(
+                fontSize: 11.5,
+                color: tokens.textPrimary,
+                height: 1.3,
+              ),
+            ),
+          ),
+          TextButton(
+            style: TextButton.styleFrom(
+              minimumSize: const Size(48, 48),
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+            onPressed: () => AiEngineConfigSheet.show(context),
+            child: Text(
+              strings.aiEngineSettingsAction,
+              style: TextStyle(
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: tokens.accent,
+              ),
+            ),
+          ),
+          IconButton(
+            tooltip: strings.closeBtn,
+            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+            icon: Icon(Icons.close_rounded, size: 16, color: tokens.textSecondary),
+            onPressed: () => ref.read(aiRuntimeNoticeProvider.notifier).clear(),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildContextHeaderStrip({
     required MindTokens tokens,
     required AppStrings strings,
@@ -628,8 +701,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
             borderRadius: BorderRadius.circular(14),
             onPressed: _openModeChooser,
             child: Container(
-              constraints: const BoxConstraints(minHeight: 40),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+              constraints: const BoxConstraints(minHeight: 48),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: tokens.accentSoft,
                 borderRadius: BorderRadius.circular(14),
@@ -675,8 +748,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
             borderRadius: BorderRadius.circular(12),
             onPressed: () => CustomAiInstructionsSheet.show(context),
             child: Container(
-              constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: hasCustomInstructions
                     ? tokens.accentSoft
@@ -1081,7 +1154,10 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                         borderRadius: BorderRadius.circular(10),
                         onPressed: () => _cycleStatementLabel(statement),
                         child: Container(
-                          constraints: const BoxConstraints(minHeight: 34),
+                          constraints: const BoxConstraints(
+                            minWidth: 48,
+                            minHeight: 48,
+                          ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
                             vertical: 6,
@@ -1144,7 +1220,10 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                         onPressed: () =>
                             _showCognitiveDistortionsSheet(statement),
                         child: Container(
-                          constraints: const BoxConstraints(minHeight: 34),
+                          constraints: const BoxConstraints(
+                            minWidth: 48,
+                            minHeight: 48,
+                          ),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,
                             vertical: 6,

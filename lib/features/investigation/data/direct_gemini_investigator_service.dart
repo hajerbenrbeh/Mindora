@@ -25,21 +25,26 @@ import 'mock_investigator_service.dart';
 ///
 /// Strictly enforces:
 /// - "The Warm Investigator" persona (warm, curious, question-first, hypotheses-only).
-/// - 20 queries/day rate limit to protect cognitive boundaries and API quotas.
+/// - 50 queries/day rate limit to protect cognitive boundaries and API quotas.
 /// - Full trilingual support (authentic Tunisian Arabic, French, English).
-/// - Automatic, silent fallback to [MockInvestigatorService] on network failure or rate limits.
+/// - Automatic fallback to [MockInvestigatorService] on network failure or rate limits,
+///   reported via [onFallback] so the UI can inform the user without failing silently.
 class DirectGeminiInvestigatorService implements InvestigatorService {
   DirectGeminiInvestigatorService({
     required this.apiKey,
-    this.modelName = 'gemini-3.5-flash',
+    this.modelName = defaultModel,
     this.clientFactory,
     this.onRequestAttempted,
+    this.onFallback,
   });
+
+  static const String defaultModel = 'gemini-2.5-flash';
 
   final String apiKey;
   final String modelName;
   final HttpClient Function()? clientFactory;
   final void Function(Uri url, Map<String, dynamic> payload)? onRequestAttempted;
+  final void Function(AiFallbackReason reason)? onFallback;
   final MockInvestigatorService _fallback = MockInvestigatorService();
 
   /// Counter tracking external network requests attempted.
@@ -75,9 +80,9 @@ class DirectGeminiInvestigatorService implements InvestigatorService {
       key.trim().isEmpty || key.trim() == kDevMockKey;
 
   static const List<String> fallbackModels = [
-    'gemini-3.5-flash',
-    'gemini-3.8-flash',
-    'gemini-3.1-flash-lite',
+    'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-2.5-pro',
     'gemini-flash-latest',
   ];
 
@@ -186,13 +191,17 @@ class DirectGeminiInvestigatorService implements InvestigatorService {
     if (isMockKey(cleanKey)) return null;
 
     final canProceed = await DailyUsageLimiter.canMakeRequest();
-    if (!canProceed) return DailyUsageLimiter.limitExceededMessage;
+    if (!canProceed) {
+      onFallback?.call(AiFallbackReason.dailyLimitReached);
+      return null;
+    }
 
     final modelsToTry = [
       modelName,
       ...fallbackModels.where((m) => m != modelName),
     ];
 
+    var networkUnavailable = false;
     for (final currentModel in modelsToTry) {
       final url = Uri.parse(
         'https://generativelanguage.googleapis.com/v1beta/models/$currentModel:generateContent',
@@ -242,10 +251,10 @@ class DirectGeminiInvestigatorService implements InvestigatorService {
           }
         }
       } on SocketException {
-        // Network unavailable, break immediately without waiting on remaining models
+        networkUnavailable = true;
         break;
       } on HandshakeException {
-        // Security handshake failure, break immediately
+        networkUnavailable = true;
         break;
       } catch (_) {
         // Model-specific error (404/429), try next fallback model
@@ -254,6 +263,11 @@ class DirectGeminiInvestigatorService implements InvestigatorService {
       }
     }
 
+    onFallback?.call(
+      networkUnavailable
+          ? AiFallbackReason.offlineOrNetwork
+          : AiFallbackReason.apiError,
+    );
     return null;
   }
 

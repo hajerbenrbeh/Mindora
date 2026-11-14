@@ -263,36 +263,43 @@ class TrackMonthCalendar extends StatelessWidget {
                   ? () => onInspectTrace!(trace)
                   : null,
               borderRadius: BorderRadius.circular(10),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      trace != null
-                          ? '$dateKey • ${trackMoodLabel(trace.overallMood, strings)} (${trace.moodIntensity}/10)'
-                          : strings.filteredByDateLabel(dateKey),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: tokens.textPrimary,
-                        fontFeatures: const [FontFeature.tabularFigures()],
-                      ),
-                    ),
-                    if (trace?.journalText != null &&
-                        trace!.journalText!.trim().isNotEmpty)
-                      Text(
-                        trace.journalText!.trim(),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 11.5,
-                          color: tokens.textSecondary,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          trace != null
+                              ? '$dateKey • ${trackMoodLabel(trace.overallMood, strings)} (${trace.moodIntensity}/10)'
+                              : strings.filteredByDateLabel(dateKey),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12.5,
+                            fontWeight: FontWeight.w700,
+                            color: tokens.textPrimary,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
                         ),
-                      ),
-                  ],
+                        if (trace?.journalText != null &&
+                            trace!.journalText!.trim().isNotEmpty)
+                          Text(
+                            trace.journalText!.trim(),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

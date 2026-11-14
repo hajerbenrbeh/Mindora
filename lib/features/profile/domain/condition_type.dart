@@ -1,3 +1,5 @@
+import '../../../app/localization/app_strings.dart';
+
 /// Mental health conditions and lived experiences supported in Mind Forensics.
 ///
 /// Strictly non-pathologizing: selection does not assume a clinical diagnosis.
@@ -189,6 +191,31 @@ enum ExperienceCategory {
       case ExperienceCategory.other:
         return 'تجارب وحالات أخرى';
     }
+  }
+
+  String get frenchTitle {
+    switch (this) {
+      case ExperienceCategory.mood:
+        return 'Expériences liées à l’humeur';
+      case ExperienceCategory.anxiety:
+        return 'Expériences liées à l’anxiété';
+      case ExperienceCategory.thought:
+        return 'Expériences liées aux pensées';
+      case ExperienceCategory.trauma:
+        return 'Expériences liées au trauma';
+      case ExperienceCategory.neurodevelopmental:
+        return 'Attention et neurodéveloppement';
+      case ExperienceCategory.psychosis:
+        return 'Expériences liées aux perceptions';
+      case ExperienceCategory.other:
+        return 'Autres expériences';
+    }
+  }
+
+  String localizedTitle(AppStrings strings) {
+    if (strings.isArabic) return arabicTitle;
+    if (strings.isFrench) return frenchTitle;
+    return englishTitle;
   }
 
   List<ConditionType> get conditions {

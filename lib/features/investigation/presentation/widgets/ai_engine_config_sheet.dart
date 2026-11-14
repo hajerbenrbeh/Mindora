@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/localization/app_strings.dart';
 import '../../../../app/theme/lab_colors.dart';
 import '../../controllers/investigation_providers.dart';
 import '../../data/direct_gemini_investigator_service.dart';
@@ -28,6 +29,7 @@ class AiEngineConfigSheet extends ConsumerStatefulWidget {
 
 class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
   late final TextEditingController _keyController;
+  late final TextEditingController _proxyController;
   bool _obscureKey = true;
   bool _isTesting = false;
   String? _testResult;
@@ -42,12 +44,12 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
     _selectedProvider = config.provider;
     final keyToDisplay = config.isMockKey ? '' : config.activeApiKey;
     _keyController = TextEditingController(text: keyToDisplay);
+    _proxyController = TextEditingController(text: config.proxyUrl);
   }
 
   void _switchProvider(AiEngineProvider provider) {
     HapticFeedback.selectionClick();
     final config = ref.read(aiConfigProvider);
-    ref.read(aiConfigProvider.notifier).setProvider(provider);
     final nextKey = provider == AiEngineProvider.groq
         ? config.groqApiKey
         : (config.apiKey == kDevMockGeminiKey ? '' : config.apiKey);
@@ -62,15 +64,17 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
   @override
   void dispose() {
     _keyController.dispose();
+    _proxyController.dispose();
     super.dispose();
   }
 
   Future<void> _testConnection() async {
+    final strings = ref.read(appStringsProvider);
     final key = _keyController.text.trim();
-    final config = ref.read(aiConfigProvider);
-    if (key.isEmpty && !(_selectedProvider == AiEngineProvider.groq && config.hasProxy)) {
+    final proxy = _proxyController.text.trim();
+    if (key.isEmpty && !(_selectedProvider == AiEngineProvider.groq && proxy.isNotEmpty)) {
       setState(() {
-        _testResult = 'Please enter an API key to test connection.';
+        _testResult = strings.aiEngineEmptyKeyPrompt;
         _testSuccess = false;
       });
       return;
@@ -87,7 +91,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
       if (_selectedProvider == AiEngineProvider.groq) {
         final service = DirectGroqInvestigatorService(
           apiKey: key,
-          proxyUrl: config.proxyUrl,
+          proxyUrl: proxy,
         );
         result = await service.testConnection();
       } else {
@@ -113,21 +117,24 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
   }
 
   Future<void> _saveKey() async {
+    final strings = ref.read(appStringsProvider);
     final key = _keyController.text.trim();
+    final proxy = _proxyController.text.trim();
     HapticFeedback.mediumImpact();
     await ref.read(aiConfigProvider.notifier).setApiKey(
           key,
           provider: _selectedProvider,
+          proxyUrl: _selectedProvider == AiEngineProvider.groq ? proxy : null,
         );
+    final hasLive = key.isNotEmpty ||
+        (_selectedProvider == AiEngineProvider.groq && proxy.isNotEmpty);
     final providerLabel =
         _selectedProvider == AiEngineProvider.groq ? 'Groq' : 'Gemini';
     if (mounted) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(key.isNotEmpty
-              ? '$providerLabel API key saved and activated.'
-              : 'Switched to offline clinical simulator.'),
+          content: Text(strings.aiEngineSavedSnackbar(providerLabel, hasLive)),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -135,6 +142,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
   }
 
   Future<void> _clearKey() async {
+    final strings = ref.read(appStringsProvider);
     HapticFeedback.lightImpact();
     await ref
         .read(aiConfigProvider.notifier)
@@ -147,8 +155,8 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
       });
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('API key cleared. Offline mock mode active.'),
+        SnackBar(
+          content: Text(strings.aiEngineClearedSnackbar),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -160,6 +168,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final aiConfig = ref.watch(aiConfigProvider);
+    final strings = ref.watch(appStringsProvider);
 
     final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
     final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
@@ -200,7 +209,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
-                    'MIND ASSISTANT ENGINE',
+                    strings.aiEngineSheetTitle,
                     style: TextStyle(
                       fontFamily: 'Inter',
                       fontSize: 16,
@@ -220,9 +229,9 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                   child: Text(
                     aiConfig.isLiveActive
                         ? (aiConfig.provider == AiEngineProvider.groq
-                            ? 'LIVE GROQ'
-                            : 'LIVE GEMINI')
-                        : 'TEST MODE (\$0.00)',
+                            ? strings.aiEngineLiveGroqBadge
+                            : strings.aiEngineLiveGeminiBadge)
+                        : strings.aiEngineTestModeBadge,
                     style: TextStyle(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w800,
@@ -235,7 +244,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
             ),
             const SizedBox(height: 8),
             Text(
-              'Mind Forensics supports Groq (Llama 3.3 free tier) or Google Gemini for live specialist dialogue, or offline mock mode with zero transmission.',
+              strings.aiEngineSheetSubtitle,
               style: TextStyle(fontSize: 12, color: textSecondary, height: 1.4),
             ),
             const SizedBox(height: 14),
@@ -246,10 +255,10 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 Expanded(
                   child: ChoiceChip(
                     selected: _selectedProvider == AiEngineProvider.groq,
-                    label: const Center(
+                    label: Center(
                       child: Text(
-                        'Groq (Free Llama)',
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                        strings.aiEngineGroqOption,
+                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                       ),
                     ),
                     onSelected: (_) => _switchProvider(AiEngineProvider.groq),
@@ -259,10 +268,10 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 Expanded(
                   child: ChoiceChip(
                     selected: _selectedProvider == AiEngineProvider.gemini,
-                    label: const Center(
+                    label: Center(
                       child: Text(
-                        'Google Gemini',
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                        strings.aiEngineGeminiOption,
+                        style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                       ),
                     ),
                     onSelected: (_) => _switchProvider(AiEngineProvider.gemini),
@@ -287,7 +296,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Development / Test Mode',
+                          strings.aiEngineDevTestModeTitle,
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
@@ -296,7 +305,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          'Enforce offline mock mode for zero-cost and automated testing.',
+                          strings.aiEngineDevTestModeSubtitle,
                           style: TextStyle(fontSize: 11, color: textSecondary),
                         ),
                       ],
@@ -318,8 +327,8 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
 
             Text(
               _selectedProvider == AiEngineProvider.groq
-                  ? 'GROQ API KEY (CONSOLE.GROQ.COM)'
-                  : 'GOOGLE GEMINI API KEY',
+                  ? strings.aiEngineGroqKeyLabel
+                  : strings.aiEngineGeminiKeyLabel,
               style: TextStyle(
                 fontSize: 10.5,
                 fontWeight: FontWeight.w800,
@@ -334,8 +343,8 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
               style: TextStyle(fontSize: 13, color: textPrimary),
               decoration: InputDecoration(
                 hintText: _selectedProvider == AiEngineProvider.groq
-                    ? 'Paste gsk_... key (or use --dart-define=AI_PROXY_URL)'
-                    : 'Paste key from aistudio.google.com...',
+                    ? 'gsk_...'
+                    : 'AIza...',
                 hintStyle: TextStyle(fontSize: 12, color: textSecondary.withValues(alpha: 0.6)),
                 filled: true,
                 fillColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
@@ -343,12 +352,42 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
                 focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1.5)),
                 suffixIcon: IconButton(
-                  tooltip: 'Toggle key visibility',
+                  tooltip: strings.isArabic
+                      ? 'إظهار أو إخفاء المفتاح'
+                      : (strings.isFrench ? 'Afficher/masquer la clé' : 'Toggle key visibility'),
                   icon: Icon(_obscureKey ? Icons.visibility_off_outlined : Icons.visibility_outlined, size: 18),
                   onPressed: () => setState(() => _obscureKey = !_obscureKey),
                 ),
               ),
             ),
+
+            if (_selectedProvider == AiEngineProvider.groq) ...[
+              const SizedBox(height: 12),
+              Text(
+                strings.aiEngineProxyLabel,
+                style: TextStyle(
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 1.0,
+                  color: textSecondary,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _proxyController,
+                keyboardType: TextInputType.url,
+                style: TextStyle(fontSize: 13, color: textPrimary),
+                decoration: InputDecoration(
+                  hintText: strings.aiEngineProxyHint,
+                  hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
+                  filled: true,
+                  fillColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
+                  enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1.5)),
+                ),
+              ),
+            ],
 
             if (_testResult != null) ...[
               const SizedBox(height: 12),
@@ -395,6 +434,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 Expanded(
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 48),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       side: BorderSide(color: border),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -403,7 +443,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                     child: _isTesting
                         ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
                         : Text(
-                            'TEST CONNECTION',
+                            strings.aiEngineTestConnBtn,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
@@ -417,15 +457,16 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 Expanded(
                   child: FilledButton(
                     style: FilledButton.styleFrom(
+                      minimumSize: const Size(0, 48),
                       backgroundColor: isDark ? Colors.white : Colors.black,
                       foregroundColor: isDark ? Colors.black : Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     onPressed: _saveKey,
-                    child: const Text(
-                      'SAVE & ACTIVATE',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+                    child: Text(
+                      strings.aiEngineSaveActivateBtn,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5),
                     ),
                   ),
                 ),
@@ -436,9 +477,15 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
               const SizedBox(height: 8),
               Center(
                 child: TextButton(
-                  style: TextButton.styleFrom(foregroundColor: LabColors.safetyWarmth),
+                  style: TextButton.styleFrom(
+                    minimumSize: const Size(48, 48),
+                    foregroundColor: LabColors.safetyWarmth,
+                  ),
                   onPressed: _clearKey,
-                  child: const Text('Revert to Offline Mock Mode', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600)),
+                  child: Text(
+                    strings.aiEngineRevertMockBtn,
+                    style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
             ],

@@ -165,6 +165,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                 final label = item.localized(strings);
                                 final isSelected = _selectedSymptoms.contains(label) ||
                                     _selectedSymptoms.contains(item.english) ||
+                                    _selectedSymptoms.contains(item.french) ||
                                     _selectedSymptoms.contains(item.arabic);
 
                                 return InkWell(
@@ -174,6 +175,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                       if (isSelected) {
                                         _selectedSymptoms.remove(label);
                                         _selectedSymptoms.remove(item.english);
+                                        _selectedSymptoms.remove(item.french);
                                         _selectedSymptoms.remove(item.arabic);
                                       } else {
                                         _selectedSymptoms.add(label);

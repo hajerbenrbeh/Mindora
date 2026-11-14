@@ -103,7 +103,7 @@ class EditExperiencesSheet extends ConsumerWidget {
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: ExperienceCategory.values.map((cat) {
-                  final catTitle = strings.isArabic ? cat.arabicTitle : cat.englishTitle;
+                  final catTitle = cat.localizedTitle(strings);
                   final conditionsInCat = cat.conditions;
 
                   return Padding(

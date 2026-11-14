@@ -752,47 +752,60 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
 
         const SizedBox(height: 24),
 
-        // Discrete numbers row
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: List.generate(10, (idx) {
-            final val = idx + 1;
-            final isCurrent = val == intensityVal;
-            return InkWell(
-              onTap: () {
-                HapticFeedback.selectionClick();
-                setState(() => _moodIntensity = val.toDouble());
-              },
-              borderRadius: BorderRadius.circular(10),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 140),
-                width: 28,
-                height: 34,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isCurrent
-                      ? context.tokens.accent
-                      : surfaceColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: isCurrent
-                        ? context.tokens.accent
-                        : borderColor,
-                  ),
-                ),
-                child: Text(
-                  '$val',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: isCurrent ? FontWeight.w800 : FontWeight.w600,
-                    color: isCurrent
-                        ? (isDark ? context.tokens.background : Colors.white)
-                        : textSecondary,
-                  ),
-                ),
+        // Discrete numbers grid (2 rows of 5 for >= 48dp accessible tap targets)
+        Column(
+          children: [
+            for (var rowIdx = 0; rowIdx < 2; rowIdx++) ...[
+              if (rowIdx > 0) const SizedBox(height: 8),
+              Row(
+                children: List.generate(5, (colIdx) {
+                  final val = rowIdx * 5 + colIdx + 1;
+                  final isCurrent = val == intensityVal;
+                  return Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: colIdx < 4 ? 8 : 0),
+                      child: InkWell(
+                        onTap: () {
+                          HapticFeedback.selectionClick();
+                          setState(() => _moodIntensity = val.toDouble());
+                        },
+                        borderRadius: BorderRadius.circular(10),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 140),
+                          height: 48,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: isCurrent
+                                ? context.tokens.accent
+                                : surfaceColor,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: isCurrent
+                                  ? context.tokens.accent
+                                  : borderColor,
+                            ),
+                          ),
+                          child: Text(
+                            '$val',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight:
+                                  isCurrent ? FontWeight.w800 : FontWeight.w600,
+                              color: isCurrent
+                                  ? (isDark
+                                      ? context.tokens.background
+                                      : Colors.white)
+                                  : textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
-            );
-          }),
+            ],
+          ],
         ),
 
         const SizedBox(height: 16),
@@ -1558,7 +1571,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
               },
               child: Container(
                 width: double.infinity,
-                height: 44,
+                height: 48,
                 decoration: BoxDecoration(
                   color: surfaceColor,
                   borderRadius: BorderRadius.circular(8),
@@ -1628,7 +1641,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
               },
               borderRadius: BorderRadius.circular(8),
               child: Container(
-                height: 46,
+                height: 48,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: borderColor),
@@ -1659,7 +1672,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             },
             borderRadius: BorderRadius.circular(8),
             child: Container(
-              height: 46,
+              height: 48,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               alignment: Alignment.center,
               child: Text(

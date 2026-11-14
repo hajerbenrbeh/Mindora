@@ -22,6 +22,18 @@ enum SymptomCategory {
           return 'صعوبات جسدية وحسية أخرى';
       }
     }
+    if (strings.isFrench) {
+      switch (this) {
+        case SymptomCategory.emotional:
+          return 'Expériences émotionnelles';
+        case SymptomCategory.thought:
+          return 'Expériences liées aux pensées';
+        case SymptomCategory.behavioral:
+          return 'Expériences comportementales';
+        case SymptomCategory.other:
+          return 'Autres difficultés';
+      }
+    }
     switch (this) {
       case SymptomCategory.emotional:
         return 'Emotional experiences';

@@ -342,42 +342,52 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                             InkWell(
                               onTap: () => _togglePrivacy(c),
                               borderRadius: BorderRadius.circular(8),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: c.isPrivate
-                                      ? context.tokens.safetyWarmthSoft
-                                      : context.tokens.surfaceSecondary,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: c.isPrivate
-                                        ? context.tokens.safetyWarmth.withValues(alpha: 0.35)
-                                        : borderColor,
-                                  ),
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  minWidth: 48,
+                                  minHeight: 48,
                                 ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      c.isPrivate ? Icons.lock_rounded : Icons.lock_open_outlined,
-                                      size: 11,
+                                child: Center(
+                                  widthFactor: 1.0,
+                                  heightFactor: 1.0,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                    decoration: BoxDecoration(
                                       color: c.isPrivate
-                                          ? context.tokens.safetyWarmth
-                                          : textSecondary,
-                                    ),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      c.isPrivate ? strings.casePrivateBadge : strings.caseShareableBadge,
-                                      style: TextStyle(
+                                          ? context.tokens.safetyWarmthSoft
+                                          : context.tokens.surfaceSecondary,
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
                                         color: c.isPrivate
-                                            ? context.tokens.safetyWarmth
-                                            : textSecondary,
-                                        fontSize: 9.5,
-                                        fontWeight: FontWeight.w700,
-                                        letterSpacing: 0.3,
+                                            ? context.tokens.safetyWarmth.withValues(alpha: 0.35)
+                                            : borderColor,
                                       ),
                                     ),
-                                  ],
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          c.isPrivate ? Icons.lock_rounded : Icons.lock_open_outlined,
+                                          size: 11,
+                                          color: c.isPrivate
+                                              ? context.tokens.safetyWarmth
+                                              : textSecondary,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          c.isPrivate ? strings.casePrivateBadge : strings.caseShareableBadge,
+                                          style: TextStyle(
+                                            color: c.isPrivate
+                                                ? context.tokens.safetyWarmth
+                                                : textSecondary,
+                                            fontSize: 9.5,
+                                            fontWeight: FontWeight.w700,
+                                            letterSpacing: 0.3,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
@@ -632,13 +642,27 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                         ),
                         InkWell(
                           onTap: () => _editConclusionDialog(isDark, strings),
-                          child: Text(
-                            strings.editBtn,
-                            style: TextStyle(
-                              fontSize: 10.5,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
-                              color: isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark,
+                          borderRadius: BorderRadius.circular(8),
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: 48,
+                              minHeight: 48,
+                            ),
+                            child: Center(
+                              widthFactor: 1.0,
+                              heightFactor: 1.0,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Text(
+                                  strings.editBtn,
+                                  style: TextStyle(
+                                    fontSize: 10.5,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: 0.5,
+                                    color: isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
