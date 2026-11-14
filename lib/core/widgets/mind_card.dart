@@ -35,7 +35,14 @@ class MindCard extends StatelessWidget {
     Widget content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? tokens.surface,
+        color: backgroundColor ?? (isDark ? null : tokens.surface),
+        gradient: (backgroundColor == null && isDark)
+            ? const LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Color(0xFF101012), Color(0xFF09090B)],
+              )
+            : null,
         borderRadius: cardRadius,
         border: Border.all(
           color: borderColor ?? tokens.border,

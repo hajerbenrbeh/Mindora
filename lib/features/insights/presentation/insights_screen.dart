@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/localization/app_strings.dart';
+import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
 import '../../../core/widgets/mind_badge.dart';
@@ -192,46 +193,12 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 });
               },
             ),
-            const SizedBox(height: 10),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Semantics(
-                button: true,
-                label: strings.navObservatory,
-                child: MindPressable(
-                  onPressed: () => context.push('/observatory'),
-                  borderRadius: BorderRadius.circular(14),
-                  child: Container(
-                    constraints: const BoxConstraints(minHeight: 48),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 10,
-                    ),
-                    decoration: BoxDecoration(
-                      color: tokens.accentSoft,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: tokens.accent.withValues(alpha: 0.35),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.spa_outlined, size: 16, color: tokens.accent),
-                        const SizedBox(width: 8),
-                        Text(
-                          strings.navObservatory,
-                          style: TextStyle(
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w700,
-                            color: tokens.accent,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            const SizedBox(height: 12),
+            _buildLiveCadenceAndToolsRow(
+              context: context,
+              tokens: tokens,
+              traces: allTraces,
+              strings: strings,
             ),
             const SizedBox(height: 18),
 
@@ -342,53 +309,233 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
   );
 }
 
+  Widget _buildLiveCadenceAndToolsRow({
+    required BuildContext context,
+    required MindTokens tokens,
+    required List<MindTraceModel> traces,
+    required AppStrings strings,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final now = DateTime.now();
+    final loggedDateKeys = traces.map((t) => t.dateKey).toSet();
+    final recentSevenDays = List<bool>.generate(7, (idx) {
+      final d = DateTime(now.year, now.month, now.day)
+          .subtract(Duration(days: 6 - idx));
+      final key =
+          '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+      return loggedDateKeys.contains(key);
+    });
+    final weekLoggedCount = recentSevenDays.where((b) => b).length;
+    final sorted = [...traces]..sort((a, b) => b.date.compareTo(a.date));
+    final latestTrace = sorted.isNotEmpty ? sorted.first : null;
+    final statusColor = latestTrace != null
+        ? trackMoodOptionFor(latestTrace.overallMood).color
+        : (isDark ? LabColors.sageGreen : tokens.accent);
+
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF0C0C0F) : tokens.surface,
+              borderRadius: BorderRadius.circular(tokens.buttonRadius),
+              border: Border.all(color: tokens.border),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: statusColor,
+                    boxShadow: isDark
+                        ? [
+                            BoxShadow(
+                              color: statusColor.withValues(alpha: 0.55),
+                              blurRadius: 6,
+                            ),
+                          ]
+                        : null,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '$weekLoggedCount/7d',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: tokens.textPrimary,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (int i = 0; i < recentSevenDays.length; i++)
+                      Container(
+                        width: 7,
+                        height: recentSevenDays[i] ? 16 : 8,
+                        margin: EdgeInsetsDirectional.only(start: i == 0 ? 0 : 4),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(3),
+                          color: recentSevenDays[i]
+                              ? (isDark ? LabColors.sageGreen : tokens.accent)
+                              : (isDark ? const Color(0xFF232329) : tokens.border),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Semantics(
+          button: true,
+          label: strings.navObservatory,
+          child: MindPressable(
+            onPressed: () => context.push('/observatory'),
+            borderRadius: BorderRadius.circular(tokens.buttonRadius),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 48),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark ? LabColors.sageBgDark : tokens.accentSoft,
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                border: Border.all(
+                  color: isDark
+                      ? LabColors.sageBorderDark
+                      : tokens.accent.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.spa_outlined,
+                    size: 16,
+                    color: isDark ? LabColors.sageGreen : tokens.accent,
+                  ),
+                  const SizedBox(width: 7),
+                  Text(
+                    strings.navObservatory,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w700,
+                      color: isDark ? LabColors.sageGreen : tokens.accent,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildMoodTrendsCard(
     BuildContext context,
     MindTokens tokens,
     List<MindTraceModel> traces,
     AppStrings strings,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final distinctDays = traces.map((t) => t.dateKey).toSet().length;
     if (distinctDays < 2) {
+      final sortedSingle = [...traces]
+        ..sort((a, b) => b.date.compareTo(a.date));
+      final latest = sortedSingle.isNotEmpty ? sortedSingle.first : null;
+      final pointColor = latest != null
+          ? trackMoodOptionFor(latest.overallMood).color
+          : (isDark ? LabColors.sageGreen : tokens.accent);
+      final normalizedY =
+          latest != null ? ((latest.moodIntensity - 1) / 9.0).clamp(0.1, 0.9) : 0.5;
+
       return MindCard(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: Row(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: tokens.surfaceSecondary,
-              ),
-              child: Icon(
-                Icons.show_chart_rounded,
-                size: 20,
-                color: tokens.textSecondary,
-              ),
+            Row(
+              children: [
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: pointColor.withValues(alpha: isDark ? 0.14 : 0.12),
+                    border: Border.all(
+                      color: pointColor.withValues(alpha: 0.42),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.show_chart_rounded,
+                    size: 18,
+                    color: pointColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        strings.calibratingChartTitle,
+                        style: TextStyle(
+                          fontSize: 13.5,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        strings.calibratingChartSub,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: tokens.textSecondary,
+                          height: 1.35,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                MindBadge(
+                  label: '$distinctDays/2d',
+                  backgroundColor: pointColor.withValues(alpha: 0.12),
+                  textColor: pointColor,
+                ),
+              ],
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    strings.calibratingChartTitle,
-                    style: TextStyle(
-                      fontSize: 13.5,
-                      fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    strings.calibratingChartSub,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: tokens.textSecondary,
-                      height: 1.35,
-                    ),
-                  ),
-                ],
+            const SizedBox(height: 12),
+            Container(
+              height: 62,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF060608) : tokens.surfaceSecondary,
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                border: Border.all(color: tokens.border),
+              ),
+              child: CustomPaint(
+                painter: _CalibrationPreviewPainter(
+                  hasPoint: latest != null,
+                  normalizedY: normalizedY,
+                  pointColor: pointColor,
+                  gridColor: isDark
+                      ? const Color(0xFF25252B)
+                      : tokens.border,
+                ),
               ),
             ),
           ],
@@ -625,7 +772,28 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             child: Row(
               children: [
-                Icon(Icons.auto_awesome_outlined, size: 20, color: tokens.accent),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? LabColors.warmBeigeBgDark
+                        : tokens.accentSoft,
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? LabColors.warmBeigeBorderDark
+                          : tokens.accent.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.auto_awesome_outlined,
+                    size: 18,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? LabColors.warmBeige
+                        : tokens.accent,
+                  ),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -879,6 +1047,29 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
           ),
           const SizedBox(height: 14),
           if (!baseline.hasSufficientData) ...[
+            Row(
+              children: [
+                for (int step = 0; step < 3; step++) ...[
+                  if (step > 0) const SizedBox(width: 6),
+                  Expanded(
+                    child: Container(
+                      height: 5,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        color: step < baseline.totalRecordedDays
+                            ? (Theme.of(context).brightness == Brightness.dark
+                                ? LabColors.sageGreen
+                                : tokens.accent)
+                            : (Theme.of(context).brightness == Brightness.dark
+                                ? const Color(0xFF222227)
+                                : tokens.border),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
             Text(
               strings.baselineNeedsMoreData,
               style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
@@ -1123,5 +1314,70 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         ],
       ),
     );
+  }
+}
+
+class _CalibrationPreviewPainter extends CustomPainter {
+  const _CalibrationPreviewPainter({
+    required this.hasPoint,
+    required this.normalizedY,
+    required this.pointColor,
+    required this.gridColor,
+  });
+
+  final bool hasPoint;
+  final double normalizedY;
+  final Color pointColor;
+  final Color gridColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final midPaint = Paint()
+      ..color = gridColor
+      ..strokeWidth = 1.0;
+
+    canvas.drawLine(
+      Offset(0, size.height * 0.5),
+      Offset(size.width, size.height * 0.5),
+      midPaint,
+    );
+
+    if (!hasPoint) return;
+
+    final px = size.width * 0.22;
+    final py = size.height * (1.0 - normalizedY);
+
+    final dashPaint = Paint()
+      ..color = pointColor.withValues(alpha: 0.38)
+      ..strokeWidth = 1.5
+      ..strokeCap = StrokeCap.round;
+    const segments = 9;
+    final dxStep = (size.width * 0.65) / segments;
+    for (int i = 0; i < segments; i += 2) {
+      canvas.drawLine(
+        Offset(px + i * dxStep, py),
+        Offset(px + (i + 1) * dxStep, py),
+        dashPaint,
+      );
+    }
+
+    canvas.drawCircle(
+      Offset(px, py),
+      9,
+      Paint()..color = pointColor.withValues(alpha: 0.22),
+    );
+    canvas.drawCircle(
+      Offset(px, py),
+      4.5,
+      Paint()..color = pointColor,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant _CalibrationPreviewPainter oldDelegate) {
+    return hasPoint != oldDelegate.hasPoint ||
+        normalizedY != oldDelegate.normalizedY ||
+        pointColor != oldDelegate.pointColor ||
+        gridColor != oldDelegate.gridColor;
   }
 }

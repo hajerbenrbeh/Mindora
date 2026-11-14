@@ -29,7 +29,7 @@ class MindSegmented extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: tokens.surfaceSecondary,
+        color: isDark ? const Color(0xFF08080A) : tokens.surfaceSecondary,
         borderRadius: BorderRadius.circular(tokens.buttonRadius),
         border: Border.all(color: tokens.border, width: 1.0),
       ),
@@ -56,16 +56,25 @@ class MindSegmented extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: index == i ? tokens.surface : Colors.transparent,
+                      color: index == i
+                          ? (isDark ? const Color(0xFF1F1F24) : tokens.surface)
+                          : Colors.transparent,
                       borderRadius: BorderRadius.circular(innerRadius),
                       border: index == i
-                          ? Border.all(color: tokens.border, width: 1.0)
+                          ? Border.all(
+                              color: isDark
+                                  ? const Color(0xFF3E3E46)
+                                  : tokens.border,
+                              width: 1.0,
+                            )
                           : null,
-                      boxShadow: index == i && !isDark
+                      boxShadow: index == i
                           ? [
                               BoxShadow(
-                                color: tokens.textPrimary.withValues(alpha: 0.06),
-                                blurRadius: 8,
+                                color: isDark
+                                    ? Colors.black.withValues(alpha: 0.45)
+                                    : tokens.textPrimary.withValues(alpha: 0.06),
+                                blurRadius: isDark ? 10 : 8,
                                 offset: const Offset(0, 2),
                               ),
                             ]

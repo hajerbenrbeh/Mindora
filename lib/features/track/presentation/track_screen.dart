@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/router/app_router.dart';
+import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/crisis_keywords.dart';
 import '../../../core/safety/safety_interceptor.dart';
@@ -591,6 +592,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 const SizedBox(height: 16),
                 TrackIntensitySlider(
                   value: _moodIntensity,
+                  moodColor: trackMoodOptionFor(_selectedMood).color,
                   strings: strings,
                   onChanged: (v) {
                     setState(() {
@@ -603,8 +605,10 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 Container(
                   padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 10),
                   decoration: BoxDecoration(
-                    color: tokens.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? const Color(0xFF0C0C0F)
+                        : tokens.surface,
+                    borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(color: tokens.border),
                   ),
                   child: TextField(
@@ -787,7 +791,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                           Icon(
                             Icons.check_circle_rounded,
                             size: 16,
-                            color: tokens.accent,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? LabColors.sageGreen
+                                : tokens.accent,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -796,7 +802,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                               fontFamily: 'Inter',
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
-                              color: tokens.accent,
+                              color: Theme.of(context).brightness == Brightness.dark
+                                  ? LabColors.sageGreen
+                                  : tokens.accent,
                             ),
                           ),
                         ],

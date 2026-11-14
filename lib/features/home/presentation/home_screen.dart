@@ -295,6 +295,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
 
+    final activeMoodKey = _moodOptions[_selectedMoodIndex].key;
+    final activeMoodColor = _getMoodColor(activeMoodKey);
+
     return Scaffold(
       backgroundColor: tokens.background,
       appBar: AppBar(
@@ -304,8 +307,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const FingerprintThreadSignature(size: 18, animated: false),
-            const SizedBox(width: 6),
+            Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF111114) : tokens.accentSoft,
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                border: Border.all(color: tokens.border),
+              ),
+              alignment: Alignment.center,
+              child: FingerprintThreadSignature(
+                size: 20,
+                animated: false,
+                primaryColor: isDark ? LabColors.warmBeige : LabColors.deepBurgundy,
+                accentColor: isDark ? LabColors.sageGreen : LabColors.secondaryOlive,
+              ),
+            ),
+            const SizedBox(width: 10),
             Flexible(
               child: Text(
                 'Mind Forensics',
@@ -315,7 +333,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   fontFamily: 'Inter',
                   fontSize: 15.5,
                   fontWeight: FontWeight.w700,
-                  letterSpacing: 0.3,
+                  letterSpacing: 0.2,
                   color: tokens.textPrimary,
                 ),
               ),
@@ -327,8 +345,34 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           SizedBox(width: 8),
         ],
       ),
-      body: SafeArea(
-        child: RefreshIndicator(
+      body: Stack(
+        children: [
+          if (isDark)
+            Positioned(
+              top: -90,
+              left: 0,
+              right: 0,
+              height: 300,
+              child: IgnorePointer(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOutCubic,
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: const Alignment(0, -0.55),
+                      radius: 1.0,
+                      colors: [
+                        activeMoodColor.withValues(alpha: 0.11),
+                        activeMoodColor.withValues(alpha: 0.03),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          SafeArea(
+            child: RefreshIndicator(
           onRefresh: () async {
             await _loadRecentCases();
             ref.invalidate(mindTraceControllerProvider);
@@ -537,6 +581,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         ),
+      ),
+        ],
       ),
     );
   }

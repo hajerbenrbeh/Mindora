@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -9,7 +7,7 @@ import 'mind_pressable.dart';
 
 /// Expressive, low-cognitive-load 1-10 intensity picker.
 ///
-/// Combines five custom-drawn minimalist vector faces (zero Unicode emojis)
+/// Combines five progressive harmonic signal meters (zero cartoon faces/emojis)
 /// representing Light through Overwhelming states with a fine 10-step
 /// graduated equalizer capsule (`-`, swipe/tap waveform bars, `+`) so users
 /// can pick either a broad feeling tier in one tap or fine-tune 1-10.
@@ -175,17 +173,8 @@ class _ExpressiveTierCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final fill = isSelected
-        ? activeColor.withValues(alpha: isDark ? 0.13 : 0.14)
-        : (isDark
-            ? tokens.surfaceSecondary
-            : tokens.surfaceSecondary.withValues(alpha: 0.72));
     final borderColor = isSelected ? activeColor : tokens.border;
-    final badgeFill = isSelected
-        ? activeColor.withValues(alpha: 0.20)
-        : tokens.surface;
-    final badgeBorder = isSelected ? activeColor : tokens.border;
-    final strokeColor = isSelected ? tokens.textPrimary : tokens.textSecondary;
+    final inactiveBarColor = isDark ? const Color(0xFF2D2D33) : tokens.border;
     final tileRadius = isDark ? tokens.buttonRadius : 16.0;
 
     return Semantics(
@@ -206,7 +195,27 @@ class _ExpressiveTierCard extends StatelessWidget {
             vertical: isSelected ? 7.5 : 8.0,
           ),
           decoration: BoxDecoration(
-            color: fill,
+            color: isSelected || !isDark
+                ? (isSelected
+                    ? activeColor.withValues(alpha: isDark ? 0.14 : 0.14)
+                    : tokens.surfaceSecondary.withValues(alpha: 0.72))
+                : null,
+            gradient: isDark && !isSelected
+                ? const LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Color(0xFF141417), Color(0xFF0C0C0E)],
+                  )
+                : (isDark && isSelected
+                    ? LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          activeColor.withValues(alpha: 0.20),
+                          activeColor.withValues(alpha: 0.06),
+                        ],
+                      )
+                    : null),
             borderRadius: BorderRadius.circular(tileRadius),
             border: Border.all(
               color: borderColor,
@@ -215,8 +224,8 @@ class _ExpressiveTierCard extends StatelessWidget {
             boxShadow: (isSelected && isDark)
                 ? [
                     BoxShadow(
-                      color: activeColor.withValues(alpha: 0.16),
-                      blurRadius: 10,
+                      color: activeColor.withValues(alpha: 0.22),
+                      blurRadius: 12,
                     ),
                   ]
                 : null,
@@ -232,19 +241,18 @@ class _ExpressiveTierCard extends StatelessWidget {
                 curve: Curves.easeOutCubic,
                 child: SizedBox(
                   width: 30,
-                  height: 30,
+                  height: 22,
                   child: CustomPaint(
-                    painter: _ExpressiveFacePainter(
-                      tier: spec.tierIndex,
-                      badgeFill: badgeFill,
-                      badgeBorder: badgeBorder,
-                      strokeColor: strokeColor,
+                    painter: _SignalMeterPainter(
+                      activeSegments: spec.tierIndex + 1,
+                      activeColor: activeColor,
+                      inactiveColor: inactiveBarColor,
                       isSelected: isSelected,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(height: 5),
+              const SizedBox(height: 6),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Text(
@@ -252,8 +260,8 @@ class _ExpressiveTierCard extends StatelessWidget {
                   maxLines: 1,
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    fontSize: 10.5,
-                    fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                    fontSize: 11,
+                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                     color: isSelected ? tokens.textPrimary : tokens.textSecondary,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
@@ -308,7 +316,7 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minHeight: 48),
       decoration: BoxDecoration(
-        color: tokens.surfaceSecondary,
+        color: isDark ? const Color(0xFF0C0C0F) : tokens.surfaceSecondary,
         borderRadius: BorderRadius.circular(capsuleRadius),
         border: Border.all(color: tokens.border),
       ),
@@ -385,10 +393,20 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                                           ? activeColor
                                           : (level < selected
                                               ? activeColor.withValues(
-                                                  alpha: 0.38 + (level / 10) * 0.34,
+                                                  alpha: 0.42 + (level / 10) * 0.36,
                                                 )
-                                              : tokens.border),
+                                              : (isDark
+                                                  ? const Color(0xFF2B2B31)
+                                                  : tokens.border)),
                                       borderRadius: BorderRadius.circular(3),
+                                      boxShadow: (level == selected && isDark)
+                                          ? [
+                                              BoxShadow(
+                                                color: activeColor.withValues(alpha: 0.48),
+                                                blurRadius: 8,
+                                              ),
+                                            ]
+                                          : null,
                                     ),
                                   ),
                                 ),
@@ -426,212 +444,60 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
   }
 }
 
-/// Bespoke minimalist vector face painter (0 Unicode characters / 0 emojis).
-class _ExpressiveFacePainter extends CustomPainter {
-  const _ExpressiveFacePainter({
-    required this.tier,
-    required this.badgeFill,
-    required this.badgeBorder,
-    required this.strokeColor,
+/// Clean 5-bar harmonic telemetry painter replacing cartoon face glyphs.
+class _SignalMeterPainter extends CustomPainter {
+  const _SignalMeterPainter({
+    required this.activeSegments,
+    required this.activeColor,
+    required this.inactiveColor,
     required this.isSelected,
   });
 
-  final int tier;
-  final Color badgeFill;
-  final Color badgeBorder;
-  final Color strokeColor;
+  final int activeSegments;
+  final Color activeColor;
+  final Color inactiveColor;
   final bool isSelected;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = (math.min(size.width, size.height) / 2) - 1.2;
+    const count = 5;
+    const barWidth = 3.6;
+    const gap = 2.6;
+    const totalWidth = (count * barWidth) + ((count - 1) * gap);
+    final startX = (size.width - totalWidth) / 2;
+    final bottomY = size.height - 1.0;
+    final maxH = size.height - 2.0;
 
-    final fillPaint = Paint()
-      ..color = badgeFill
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(center, radius, fillPaint);
+    for (var i = 0; i < count; i++) {
+      final ratio = (i + 1) / count;
+      final barH = maxH * (0.32 + (0.68 * ratio));
+      final left = startX + i * (barWidth + gap);
+      final top = bottomY - barH;
+      final isLit = i < activeSegments;
 
-    final borderPaint = Paint()
-      ..color = badgeBorder
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = isSelected ? 1.5 : 1.0;
-    canvas.drawCircle(center, radius, borderPaint);
+      final paint = Paint()
+        ..color = isLit
+            ? (isSelected
+                ? activeColor
+                : activeColor.withValues(alpha: 0.55))
+            : inactiveColor
+        ..style = PaintingStyle.fill;
 
-    final stroke = Paint()
-      ..color = strokeColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = isSelected ? 1.75 : 1.5
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    final dotPaint = Paint()
-      ..color = strokeColor
-      ..style = PaintingStyle.fill;
-
-    switch (tier) {
-      case 0:
-        // Tier 1 (Light): peaceful closed arches + calm serene smile
-        canvas.drawArc(
-          Rect.fromCenter(
-            center: Offset(center.dx - radius * 0.34, center.dy - radius * 0.08),
-            width: radius * 0.32,
-            height: radius * 0.24,
-          ),
-          math.pi * 1.12,
-          math.pi * 0.76,
-          false,
-          stroke,
-        );
-        canvas.drawArc(
-          Rect.fromCenter(
-            center: Offset(center.dx + radius * 0.34, center.dy - radius * 0.08),
-            width: radius * 0.32,
-            height: radius * 0.24,
-          ),
-          math.pi * 1.12,
-          math.pi * 0.76,
-          false,
-          stroke,
-        );
-        canvas.drawArc(
-          Rect.fromCenter(
-            center: Offset(center.dx, center.dy + radius * 0.14),
-            width: radius * 0.72,
-            height: radius * 0.56,
-          ),
-          math.pi * 0.16,
-          math.pi * 0.68,
-          false,
-          stroke,
-        );
-        break;
-
-      case 1:
-        // Tier 2 (Mild): soft open eyes + gentle calm smile
-        canvas.drawCircle(
-          Offset(center.dx - radius * 0.34, center.dy - radius * 0.15),
-          radius * 0.10,
-          dotPaint,
-        );
-        canvas.drawCircle(
-          Offset(center.dx + radius * 0.34, center.dy - radius * 0.15),
-          radius * 0.10,
-          dotPaint,
-        );
-        canvas.drawArc(
-          Rect.fromCenter(
-            center: Offset(center.dx, center.dy + radius * 0.14),
-            width: radius * 0.62,
-            height: radius * 0.44,
-          ),
-          math.pi * 0.20,
-          math.pi * 0.60,
-          false,
-          stroke,
-        );
-        break;
-
-      case 2:
-        // Tier 3 (Moderate): balanced open eyes + steady horizontal mouth
-        canvas.drawCircle(
-          Offset(center.dx - radius * 0.34, center.dy - radius * 0.15),
-          radius * 0.10,
-          dotPaint,
-        );
-        canvas.drawCircle(
-          Offset(center.dx + radius * 0.34, center.dy - radius * 0.15),
-          radius * 0.10,
-          dotPaint,
-        );
-        canvas.drawLine(
-          Offset(center.dx - radius * 0.28, center.dy + radius * 0.28),
-          Offset(center.dx + radius * 0.28, center.dy + radius * 0.28),
-          stroke,
-        );
-        break;
-
-      case 3:
-        // Tier 4 (Strong): slightly furrowed brows + gentle downturn arch
-        canvas.drawLine(
-          Offset(center.dx - radius * 0.44, center.dy - radius * 0.38),
-          Offset(center.dx - radius * 0.18, center.dy - radius * 0.28),
-          stroke,
-        );
-        canvas.drawLine(
-          Offset(center.dx + radius * 0.44, center.dy - radius * 0.38),
-          Offset(center.dx + radius * 0.18, center.dy - radius * 0.28),
-          stroke,
-        );
-        canvas.drawCircle(
-          Offset(center.dx - radius * 0.32, center.dy - radius * 0.08),
-          radius * 0.095,
-          dotPaint,
-        );
-        canvas.drawCircle(
-          Offset(center.dx + radius * 0.32, center.dy - radius * 0.08),
-          radius * 0.095,
-          dotPaint,
-        );
-        final frown = Path()
-          ..moveTo(center.dx - radius * 0.28, center.dy + radius * 0.34)
-          ..quadraticBezierTo(
-            center.dx,
-            center.dy + radius * 0.16,
-            center.dx + radius * 0.28,
-            center.dy + radius * 0.34,
-          );
-        canvas.drawPath(frown, stroke);
-        break;
-
-      case 4:
-      default:
-        // Tier 5 (Overwhelming): deeper angled brows + wavy tense mouth
-        canvas.drawLine(
-          Offset(center.dx - radius * 0.46, center.dy - radius * 0.42),
-          Offset(center.dx - radius * 0.15, center.dy - radius * 0.26),
-          stroke,
-        );
-        canvas.drawLine(
-          Offset(center.dx + radius * 0.46, center.dy - radius * 0.42),
-          Offset(center.dx + radius * 0.15, center.dy - radius * 0.26),
-          stroke,
-        );
-        canvas.drawCircle(
-          Offset(center.dx - radius * 0.32, center.dy - radius * 0.06),
-          radius * 0.095,
-          dotPaint,
-        );
-        canvas.drawCircle(
-          Offset(center.dx + radius * 0.32, center.dy - radius * 0.06),
-          radius * 0.095,
-          dotPaint,
-        );
-        final wave = Path()
-          ..moveTo(center.dx - radius * 0.36, center.dy + radius * 0.30)
-          ..quadraticBezierTo(
-            center.dx - radius * 0.18,
-            center.dy + radius * 0.14,
-            center.dx,
-            center.dy + radius * 0.30,
-          )
-          ..quadraticBezierTo(
-            center.dx + radius * 0.18,
-            center.dy + radius * 0.46,
-            center.dx + radius * 0.36,
-            center.dy + radius * 0.30,
-          );
-        canvas.drawPath(wave, stroke);
-        break;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(left, top, barWidth, barH),
+          const Radius.circular(2.0),
+        ),
+        paint,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(covariant _ExpressiveFacePainter oldDelegate) {
-    return tier != oldDelegate.tier ||
-        badgeFill != oldDelegate.badgeFill ||
-        badgeBorder != oldDelegate.badgeBorder ||
-        strokeColor != oldDelegate.strokeColor ||
+  bool shouldRepaint(covariant _SignalMeterPainter oldDelegate) {
+    return activeSegments != oldDelegate.activeSegments ||
+        activeColor != oldDelegate.activeColor ||
+        inactiveColor != oldDelegate.inactiveColor ||
         isSelected != oldDelegate.isSelected;
   }
 }

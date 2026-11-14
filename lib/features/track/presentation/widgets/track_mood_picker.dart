@@ -24,8 +24,10 @@ class TrackMoodPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final normalizedSelected = selectedMoodKey?.trim().toLowerCase();
+    final tileRadius = isDark ? tokens.buttonRadius : 14.0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -49,7 +51,7 @@ class TrackMoodPicker extends StatelessWidget {
                 selected: isSelected,
                 label: label,
                 child: MindPressable(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(tileRadius),
                   onPressed: () => onSelect(option.key),
                   child: AnimatedContainer(
                     duration: reduceMotion
@@ -65,13 +67,21 @@ class TrackMoodPicker extends StatelessWidget {
                     ),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? option.color.withValues(alpha: 0.14)
-                          : tokens.surface,
-                      borderRadius: BorderRadius.circular(14),
+                          ? option.color.withValues(alpha: isDark ? 0.14 : 0.14)
+                          : (isDark ? const Color(0xFF0E0E11) : tokens.surface),
+                      borderRadius: BorderRadius.circular(tileRadius),
                       border: Border.all(
                         color: isSelected ? option.color : tokens.border,
-                        width: isSelected ? 1.6 : 1.0,
+                        width: isSelected ? 1.5 : 1.0,
                       ),
+                      boxShadow: (isSelected && isDark)
+                          ? [
+                              BoxShadow(
+                                color: option.color.withValues(alpha: 0.18),
+                                blurRadius: 12,
+                              ),
+                            ]
+                          : null,
                     ),
                     child: Row(
                       children: [
@@ -137,18 +147,22 @@ class TrackIntensitySlider extends StatelessWidget {
     required this.value,
     required this.strings,
     required this.onChanged,
+    this.moodColor,
     this.inCard = true,
   });
 
   final double value;
   final AppStrings strings;
   final ValueChanged<double> onChanged;
+  final Color? moodColor;
   final bool inCard;
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final rounded = value.round().clamp(1, 10);
+    final activeAccent = moodColor ?? tokens.accent;
 
     final body = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,10 +188,12 @@ class TrackIntensitySlider extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
-                  borderRadius: BorderRadius.circular(10),
+                  color: moodColor != null
+                      ? activeAccent.withValues(alpha: isDark ? 0.14 : 0.12)
+                      : tokens.accentSoft,
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
                   border: Border.all(
-                    color: tokens.accent.withValues(alpha: 0.35),
+                    color: activeAccent.withValues(alpha: 0.42),
                   ),
                 ),
                 child: Text(
@@ -188,7 +204,7 @@ class TrackIntensitySlider extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: tokens.accent,
+                    color: activeAccent,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
@@ -199,7 +215,7 @@ class TrackIntensitySlider extends StatelessWidget {
         const SizedBox(height: 12),
         MindIntensityPicker(
           value: rounded,
-          accentColor: tokens.accent,
+          accentColor: activeAccent,
           strings: strings,
           onChanged: (next) => onChanged(next.toDouble()),
         ),

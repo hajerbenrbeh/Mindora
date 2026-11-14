@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app/localization/app_strings.dart';
 import '../../../app/localization/locale_controller.dart';
 import '../../../app/router/app_router.dart';
+import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../app/theme/theme_controller.dart';
 import '../../../core/notifications/gentle_reminder_service.dart';
@@ -1090,7 +1091,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             padding: const EdgeInsets.all(18),
             child: Row(
               children: [
-                const BotanicalEmblem(size: 56),
+                Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? LabColors.sageBgDark
+                        : tokens.accentSoft,
+                    border: Border.all(
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? LabColors.sageBorderDark
+                          : tokens.accent.withValues(alpha: 0.3),
+                    ),
+                    boxShadow: Theme.of(context).brightness == Brightness.dark
+                        ? [
+                            BoxShadow(
+                              color: LabColors.sageGreen.withValues(alpha: 0.14),
+                              blurRadius: 16,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  alignment: Alignment.center,
+                  child: const BotanicalEmblem(size: 36),
+                ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: Column(
@@ -1122,8 +1147,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         icon: isCloudLinked
                             ? Icons.cloud_done_outlined
                             : Icons.phonelink_lock_outlined,
-                        backgroundColor: tokens.accentSoft,
-                        textColor: tokens.accent,
+                        backgroundColor: Theme.of(context).brightness ==
+                                Brightness.dark
+                            ? (isCloudLinked
+                                ? LabColors.sageBgDark
+                                : LabColors.warmBeigeBgDark)
+                            : tokens.accentSoft,
+                        textColor: Theme.of(context).brightness ==
+                                Brightness.dark
+                            ? (isCloudLinked
+                                ? LabColors.sageGreen
+                                : LabColors.warmBeige)
+                            : tokens.accent,
                       ),
                     ],
                   ),
@@ -1618,16 +1653,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
               if (trailingText != null && trailingText.isNotEmpty) ...[
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    trailingText,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                      color: tokens.textSecondary,
+                const SizedBox(width: 10),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 168),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 9,
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: tokens.surfaceSecondary,
+                      borderRadius: BorderRadius.circular(tokens.chipRadius),
+                      border: Border.all(color: tokens.border),
+                    ),
+                    child: Text(
+                      trailingText,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w700,
+                        color: tokens.textPrimary,
+                      ),
                     ),
                   ),
                 ),

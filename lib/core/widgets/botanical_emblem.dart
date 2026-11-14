@@ -18,7 +18,7 @@ class BotanicalEmblem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final leafColor = color ?? (isDark ? LabColors.lightOlive : LabColors.secondaryOlive);
+    final leafColor = color ?? (isDark ? LabColors.sageGreen : LabColors.secondaryOlive);
 
     final emblem = ExcludeSemantics(
       child: CustomPaint(

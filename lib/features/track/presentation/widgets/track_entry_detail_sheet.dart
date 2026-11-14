@@ -537,6 +537,7 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
                 const SizedBox(height: 16),
                 TrackIntensitySlider(
                   value: _intensity,
+                  moodColor: trackMoodOptionFor(_mood).color,
                   strings: strings,
                   inCard: false,
                   onChanged: (v) => setState(() => _intensity = v),
