@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mind_forensics/app/localization/app_strings.dart';
 import 'package:mind_forensics/app/theme/lab_colors.dart';
 import 'package:mind_forensics/app/theme/mind_tokens.dart';
+import 'package:mind_forensics/core/widgets/mood_emblem.dart';
 import 'package:mind_forensics/features/home/presentation/widgets/home_active_case_card.dart';
 import 'package:mind_forensics/features/home/presentation/widgets/home_daily_check_in_card.dart';
 import 'package:mind_forensics/features/investigation/domain/case_model.dart';
@@ -64,8 +65,8 @@ void main() {
       await tester.pumpAndSettle();
       expect(selectedIdx, equals(1));
 
-      // Tap tier 4 ('7-8') cleanly -> jumps to 8/10 ('Strong') without bar dragging
-      await tester.tap(find.byKey(const ValueKey<String>('intensity-tier-4')));
+      // Tap bar 8 cleanly -> jumps directly to 8/10 ('Strong') without dragging
+      await tester.tap(find.byKey(const ValueKey<String>('intensity-bar-8')));
       await tester.pumpAndSettle();
       expect(intensity, equals(8.0));
       expect(find.text('${strings.moodIntensityLabel.toUpperCase()}: 8/10'), findsOneWidget);
@@ -194,6 +195,31 @@ void main() {
         await tester.pumpAndSettle();
         expect(captureRects(), equals(initialRects), reason: 'Reflow after selecting ${m.key}');
       }
+    });
+
+    testWidgets('MoodEmblem renders bespoke geometric vectors across all 5 states', (tester) async {
+      const moodKeys = ['calm', 'anxious', 'frustrated', 'heavy', 'restless', 'هادئ', 'قلق'];
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Row(
+              children: [
+                for (final key in moodKeys)
+                  MoodEmblem(
+                    moodKey: key,
+                    size: 20,
+                    color: LabColors.moodColorFor(key),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MoodEmblem), findsNWidgets(moodKeys.length));
+      expect(find.byType(CustomPaint), findsAtLeastNWidgets(moodKeys.length));
+      expect(tester.takeException(), isNull);
     });
   });
 }

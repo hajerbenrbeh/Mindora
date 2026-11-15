@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/localization/app_strings.dart';
+import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_card.dart';
 import '../../../../core/widgets/mind_intensity_picker.dart';
 import '../../../../core/widgets/mind_pressable.dart';
+import '../../../../core/widgets/mood_emblem.dart';
 import 'track_mood_utils.dart';
 
 /// Two-column symmetric mood grid shared across Track Check-In Today and
@@ -27,7 +29,7 @@ class TrackMoodPicker extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final normalizedSelected = selectedMoodKey?.trim().toLowerCase();
-    final tileRadius = isDark ? tokens.buttonRadius : 14.0;
+    final tileRadius = tokens.buttonRadius;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -43,6 +45,8 @@ class TrackMoodPicker extends StatelessWidget {
           children: trackCoreMoods.map((option) {
             final isSelected = normalizedSelected == option.key;
             final label = trackMoodLabel(option.key, strings);
+            final moodColor = LabColors.moodColorFor(option.key, isDark: isDark);
+            final moodSoft = LabColors.moodSoftFor(option.key, isDark: isDark);
 
             return SizedBox(
               width: colWidth,
@@ -66,39 +70,34 @@ class TrackMoodPicker extends StatelessWidget {
                       10,
                     ),
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? option.color.withValues(alpha: isDark ? 0.14 : 0.14)
-                          : (isDark ? const Color(0xFF0E0E11) : tokens.surface),
+                      color: isSelected ? moodSoft : tokens.surface,
                       borderRadius: BorderRadius.circular(tileRadius),
                       border: Border.all(
-                        color: isSelected ? option.color : tokens.border,
+                        color: isSelected ? moodColor : tokens.border,
                         width: isSelected ? 1.5 : 1.0,
                       ),
-                      boxShadow: (isSelected && isDark)
-                          ? [
-                              BoxShadow(
-                                color: option.color.withValues(alpha: 0.18),
-                                blurRadius: 12,
-                              ),
-                            ]
-                          : null,
                     ),
                     child: Row(
                       children: [
                         Container(
-                          width: 32,
-                          height: 32,
+                          width: 34,
+                          height: 34,
                           decoration: BoxDecoration(
-                            color: option.color.withValues(
-                              alpha: isSelected ? 0.22 : 0.12,
-                            ),
+                            color: isSelected
+                                ? moodColor.withValues(alpha: isDark ? 0.22 : 0.16)
+                                : tokens.surfaceSecondary,
                             shape: BoxShape.circle,
+                            border: Border.all(
+                              color: isSelected
+                                  ? moodColor.withValues(alpha: 0.35)
+                                  : tokens.border.withValues(alpha: 0.7),
+                            ),
                           ),
                           alignment: Alignment.center,
-                          child: Icon(
-                            option.icon,
-                            size: 17,
-                            color: option.color,
+                          child: MoodEmblem(
+                            moodKey: option.key,
+                            size: 18,
+                            color: moodColor,
                           ),
                         ),
                         const SizedBox(width: 10),
@@ -120,10 +119,19 @@ class TrackMoodPicker extends StatelessWidget {
                         ),
                         if (isSelected) ...[
                           const SizedBox(width: 6),
-                          Icon(
-                            Icons.check_circle_rounded,
-                            size: 16,
-                            color: option.color,
+                          Container(
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: moodColor,
+                              shape: BoxShape.circle,
+                            ),
+                            alignment: Alignment.center,
+                            child: Icon(
+                              Icons.check_rounded,
+                              size: 12,
+                              color: tokens.onAccent,
+                            ),
                           ),
                         ],
                       ],
