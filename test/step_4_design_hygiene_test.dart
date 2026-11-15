@@ -52,6 +52,7 @@ void main() {
       expect(_contrastRatio(light.textTertiary, light.background), greaterThanOrEqualTo(4.5));
       expect(_contrastRatio(light.textTertiary, light.surfaceSecondary), greaterThanOrEqualTo(4.5));
       expect(_contrastRatio(light.accent, light.accentSoft), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.onAccent, light.accent), greaterThanOrEqualTo(4.5));
       expect(_contrastRatio(light.safetyWarmth, light.safetyWarmthSoft), greaterThanOrEqualTo(4.5));
 
       // Dark surfaces
@@ -61,6 +62,7 @@ void main() {
       expect(_contrastRatio(dark.textTertiary, dark.surface), greaterThanOrEqualTo(4.5));
       expect(_contrastRatio(dark.textTertiary, dark.surfaceSecondary), greaterThanOrEqualTo(4.5));
       expect(_contrastRatio(dark.accent, dark.accentSoft), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.onAccent, dark.accent), greaterThanOrEqualTo(4.5));
       expect(_contrastRatio(dark.safetyWarmth, dark.safetyWarmthSoft), greaterThanOrEqualTo(4.5));
     });
 

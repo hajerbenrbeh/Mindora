@@ -19,6 +19,10 @@ class MindTokens extends ThemeExtension<MindTokens> {
     required this.cardRadius,
     required this.buttonRadius,
     required this.chipRadius,
+    this.onAccent = Colors.white,
+    this.surfaceElevated = const Color(0xFFF3EFE7),
+    this.warm = LabColors.warmTerracotta,
+    this.warmSoft = LabColors.warmTerracottaSoft,
   });
 
   final Color background;
@@ -29,7 +33,11 @@ class MindTokens extends ThemeExtension<MindTokens> {
   final Color textSecondary;
   final Color textTertiary;
   final Color accent;
+  final Color onAccent;
   final Color accentSoft;
+  final Color surfaceElevated;
+  final Color warm;
+  final Color warmSoft;
   final Color safetyWarmth;
   final Color safetyWarmthSoft;
   final double cardRadius;
@@ -40,34 +48,42 @@ class MindTokens extends ThemeExtension<MindTokens> {
     background: LabColors.daylightBackground,
     surface: LabColors.daylightSurface,
     surfaceSecondary: LabColors.daylightSurfaceSubtle,
+    surfaceElevated: LabColors.daylightSurfaceElevated,
     border: LabColors.daylightBorder,
     textPrimary: LabColors.daylightTextPrimary,
     textSecondary: LabColors.daylightTextSecondary,
     textTertiary: LabColors.daylightTextTertiary,
     accent: LabColors.daylightAccent,
+    onAccent: LabColors.daylightOnAccent,
     accentSoft: LabColors.daylightAccentSoft,
+    warm: LabColors.warmTerracotta,
+    warmSoft: LabColors.warmTerracottaSoft,
     safetyWarmth: LabColors.safetyWarmth,
     safetyWarmthSoft: LabColors.safetySoftBgLight,
     cardRadius: 20.0,
-    buttonRadius: 18.0,
-    chipRadius: 20.0,
+    buttonRadius: 16.0,
+    chipRadius: 14.0,
   );
 
   static const MindTokens dark = MindTokens(
     background: LabColors.nightBackground,
     surface: LabColors.nightSurface,
     surfaceSecondary: LabColors.nightSurfaceSubtle,
+    surfaceElevated: LabColors.nightSurfaceElevated,
     border: LabColors.nightBorder,
     textPrimary: LabColors.nightTextPrimary,
     textSecondary: LabColors.nightTextSecondary,
     textTertiary: LabColors.textTertiary,
     accent: LabColors.nightAccent,
+    onAccent: LabColors.nightOnAccent,
     accentSoft: LabColors.nightAccentSoft,
+    warm: LabColors.warmHoney,
+    warmSoft: LabColors.warmHoneySoft,
     safetyWarmth: LabColors.safetyWarmthDark,
     safetyWarmthSoft: LabColors.safetySoftBgDark,
-    cardRadius: 10.0,
-    buttonRadius: 10.0,
-    chipRadius: 8.0,
+    cardRadius: 20.0,
+    buttonRadius: 16.0,
+    chipRadius: 14.0,
   );
 
   @override
@@ -75,12 +91,16 @@ class MindTokens extends ThemeExtension<MindTokens> {
     Color? background,
     Color? surface,
     Color? surfaceSecondary,
+    Color? surfaceElevated,
     Color? border,
     Color? textPrimary,
     Color? textSecondary,
     Color? textTertiary,
     Color? accent,
+    Color? onAccent,
     Color? accentSoft,
+    Color? warm,
+    Color? warmSoft,
     Color? safetyWarmth,
     Color? safetyWarmthSoft,
     double? cardRadius,
@@ -91,12 +111,16 @@ class MindTokens extends ThemeExtension<MindTokens> {
       background: background ?? this.background,
       surface: surface ?? this.surface,
       surfaceSecondary: surfaceSecondary ?? this.surfaceSecondary,
+      surfaceElevated: surfaceElevated ?? this.surfaceElevated,
       border: border ?? this.border,
       textPrimary: textPrimary ?? this.textPrimary,
       textSecondary: textSecondary ?? this.textSecondary,
       textTertiary: textTertiary ?? this.textTertiary,
       accent: accent ?? this.accent,
+      onAccent: onAccent ?? this.onAccent,
       accentSoft: accentSoft ?? this.accentSoft,
+      warm: warm ?? this.warm,
+      warmSoft: warmSoft ?? this.warmSoft,
       safetyWarmth: safetyWarmth ?? this.safetyWarmth,
       safetyWarmthSoft: safetyWarmthSoft ?? this.safetyWarmthSoft,
       cardRadius: cardRadius ?? this.cardRadius,
@@ -112,12 +136,16 @@ class MindTokens extends ThemeExtension<MindTokens> {
       background: Color.lerp(background, other.background, t) ?? background,
       surface: Color.lerp(surface, other.surface, t) ?? surface,
       surfaceSecondary: Color.lerp(surfaceSecondary, other.surfaceSecondary, t) ?? surfaceSecondary,
+      surfaceElevated: Color.lerp(surfaceElevated, other.surfaceElevated, t) ?? surfaceElevated,
       border: Color.lerp(border, other.border, t) ?? border,
       textPrimary: Color.lerp(textPrimary, other.textPrimary, t) ?? textPrimary,
       textSecondary: Color.lerp(textSecondary, other.textSecondary, t) ?? textSecondary,
       textTertiary: Color.lerp(textTertiary, other.textTertiary, t) ?? textTertiary,
       accent: Color.lerp(accent, other.accent, t) ?? accent,
+      onAccent: Color.lerp(onAccent, other.onAccent, t) ?? onAccent,
       accentSoft: Color.lerp(accentSoft, other.accentSoft, t) ?? accentSoft,
+      warm: Color.lerp(warm, other.warm, t) ?? warm,
+      warmSoft: Color.lerp(warmSoft, other.warmSoft, t) ?? warmSoft,
       safetyWarmth: Color.lerp(safetyWarmth, other.safetyWarmth, t) ?? safetyWarmth,
       safetyWarmthSoft: Color.lerp(safetyWarmthSoft, other.safetyWarmthSoft, t) ?? safetyWarmthSoft,
       cardRadius: cardRadius + (other.cardRadius - cardRadius) * t,

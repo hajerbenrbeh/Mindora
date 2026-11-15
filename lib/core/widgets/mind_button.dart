@@ -46,7 +46,7 @@ class MindButton extends StatelessWidget {
     switch (variant) {
       case MindButtonVariant.primary:
         bg = tokens.accent;
-        fg = isDark ? tokens.background : Colors.white;
+        fg = tokens.onAccent;
         border = Colors.transparent;
         break;
       case MindButtonVariant.secondary:
@@ -56,8 +56,8 @@ class MindButton extends StatelessWidget {
         break;
       case MindButtonVariant.soft:
         bg = tokens.accentSoft;
-        fg = isDark ? tokens.accent : tokens.accent;
-        border = tokens.border;
+        fg = tokens.accent;
+        border = tokens.accent.withValues(alpha: 0.25);
         break;
       case MindButtonVariant.danger:
         bg = tokens.safetyWarmthSoft;

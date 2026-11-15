@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
-/// Semantic, calm card primitive for Mind Forensics.
+/// Semantic, warm sanctuary card primitive for Mind Forensics.
 ///
-/// Implements 10px corner radius, hairline 1.0px border, zero decorative elevation,
-/// and optional tactile press feedback.
+/// Implements 20px unified corner radius, hairline 1.0px warm border,
+/// solid neutral-warm surface (zero cool-blue gradient banding in Dark mode),
+/// soft daylight elevation, and optional tactile press feedback.
 class MindCard extends StatelessWidget {
   const MindCard({
     super.key,
@@ -35,26 +36,25 @@ class MindCard extends StatelessWidget {
     Widget content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? (isDark ? null : tokens.surface),
-        gradient: (backgroundColor == null && isDark)
-            ? const LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF101012), Color(0xFF09090B)],
-              )
-            : null,
+        color: backgroundColor ?? tokens.surface,
         borderRadius: cardRadius,
         border: Border.all(
           color: borderColor ?? tokens.border,
           width: 1.0,
         ),
         boxShadow: isDark
-            ? null
+            ? [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.22),
+                  blurRadius: 14,
+                  offset: const Offset(0, 4),
+                ),
+              ]
             : [
                 BoxShadow(
                   color: tokens.textPrimary.withValues(alpha: 0.035),
-                  blurRadius: 12,
-                  offset: const Offset(0, 3),
+                  blurRadius: 16,
+                  offset: const Offset(0, 4),
                 ),
               ],
       ),

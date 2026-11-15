@@ -29,7 +29,7 @@ class MindSegmented extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF08080A) : tokens.surfaceSecondary,
+        color: tokens.surfaceSecondary,
         borderRadius: BorderRadius.circular(tokens.buttonRadius),
         border: Border.all(color: tokens.border, width: 1.0),
       ),
@@ -57,14 +57,12 @@ class MindSegmented extends StatelessWidget {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: index == i
-                          ? (isDark ? const Color(0xFF1F1F24) : tokens.surface)
+                          ? (isDark ? tokens.surfaceElevated : tokens.surface)
                           : Colors.transparent,
                       borderRadius: BorderRadius.circular(innerRadius),
                       border: index == i
                           ? Border.all(
-                              color: isDark
-                                  ? const Color(0xFF3E3E46)
-                                  : tokens.border,
+                              color: tokens.border,
                               width: 1.0,
                             )
                           : null,
@@ -72,7 +70,7 @@ class MindSegmented extends StatelessWidget {
                           ? [
                               BoxShadow(
                                 color: isDark
-                                    ? Colors.black.withValues(alpha: 0.45)
+                                    ? Colors.black.withValues(alpha: 0.30)
                                     : tokens.textPrimary.withValues(alpha: 0.06),
                                 blurRadius: isDark ? 10 : 8,
                                 offset: const Offset(0, 2),

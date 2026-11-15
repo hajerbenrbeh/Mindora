@@ -140,9 +140,9 @@ class LabTheme {
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: LabColors.forestGreen,
-          foregroundColor: Colors.white,
+          foregroundColor: LabColors.daylightOnAccent,
           minimumSize: const Size(48, 48), // Accessible touch target
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           elevation: 0,
           textStyle: const TextStyle(
@@ -158,7 +158,7 @@ class LabTheme {
           foregroundColor: LabColors.daylightTextPrimary,
           minimumSize: const Size(48, 48),
           side: const BorderSide(color: LabColors.daylightBorder, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           textStyle: const TextStyle(
             fontFamily: 'Inter',
@@ -198,7 +198,7 @@ class LabTheme {
     );
   }
 
-  /// Night Theme (Luxury Vercel Dark — Pitch Black, 1px Hairline, Stark White)
+  /// Night Theme (Warm Smoked Charcoal — Non-Gloomy Evening Companion)
   static ThemeData get nightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -209,7 +209,7 @@ class LabTheme {
       extensions: const [MindTokens.dark],
       colorScheme: const ColorScheme.dark(
         primary: LabColors.nightAccent,
-        onPrimary: LabColors.nightBackground,
+        onPrimary: LabColors.nightOnAccent,
         surface: LabColors.nightSurface,
         onSurface: LabColors.nightTextPrimary,
         outline: LabColors.nightBorder,
@@ -219,25 +219,25 @@ class LabTheme {
         color: LabColors.nightSurface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: LabColors.nightBorder, width: 1),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: LabColors.nightSurfaceSubtle,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         hintStyle: const TextStyle(color: LabColors.nightTextSecondary, fontSize: 13),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: LabColors.nightBorder, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: LabColors.nightBorder, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: LabColors.nightAccent, width: 1.5),
         ),
       ),
@@ -245,28 +245,28 @@ class LabTheme {
         backgroundColor: LabColors.nightSurface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
       ),
       dialogTheme: DialogThemeData(
         backgroundColor: LabColors.nightSurface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: LabColors.nightBorder, width: 1),
         ),
       ),
       dividerTheme: const DividerThemeData(
-        color: LabColors.nightBorder,
+        color: LabColors.nightBorderSubtle,
         thickness: 1,
         space: 1,
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: LabColors.nightAccent,
-          foregroundColor: LabColors.nightBackground,
+          foregroundColor: LabColors.nightOnAccent,
           minimumSize: const Size(48, 48), // Accessible touch target
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           elevation: 0,
           textStyle: const TextStyle(
@@ -282,7 +282,7 @@ class LabTheme {
           foregroundColor: LabColors.nightTextPrimary,
           minimumSize: const Size(48, 48),
           side: const BorderSide(color: LabColors.nightBorder, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           textStyle: const TextStyle(
             fontFamily: 'Inter',

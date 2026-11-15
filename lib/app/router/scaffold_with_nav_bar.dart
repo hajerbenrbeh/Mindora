@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,7 +39,7 @@ class ScaffoldWithNavBar extends ConsumerWidget {
     final currentIndex = navigationShell.currentIndex;
 
     final scaffoldBg = tokens.background;
-    final navBg = tokens.surface;
+    final navBg = tokens.surface.withValues(alpha: isDark ? 0.90 : 0.92);
     final borderColor = tokens.border;
     final activeColor = tokens.accent;
     final inactiveColor = tokens.textSecondary;
@@ -54,21 +56,25 @@ class ScaffoldWithNavBar extends ConsumerWidget {
           child: MediaQuery.withClampedTextScaling(
             minScaleFactor: 0.85,
             maxScaleFactor: 1.15,
-            child: Container(
-              height: 64,
-              decoration: BoxDecoration(
-                color: navBg,
-                borderRadius: BorderRadius.circular(isDark ? 14 : 24),
-                border: Border.all(color: borderColor, width: 1.0),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: isDark ? 0.55 : 0.05),
-                    blurRadius: isDark ? 20 : 16,
-                    offset: const Offset(0, 4),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(22),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: navBg,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: borderColor, width: 1.0),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: isDark ? 0.42 : 0.06),
+                        blurRadius: isDark ? 22 : 18,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Row(
+                  child: Row(
                 children: [
                   // 1. Home
                   _buildNavItem(
@@ -141,6 +147,8 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                     reduceMotion: reduceMotion,
                   ),
                 ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -183,31 +191,35 @@ class ScaffoldWithNavBar extends ConsumerWidget {
                         ? Duration.zero
                         : const Duration(milliseconds: 200),
                     curve: Curves.easeOutCubic,
-                    width: 38,
-                    height: 38,
-                decoration: BoxDecoration(
-                  color: activeColor,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isSelected
-                        ? (isDark ? tokens.background : tokens.surface)
-                        : Colors.transparent,
-                    width: 1.5,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: activeColor.withValues(alpha: isDark ? 0.16 : 0.22),
-                      blurRadius: isDark ? 12 : 8,
-                      offset: const Offset(0, 2),
+                    width: 44,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: isSelected ? activeColor : tokens.accentSoft,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.transparent
+                            : activeColor.withValues(alpha: 0.28),
+                        width: 1.0,
+                      ),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: activeColor.withValues(
+                                  alpha: isDark ? 0.18 : 0.22,
+                                ),
+                                blurRadius: isDark ? 10 : 8,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
                     ),
-                  ],
-                ),
-                child: Icon(
-                  isSelected ? activeIcon : icon,
-                  size: 19,
-                  color: isDark ? tokens.background : tokens.surface,
-                ),
-              )
+                    child: Icon(
+                      isSelected ? activeIcon : icon,
+                      size: 18,
+                      color: isSelected ? tokens.onAccent : activeColor,
+                    ),
+                  )
             else
               Icon(
                 isSelected ? activeIcon : icon,

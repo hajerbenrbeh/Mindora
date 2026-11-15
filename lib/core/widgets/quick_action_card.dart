@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../app/theme/lab_colors.dart';
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
@@ -26,8 +25,8 @@ class QuickActionCard extends StatelessWidget {
 
     final bg = tokens.surface;
     final border = tokens.border;
-    final iconBg = tokens.surfaceSecondary;
-    final iconColor = isDark ? LabColors.sageGreen : LabColors.forestGreen;
+    final iconBg = tokens.accentSoft;
+    final iconColor = tokens.accent;
     final textCol = tokens.textPrimary;
 
     return Expanded(

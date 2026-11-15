@@ -28,15 +28,15 @@ class SafetyInterceptor {
 
   /// Displays the Level 2 Gentle Pause dialog.
   ///
-  /// Vercel Luxury Dark: 10px radius, hairline borders, outline vector shield icon,
-  /// non-dismissible modal barrier for clinical integrity, trilingual copy.
+  /// Dual-theme sanctuary dialog: warm charcoal dark / sunlit linen light,
+  /// hairline borders, outline vector shield icon, non-dismissible barrier.
   static void showCrisisPauseDialog(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = AppStrings.of(context);
 
-    final dialogBg = isDark ? const Color(0xFF0F0F0F) : LabColors.daylightSurface;
-    final borderColor = isDark ? const Color(0xFF262626) : LabColors.daylightBorder;
-    final surfaceSubtle = isDark ? const Color(0xFF161616) : LabColors.daylightSurfaceSubtle;
+    final dialogBg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
+    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
+    final surfaceSubtle = isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle;
     final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
     final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
 
@@ -46,7 +46,7 @@ class SafetyInterceptor {
       builder: (ctx) => AlertDialog(
         backgroundColor: dialogBg,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(20),
           side: BorderSide(color: borderColor, width: 1),
         ),
         title: Row(
@@ -95,10 +95,10 @@ class SafetyInterceptor {
                   const SizedBox(height: 2),
                   Text(
                     strings.greenLineSubtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: LabColors.factBlue,
+                      color: isDark ? LabColors.factBlueDark : LabColors.factBlue,
                     ),
                   ),
                 ],
@@ -118,7 +118,7 @@ class SafetyInterceptor {
             style: FilledButton.styleFrom(
               backgroundColor: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
               foregroundColor: isDark ? LabColors.nightBackground : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             icon: const Icon(Icons.shield_outlined, size: 15),
             label: Text(

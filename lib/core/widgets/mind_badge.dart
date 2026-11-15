@@ -25,13 +25,12 @@ class MindBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final defaultBg = isSelected
         ? tokens.accent
         : (backgroundColor ?? tokens.surfaceSecondary);
     final defaultFg = isSelected
-        ? (isDark ? tokens.background : Colors.white)
+        ? tokens.onAccent
         : (textColor ?? tokens.textPrimary);
     final defaultBorder = isSelected
         ? Colors.transparent

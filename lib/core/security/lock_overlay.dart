@@ -151,7 +151,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                         if (!success && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              backgroundColor: isDark ? const Color(0xFF161616) : Colors.black,
+                              backgroundColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightTextPrimary,
                               content: Text(
                                 strings.biometricFailedSnackbar,
                                 style: const TextStyle(color: Colors.white, fontSize: 12.5),
@@ -164,10 +164,10 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white : Colors.black,
-                          borderRadius: BorderRadius.circular(8),
+                          color: isDark ? LabColors.nightAccent : LabColors.daylightAccent,
+                          borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark ? const Color(0xFF333333) : const Color(0xFFE4E4E7),
+                            color: isDark ? LabColors.nightBorder : LabColors.daylightBorder,
                             width: 1,
                           ),
                         ),
@@ -177,7 +177,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                             Icon(
                               Icons.lock_open_rounded,
                               size: 16,
-                              color: isDark ? Colors.black : Colors.white,
+                              color: isDark ? LabColors.nightOnAccent : LabColors.daylightOnAccent,
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -186,7 +186,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.6,
-                                color: isDark ? Colors.black : Colors.white,
+                                color: isDark ? LabColors.nightOnAccent : LabColors.daylightOnAccent,
                               ),
                             ),
                           ],

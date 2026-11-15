@@ -29,7 +29,7 @@ class MindPill extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final activeBg = tokens.accent;
-    final activeFg = isDark ? tokens.background : Colors.white;
+    final activeFg = tokens.onAccent;
     final inactiveBg = tokens.surfaceSecondary;
     final inactiveFg = tokens.textSecondary;
     final borderColor = tokens.border;

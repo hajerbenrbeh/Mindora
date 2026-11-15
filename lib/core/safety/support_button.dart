@@ -261,9 +261,9 @@ class SupportModalSheet extends ConsumerWidget {
                                     : (strings.isFrench
                                         ? 'Gratuit 24/7'
                                         : 'Toll-free 24/7'),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 11,
-                                  color: LabColors.factBlue,
+                                  color: isDark ? LabColors.factBlueDark : LabColors.factBlue,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -278,7 +278,7 @@ class SupportModalSheet extends ConsumerWidget {
                             backgroundColor: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
                             foregroundColor: isDark ? LabColors.nightBackground : Colors.white,
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),
                           icon: const Icon(Icons.phone_outlined, size: 14),
                           label: Text(
