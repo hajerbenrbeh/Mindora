@@ -66,31 +66,29 @@ class _VagalBreathingVisualizerState extends State<VagalBreathingVisualizer>
 
   Color get _phaseAccentColor {
     switch (widget.phase) {
-      case 0: // Inhale - Warm Beige / Cream life
-        return widget.isDark ? LabColors.warmBeige : LabColors.warmBeigeDark;
-      case 1: // Hold - Warm Gold / Amber balance
-        return LabColors.assumptionAmber;
-      case 2: // Exhale - Soothing Cherry Red release
-        return widget.isDark ? LabColors.cherryRedGlow : LabColors.cherryRed;
-      case 3: // Hold - Sage / Stillness
+      case 0: // Inhale - Warm Sand / Amber clarity
+        return LabColors.moodColorFor('anxious', isDark: widget.isDark);
+      case 1: // Hold - Grounded Blue focus
+        return LabColors.moodColorFor('restless', isDark: widget.isDark);
+      case 2: // Exhale - Warm Coral release
+        return LabColors.moodColorFor('frustrated', isDark: widget.isDark);
+      case 3: // Hold - Eucalyptus / Stillness
       default:
-        return widget.isDark ? LabColors.sageGreenGlow : LabColors.sageGreen;
+        return widget.isDark ? LabColors.nightAccent : LabColors.forestGreen;
     }
   }
 
   Color get _phaseBgColor {
     switch (widget.phase) {
       case 0:
-        return widget.isDark ? LabColors.warmBeigeBgDark : LabColors.warmBeigeBgLight;
+        return LabColors.moodSoftFor('anxious', isDark: widget.isDark);
       case 1:
-        return widget.isDark
-            ? LabColors.assumptionBackgroundDark.withValues(alpha: 0.4)
-            : LabColors.assumptionBackgroundLight;
+        return LabColors.moodSoftFor('restless', isDark: widget.isDark);
       case 2:
-        return widget.isDark ? LabColors.cherryBgDark : LabColors.cherryBgLight;
+        return LabColors.moodSoftFor('frustrated', isDark: widget.isDark);
       case 3:
       default:
-        return widget.isDark ? LabColors.sageBgDark : LabColors.sageBgLight;
+        return LabColors.moodSoftFor('calm', isDark: widget.isDark);
     }
   }
 

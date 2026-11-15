@@ -329,8 +329,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final sorted = [...traces]..sort((a, b) => b.date.compareTo(a.date));
     final latestTrace = sorted.isNotEmpty ? sorted.first : null;
     final statusColor = latestTrace != null
-        ? trackMoodOptionFor(latestTrace.overallMood).color
-        : (isDark ? LabColors.sageGreen : tokens.accent);
+        ? LabColors.moodColorFor(latestTrace.overallMood, isDark: isDark)
+        : tokens.accent;
 
     return Row(
       children: [
@@ -339,7 +339,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             constraints: const BoxConstraints(minHeight: 48),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF0C0C0F) : tokens.surface,
+              color: tokens.surface,
               borderRadius: BorderRadius.circular(tokens.buttonRadius),
               border: Border.all(color: tokens.border),
             ),
@@ -351,14 +351,6 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: statusColor,
-                    boxShadow: isDark
-                        ? [
-                            BoxShadow(
-                              color: statusColor.withValues(alpha: 0.55),
-                              blurRadius: 6,
-                            ),
-                          ]
-                        : null,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -388,8 +380,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3),
                           color: recentSevenDays[i]
-                              ? (isDark ? LabColors.sageGreen : tokens.accent)
-                              : (isDark ? const Color(0xFF232329) : tokens.border),
+                              ? tokens.accent
+                              : tokens.border,
                         ),
                       ),
                   ],
@@ -409,12 +401,10 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               constraints: const BoxConstraints(minHeight: 48),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: isDark ? LabColors.sageBgDark : tokens.accentSoft,
+                color: tokens.accentSoft,
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 border: Border.all(
-                  color: isDark
-                      ? LabColors.sageBorderDark
-                      : tokens.accent.withValues(alpha: 0.35),
+                  color: tokens.accent.withValues(alpha: 0.35),
                 ),
               ),
               child: Row(
@@ -423,7 +413,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   Icon(
                     Icons.spa_outlined,
                     size: 16,
-                    color: isDark ? LabColors.sageGreen : tokens.accent,
+                    color: tokens.accent,
                   ),
                   const SizedBox(width: 7),
                   Text(
@@ -431,7 +421,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? LabColors.sageGreen : tokens.accent,
+                      color: tokens.accent,
                     ),
                   ),
                 ],
@@ -456,8 +446,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         ..sort((a, b) => b.date.compareTo(a.date));
       final latest = sortedSingle.isNotEmpty ? sortedSingle.first : null;
       final pointColor = latest != null
-          ? trackMoodOptionFor(latest.overallMood).color
-          : (isDark ? LabColors.sageGreen : tokens.accent);
+          ? LabColors.moodColorFor(latest.overallMood, isDark: isDark)
+          : tokens.accent;
       final normalizedY =
           latest != null ? ((latest.moodIntensity - 1) / 9.0).clamp(0.1, 0.9) : 0.5;
 
@@ -523,7 +513,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF060608) : tokens.surfaceSecondary,
+                color: tokens.surfaceSecondary,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 border: Border.all(color: tokens.border),
               ),
@@ -532,9 +522,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   hasPoint: latest != null,
                   normalizedY: normalizedY,
                   pointColor: pointColor,
-                  gridColor: isDark
-                      ? const Color(0xFF25252B)
-                      : tokens.border,
+                  gridColor: tokens.border,
                 ),
               ),
             ),
@@ -687,7 +675,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               label: strings.viewAllArrowLabel,
               child: MindPressable(
                 onPressed: () => context.push('/progress'),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(minHeight: 48),
                   child: Padding(
@@ -777,21 +765,15 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   height: 36,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? LabColors.warmBeigeBgDark
-                        : tokens.accentSoft,
+                    color: tokens.warmSoft,
                     border: Border.all(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? LabColors.warmBeigeBorderDark
-                          : tokens.accent.withValues(alpha: 0.3),
+                      color: tokens.warm.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Icon(
                     Icons.auto_awesome_outlined,
                     size: 18,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? LabColors.warmBeige
-                        : tokens.accent,
+                    color: tokens.warm,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -1057,12 +1039,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3),
                         color: step < baseline.totalRecordedDays
-                            ? (Theme.of(context).brightness == Brightness.dark
-                                ? LabColors.sageGreen
-                                : tokens.accent)
-                            : (Theme.of(context).brightness == Brightness.dark
-                                ? const Color(0xFF222227)
-                                : tokens.border),
+                            ? tokens.accent
+                            : tokens.border,
                       ),
                     ),
                   ),
@@ -1087,11 +1065,13 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   baseline.averageSleepHours != null ? '${baseline.averageSleepHours}h' : '—',
                   tokens,
                 ),
+                const SizedBox(width: 8),
                 _buildStatColumn(
                   strings.typicalEnergyLabel,
                   baseline.averageEnergyLevel != null ? '${baseline.averageEnergyLevel}/10' : '—',
                   tokens,
                 ),
+                const SizedBox(width: 8),
                 _buildStatColumn(
                   strings.moodIntensityShortLabel,
                   baseline.averageMoodIntensity != null ? '${baseline.averageMoodIntensity}/10' : '—',
@@ -1100,7 +1080,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               ],
             ),
             if (baseline.commonEmotions.isNotEmpty) ...[
-              const Divider(height: 24, thickness: 0.5),
+              Divider(height: 24, thickness: 0.5, color: tokens.border),
               Text(
                 '${strings.frequentEmotionsLabel}: ${baseline.commonEmotions.map((e) => trackMoodLabel(e, strings)).join(', ')}',
                 style: TextStyle(color: tokens.textTertiary, fontSize: 11.5, fontWeight: FontWeight.w600),
@@ -1114,24 +1094,38 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
 
   Widget _buildStatColumn(String label, String value, MindTokens tokens) {
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: TextStyle(color: tokens.textTertiary, fontSize: 11.5, fontWeight: FontWeight.w700),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              color: tokens.textPrimary,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              fontFeatures: const [FontFeature.tabularFigures()],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: tokens.surfaceSecondary,
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: tokens.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: tokens.textTertiary,
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              value,
+              style: TextStyle(
+                color: tokens.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

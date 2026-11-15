@@ -189,7 +189,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
               height: 36,
               decoration: BoxDecoration(
                 color: tokens.accentSoft,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
               child: Icon(Icons.air_rounded, size: 19, color: tokens.accent),
             ),
@@ -542,7 +542,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(context.tokens.cardRadius),
         border: Border.all(color: borderColor),
       ),
       child: Column(

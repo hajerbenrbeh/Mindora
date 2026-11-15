@@ -1073,10 +1073,15 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
     required bool isLive,
   }) {
     final isUser = statement.speaker == StatementSpeaker.user;
+    final epistemicColor = statement.label != null
+        ? LabColors.forLabel(statement.label!, isDark: isDark)
+        : null;
     final bubbleBg = isUser ? tokens.surfaceSecondary : tokens.surface;
-    final bubbleBorder = isUser
-        ? tokens.border
-        : (isLive ? tokens.accent.withValues(alpha: 0.35) : tokens.border);
+    final bubbleBorder = epistemicColor != null
+        ? epistemicColor.withValues(alpha: isDark ? 0.45 : 0.35)
+        : (isUser
+            ? tokens.border
+            : (isLive ? tokens.accent.withValues(alpha: 0.35) : tokens.border));
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -1118,200 +1123,218 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
             ],
           ),
           const SizedBox(height: 5),
-          Container(
+          ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 340),
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
-            decoration: BoxDecoration(
-              color: bubbleBg,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: bubbleBorder, width: 1),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  statement.text,
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.55,
-                    color: tokens.textPrimary,
-                    fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
-                  ),
-                ),
-                if (isUser) ...[
-                  const SizedBox(height: 10),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 6,
-                    children: [
-                      MindPressable(
-                        semanticLabel: statement.label != null
-                            ? localizedStatementLabelName(
-                                statement.label!,
-                                strings,
-                              )
-                            : strings.tagFactGuessStoryHint,
-                        borderRadius: BorderRadius.circular(10),
-                        onPressed: () => _cycleStatementLabel(statement),
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            minWidth: 48,
-                            minHeight: 48,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: statement.label != null
-                                ? LabColors.labelBackground(
-                                    statement.label!,
-                                    isDark: isDark,
-                                  )
-                                : tokens.surface,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: statement.label != null
-                                  ? LabColors.forLabel(statement.label!)
-                                  : tokens.border,
-                              width: statement.label != null ? 1.2 : 1.0,
+            child: Container(
+              decoration: BoxDecoration(
+                color: bubbleBg,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: bubbleBorder, width: 1),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(15),
+                child: Stack(
+                  children: [
+                    Padding(
+                      padding: EdgeInsetsDirectional.fromSTEB(
+                        epistemicColor != null ? 18 : 15,
+                        13,
+                        15,
+                        13,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            statement.text,
+                            style: TextStyle(
+                              fontSize: 15,
+                              height: 1.55,
+                              color: tokens.textPrimary,
+                              fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
                             ),
                           ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                statement.label != null
-                                    ? iconForStatementLabel(statement.label!)
-                                    : Icons.label_outline_rounded,
-                                size: 14,
-                                color: statement.label != null
-                                    ? LabColors.forLabel(statement.label!)
-                                    : tokens.textSecondary,
-                              ),
-                              const SizedBox(width: 5),
-                              Flexible(
-                                child: Text(
-                                  statement.label != null
+                          if (isUser) ...[
+                            const SizedBox(height: 10),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 6,
+                              children: [
+                                MindPressable(
+                                  semanticLabel: statement.label != null
                                       ? localizedStatementLabelName(
                                           statement.label!,
                                           strings,
                                         )
                                       : strings.tagFactGuessStoryHint,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 11.5,
-                                    fontWeight: FontWeight.w700,
-                                    color: statement.label != null
-                                        ? LabColors.forLabel(statement.label!)
-                                        : tokens.textSecondary,
+                                  borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                  onPressed: () => _cycleStatementLabel(statement),
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      minWidth: 48,
+                                      minHeight: 48,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: statement.label != null
+                                          ? LabColors.labelBackground(
+                                              statement.label!,
+                                              isDark: isDark,
+                                            )
+                                          : tokens.surface,
+                                      borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                      border: Border.all(
+                                        color: epistemicColor ?? tokens.border,
+                                        width: epistemicColor != null ? 1.2 : 1.0,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          statement.label != null
+                                              ? iconForStatementLabel(statement.label!)
+                                              : Icons.label_outline_rounded,
+                                          size: 14,
+                                          color: epistemicColor ?? tokens.textSecondary,
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Flexible(
+                                          child: Text(
+                                            statement.label != null
+                                                ? localizedStatementLabelName(
+                                                    statement.label!,
+                                                    strings,
+                                                  )
+                                                : strings.tagFactGuessStoryHint,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 11.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: epistemicColor ?? tokens.textSecondary,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
+                                MindPressable(
+                                  semanticLabel: statement.distortionTag ??
+                                      strings.tagDistortionBtn,
+                                  borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                  onPressed: () =>
+                                      _showCognitiveDistortionsSheet(statement),
+                                  child: Container(
+                                    constraints: const BoxConstraints(
+                                      minWidth: 48,
+                                      minHeight: 48,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 10,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: statement.distortionTag != null
+                                          ? tokens.accentSoft
+                                          : tokens.surface,
+                                      borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                      border: Border.all(
+                                        color: statement.distortionTag != null
+                                            ? tokens.accent
+                                            : tokens.border,
+                                        width: 1,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      statement.distortionTag ?? strings.tagDistortionBtn,
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: statement.distortionTag != null
+                                            ? tokens.accent
+                                            : tokens.textSecondary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ] else ...[
+                            const SizedBox(height: 10),
+                            MindPressable(
+                              semanticLabel: strings.saveTakeawayAction,
+                              borderRadius: BorderRadius.circular(tokens.chipRadius),
+                              onPressed: () async {
+                                HapticFeedback.lightImpact();
+                                final notifier =
+                                    ref.read(activeCaseControllerProvider.notifier);
+                                await notifier.saveConclusion(statement.text);
+                                if (!mounted) return;
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      strings.isArabic
+                                          ? 'تم حفظ الفكرة في ملفك'
+                                          : (strings.isFrench
+                                              ? 'Idée sauvegardée dans votre profil'
+                                              : 'Takeaway saved to your profile'),
+                                    ),
+                                    behavior: SnackBarBehavior.floating,
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                constraints: const BoxConstraints(minHeight: 34),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: tokens.surfaceSecondary,
+                                  borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                  border: Border.all(color: tokens.border),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.bookmark_add_outlined,
+                                      size: 14,
+                                      color: tokens.accent,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      strings.saveTakeawayAction,
+                                      style: TextStyle(
+                                        fontSize: 11.5,
+                                        fontWeight: FontWeight.w700,
+                                        color: tokens.accent,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      MindPressable(
-                        semanticLabel: statement.distortionTag ??
-                            strings.tagDistortionBtn,
-                        borderRadius: BorderRadius.circular(10),
-                        onPressed: () =>
-                            _showCognitiveDistortionsSheet(statement),
-                        child: Container(
-                          constraints: const BoxConstraints(
-                            minWidth: 48,
-                            minHeight: 48,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: statement.distortionTag != null
-                                ? tokens.accentSoft
-                                : tokens.surface,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: statement.distortionTag != null
-                                  ? tokens.accent
-                                  : tokens.border,
-                              width: 1,
                             ),
-                          ),
-                          child: Text(
-                            statement.distortionTag ?? strings.tagDistortionBtn,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
-                              color: statement.distortionTag != null
-                                  ? tokens.accent
-                                  : tokens.textSecondary,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ] else ...[
-                  const SizedBox(height: 10),
-                  MindPressable(
-                    semanticLabel: strings.saveTakeawayAction,
-                    borderRadius: BorderRadius.circular(10),
-                    onPressed: () async {
-                      HapticFeedback.lightImpact();
-                      final notifier =
-                          ref.read(activeCaseControllerProvider.notifier);
-                      await notifier.saveConclusion(statement.text);
-                      if (!mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            strings.isArabic
-                                ? 'تم حفظ الفكرة في ملفك'
-                                : (strings.isFrench
-                                    ? 'Idée sauvegardée dans votre profil'
-                                    : 'Takeaway saved to your profile'),
-                          ),
-                          behavior: SnackBarBehavior.floating,
-                        ),
-                      );
-                    },
-                    child: Container(
-                      constraints: const BoxConstraints(minHeight: 34),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: tokens.surfaceSecondary,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: tokens.border),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.bookmark_add_outlined,
-                            size: 14,
-                            color: tokens.accent,
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            strings.saveTakeawayAction,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
-                              color: tokens.accent,
-                            ),
-                          ),
+                          ],
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ],
+                    if (epistemicColor != null)
+                      PositionedDirectional(
+                        start: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: 3.5,
+                        child: ColoredBox(color: epistemicColor),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

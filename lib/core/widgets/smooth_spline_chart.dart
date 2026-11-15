@@ -43,7 +43,7 @@ class SmoothSplineChart extends StatelessWidget {
     final effectiveLine = lineColor ?? tokens.accent;
     final effectiveFill = fillColors ??
         [
-          effectiveLine.withValues(alpha: 0.24),
+          effectiveLine.withValues(alpha: 0.28),
           effectiveLine.withValues(alpha: 0.0),
         ];
 

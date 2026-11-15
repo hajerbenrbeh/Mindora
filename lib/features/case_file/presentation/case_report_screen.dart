@@ -13,6 +13,7 @@ import '../../../core/safety/support_button.dart';
 import '../../../core/widgets/label_badge.dart';
 import '../../investigation/controllers/investigation_providers.dart';
 import '../../investigation/domain/case_model.dart';
+import '../../investigation/domain/label_type.dart';
 import '../../investigation/domain/statement.dart';
 import 'clinical_export_preview_sheet.dart';
 
@@ -81,7 +82,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(strings.cancelBtn, style: TextStyle(color: isDark ? const Color(0xFF888888) : const Color(0xFF71717A))),
+            child: Text(strings.cancelBtn, style: TextStyle(color: ctx.tokens.textSecondary)),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
@@ -257,12 +258,13 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surfaceColor = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.background;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.border;
+    final textPrimary = tokens.textPrimary;
+    final textSecondary = tokens.textSecondary;
 
     if (_isLoading) {
       return Scaffold(
@@ -295,7 +297,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
             icon: Icon(
               c.isPrivate ? Icons.lock_rounded : Icons.lock_open_outlined,
               size: 18,
-              color: c.isPrivate ? (isDark ? LabColors.cherryRedGlow : LabColors.cherryRedDeep) : textSecondary,
+              color: c.isPrivate ? tokens.safetyWarmth : textSecondary,
             ),
             tooltip: strings.togglePrivacyTooltip,
             onPressed: () => _togglePrivacy(c),
@@ -338,8 +340,8 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
-                                color: context.tokens.surfaceSecondary,
-                                borderRadius: BorderRadius.circular(8),
+                                color: tokens.surfaceSecondary,
+                                borderRadius: BorderRadius.circular(tokens.chipRadius),
                               ),
                               child: Text(
                                 strings.formatSessionNumber(c.caseNumber),
@@ -354,7 +356,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                             const SizedBox(width: 8),
                             InkWell(
                               onTap: () => _togglePrivacy(c),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(tokens.chipRadius),
                               child: ConstrainedBox(
                                 constraints: const BoxConstraints(
                                   minWidth: 48,
@@ -367,12 +369,12 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                     decoration: BoxDecoration(
                                       color: c.isPrivate
-                                          ? context.tokens.safetyWarmthSoft
-                                          : context.tokens.surfaceSecondary,
-                                      borderRadius: BorderRadius.circular(8),
+                                          ? tokens.safetyWarmthSoft
+                                          : tokens.surfaceSecondary,
+                                      borderRadius: BorderRadius.circular(tokens.chipRadius),
                                       border: Border.all(
                                         color: c.isPrivate
-                                            ? context.tokens.safetyWarmth.withValues(alpha: 0.35)
+                                            ? tokens.safetyWarmth.withValues(alpha: 0.35)
                                             : borderColor,
                                       ),
                                     ),
@@ -425,9 +427,11 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                         decoration: BoxDecoration(
-                          color: LabColors.cherryBackground(isDark: isDark),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: LabColors.cherryBorder(isDark: isDark)),
+                          color: tokens.safetyWarmthSoft,
+                          borderRadius: BorderRadius.circular(tokens.chipRadius),
+                          border: Border.all(
+                            color: tokens.safetyWarmth.withValues(alpha: 0.35),
+                          ),
                         ),
                         child: Text(
                           strings.emotionTag(chain.emotion, chain.emotionIntensity),
@@ -435,7 +439,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                             fontSize: 10.5,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.4,
-                            color: isDark ? LabColors.cherryRedGlow : LabColors.cherryRedDeep,
+                            color: tokens.safetyWarmth,
                           ),
                         ),
                       ),
@@ -453,7 +457,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: surfaceColor,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(tokens.cardRadius),
                   border: Border.all(color: borderColor, width: 1),
                 ),
                 child: Text(
@@ -475,7 +479,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: surfaceColor,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(color: borderColor, width: 1),
                   ),
                   child: Column(
@@ -508,7 +512,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
                       color: surfaceColor,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(tokens.cardRadius),
                       border: Border.all(color: borderColor, width: 1),
                     ),
                     child: Column(
@@ -518,9 +522,21 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                         const SizedBox(height: 4),
                         Text(h.explanation, style: TextStyle(fontSize: 12, color: textSecondary, height: 1.35)),
                         const SizedBox(height: 8),
-                        Text('• ${strings.whyItFitsPrefix} ${h.whyItMightFit}', style: const TextStyle(fontSize: 11.5, color: LabColors.factBlue)),
+                        Text(
+                          '• ${strings.whyItFitsPrefix} ${h.whyItMightFit}',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: LabColors.forLabel(LabelType.fact, isDark: isDark),
+                          ),
+                        ),
                         const SizedBox(height: 2),
-                        Text('• ${strings.whatDoesNotFitPrefix} ${h.whatDoesNotFit}', style: const TextStyle(fontSize: 11.5, color: LabColors.assumptionAmber)),
+                        Text(
+                          '• ${strings.whatDoesNotFitPrefix} ${h.whatDoesNotFit}',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: LabColors.forLabel(LabelType.assumption, isDark: isDark),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -541,7 +557,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: surfaceColor,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(color: borderColor, width: 1),
                   ),
                   child: Text(
@@ -565,7 +581,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: surfaceColor,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(color: borderColor, width: 1),
                   ),
                   child: Column(
@@ -590,9 +606,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                                     fontSize: 10,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.6,
-                                    color: isUser
-                                        ? (isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark)
-                                        : context.tokens.accent,
+                                    color: isUser ? tokens.warm : tokens.accent,
                                   ),
                                 ),
                                 if (st.label != null) ...[
@@ -625,10 +639,10 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: LabColors.beigeBackground(isDark: isDark),
-                  borderRadius: BorderRadius.circular(10),
+                  color: tokens.warmSoft,
+                  borderRadius: BorderRadius.circular(tokens.cardRadius),
                   border: Border.all(
-                    color: LabColors.beigeBorder(isDark: isDark),
+                    color: tokens.warm.withValues(alpha: 0.35),
                     width: 1,
                   ),
                 ),
@@ -640,22 +654,22 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.anchor_rounded, size: 14, color: LabColors.warmBeigeMuted),
+                            Icon(Icons.anchor_rounded, size: 14, color: tokens.warm),
                             const SizedBox(width: 6),
                             Text(
                               strings.finalTakeawayUserHeader,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.6,
-                                color: LabColors.warmBeigeMuted,
+                                color: tokens.warm,
                               ),
                             ),
                           ],
                         ),
                         InkWell(
                           onTap: () => _editConclusionDialog(isDark, strings),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(tokens.chipRadius),
                           child: ConstrainedBox(
                             constraints: const BoxConstraints(
                               minWidth: 48,
@@ -672,7 +686,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                                     fontSize: 10.5,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.5,
-                                    color: isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark,
+                                    color: tokens.warm,
                                   ),
                                 ),
                               ),
@@ -688,7 +702,7 @@ class _CaseReportScreenState extends ConsumerState<CaseReportScreen> {
                         fontWeight: FontWeight.w500,
                         fontSize: 13.5,
                         height: 1.45,
-                        color: isDark ? LabColors.warmBeigeGlow : textPrimary,
+                        color: textPrimary,
                       ),
                     ),
                   ],

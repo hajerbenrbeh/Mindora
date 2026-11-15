@@ -137,7 +137,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: tokens.accentSoft,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
                   border: Border.all(
                     color: tokens.accent.withValues(alpha: 0.35),
                   ),

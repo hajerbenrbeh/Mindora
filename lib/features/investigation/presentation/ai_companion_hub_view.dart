@@ -234,19 +234,17 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
   Color _accentForMode(ConversationMode mode, bool isDark) {
     switch (mode) {
       case ConversationMode.exploreThought:
-        return isDark ? LabColors.moodRestless : LabColors.factBorderDark;
+        return LabColors.moodColorFor('restless', isDark: isDark);
       case ConversationMode.understandEmotion:
-        return isDark ? LabColors.cherryRedGlow : LabColors.cherryRed;
+        return LabColors.moodColorFor('frustrated', isDark: isDark);
       case ConversationMode.psychologicalAnalysis:
-        return isDark ? LabColors.warmBeige : LabColors.warmBeigeDark;
+        return LabColors.moodColorFor('anxious', isDark: isDark);
       case ConversationMode.guidedReflection:
-        return isDark ? LabColors.sageGreen : LabColors.forestGreen;
+        return isDark ? LabColors.nightAccent : LabColors.forestGreen;
       case ConversationMode.justTalk:
-        return isDark
-            ? LabColors.interpretationViolet
-            : LabColors.interpretationBorderDark;
+        return LabColors.moodColorFor('heavy', isDark: isDark);
       case ConversationMode.grounding:
-        return isDark ? LabColors.sageGreenGlow : LabColors.secondaryOlive;
+        return isDark ? LabColors.moodCalm : LabColors.secondaryOlive;
     }
   }
 
@@ -337,7 +335,6 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                       .setMode(mode);
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: isSelected
                         ? modeColor.withValues(alpha: isDark ? 0.11 : 0.08)
@@ -348,78 +345,99 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                       width: isSelected ? 1.5 : 1.0,
                     ),
                   ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(9),
-                        decoration: BoxDecoration(
-                          color: modeColor.withValues(
-                              alpha: isSelected ? 0.20 : (isDark ? 0.10 : 0.08)),
-                          borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                          border: Border.all(
-                            color: modeColor.withValues(
-                                alpha: isSelected ? 0.45 : 0.22),
-                          ),
-                        ),
-                        child: Icon(
-                          iconForConversationMode(mode),
-                          size: 18,
-                          color: modeColor,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    modeTitle,
-                                    style: TextStyle(
-                                      fontSize: 13.5,
-                                      fontWeight: FontWeight.w700,
-                                      color: isSelected ? modeColor : textPrimary,
-                                    ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(tokens.cardRadius - 1),
+                    child: Stack(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(17, 14, 14, 14),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(9),
+                                decoration: BoxDecoration(
+                                  color: modeColor.withValues(
+                                      alpha: isSelected ? 0.20 : (isDark ? 0.10 : 0.08)),
+                                  borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                                  border: Border.all(
+                                    color: modeColor.withValues(
+                                        alpha: isSelected ? 0.45 : 0.22),
                                   ),
                                 ),
-                                if (isSelected)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8, vertical: 3),
-                                    decoration: BoxDecoration(
-                                      color: modeColor.withValues(alpha: 0.16),
-                                      borderRadius: BorderRadius.circular(8),
+                                child: Icon(
+                                  iconForConversationMode(mode),
+                                  size: 18,
+                                  color: modeColor,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            modeTitle,
+                                            style: TextStyle(
+                                              fontSize: 13.5,
+                                              fontWeight: FontWeight.w700,
+                                              color: isSelected ? modeColor : textPrimary,
+                                            ),
+                                          ),
+                                        ),
+                                        if (isSelected)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 3),
+                                            decoration: BoxDecoration(
+                                              color: modeColor.withValues(alpha: 0.16),
+                                              borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                            ),
+                                            child: Text(
+                                              'ACTIVE',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w800,
+                                                letterSpacing: 0.5,
+                                                color: modeColor,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
-                                    child: Text(
-                                      'ACTIVE',
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      modeDesc,
                                       style: TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w800,
-                                        letterSpacing: 0.5,
-                                        color: modeColor,
+                                        fontSize: 12.5,
+                                        height: 1.4,
+                                        color: isSelected
+                                            ? textPrimary.withValues(alpha: 0.90)
+                                            : textSecondary,
                                       ),
                                     ),
-                                  ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              modeDesc,
-                              style: TextStyle(
-                                fontSize: 12.5,
-                                height: 1.4,
-                                color: isSelected
-                                    ? textPrimary.withValues(alpha: 0.90)
-                                    : textSecondary,
+                                  ],
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                        PositionedDirectional(
+                          start: 0,
+                          top: 0,
+                          bottom: 0,
+                          width: isSelected ? 3.5 : 2.5,
+                          child: ColoredBox(
+                            color: isSelected
+                                ? modeColor
+                                : modeColor.withValues(alpha: isDark ? 0.35 : 0.25),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -782,9 +800,9 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: LabColors.sageBackground(isDark: isDark),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: LabColors.sageBorder(isDark: isDark)),
+                  color: tokens.accentSoft,
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
+                  border: Border.all(color: tokens.accent.withValues(alpha: 0.35)),
                 ),
                 child: Text(
                   'CONFIDENTIAL & OFFLINE-FIRST',
@@ -792,7 +810,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                     fontSize: 8.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
-                    color: isDark ? LabColors.sageGreen : LabColors.forestGreen,
+                    color: tokens.accent,
                   ),
                 ),
               ),
