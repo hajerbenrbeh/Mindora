@@ -369,6 +369,10 @@ void main() {
       tester.view.devicePixelRatio = 2.0;
       addTearDown(tester.view.reset);
 
+      SharedPreferences.setMockInitialValues({
+        'mf_onboarding_completed': true,
+      });
+
       final repaintKey = GlobalKey();
 
       await tester.pumpWidget(

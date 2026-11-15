@@ -1739,7 +1739,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             borderRadius: BorderRadius.circular(tokens.chipRadius),
             child: Container(
               height: 54,
-              decoration: BoxDecoration(
+              foregroundDecoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 border: Border.all(
                   color: selected ? tokens.accent : tokens.border,
@@ -1747,7 +1747,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(tokens.chipRadius - 1.5),
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [

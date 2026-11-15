@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/router/app_router.dart';
 import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_intensity_picker.dart';
 import '../../../../core/widgets/mind_pressable.dart';
@@ -610,6 +611,8 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
               textStyle: const TextStyle(
+                fontFamily: 'Inter',
+                fontFamilyFallback: LabTheme.fontFallback,
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
               ),
