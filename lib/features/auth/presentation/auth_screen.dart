@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/router/app_router.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/lab_theme.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
@@ -139,7 +138,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     final borderColor = tokens.border;
     final textPrimary = tokens.textPrimary;
     final textSecondary = tokens.textSecondary;
-    final sageAccent = isDark ? LabColors.sageGreen : LabColors.forestGreen;
+    final sageAccent = tokens.accent;
 
     return Scaffold(
       backgroundColor: bg,
@@ -221,7 +220,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: !_isSignUp
-                                  ? (isDark ? tokens.accent : LabColors.forestGreen)
+                                  ? tokens.accent
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(tokens.buttonRadius - 2),
                             ),
@@ -233,7 +232,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.5,
                                 color: !_isSignUp
-                                    ? (isDark ? tokens.background : Colors.white)
+                                    ? tokens.onAccent
                                     : textSecondary,
                               ),
                             ),
@@ -257,7 +256,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: _isSignUp
-                                  ? (isDark ? tokens.accent : LabColors.forestGreen)
+                                  ? tokens.accent
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(tokens.buttonRadius - 2),
                             ),
@@ -269,7 +268,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.5,
                                 color: _isSignUp
-                                    ? (isDark ? tokens.background : Colors.white)
+                                    ? tokens.onAccent
                                     : textSecondary,
                               ),
                             ),
@@ -625,7 +624,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: isDark ? LabColors.warmBeige : LabColors.forestGreen,
+                            color: tokens.accent,
                             decoration: TextDecoration.underline,
                           ),
                         ),

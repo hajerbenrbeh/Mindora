@@ -178,7 +178,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ? 'كلمة السر'
                         : (strings.isFrench ? 'Mot de passe' : 'Passphrase'),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(tokens.buttonRadius),
                     ),
                   ),
                 ),
@@ -192,7 +192,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ? 'تأكيد كلمة السر'
                         : (strings.isFrench ? 'Confirmer' : 'Confirm password'),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(tokens.buttonRadius),
                     ),
                   ),
                 ),
@@ -336,7 +336,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ? 'Contenu de sauvegarde (JSON)'
                             : 'Encrypted Backup JSON'),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(tokens.buttonRadius),
                     ),
                   ),
                 ),
@@ -350,7 +350,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ? 'كلمة السر'
                         : (strings.isFrench ? 'Mot de passe' : 'Passphrase'),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(tokens.buttonRadius),
                     ),
                   ),
                 ),
@@ -1096,22 +1096,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   height: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? LabColors.sageBgDark
-                        : tokens.accentSoft,
+                    color: tokens.accentSoft,
                     border: Border.all(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? LabColors.sageBorderDark
-                          : tokens.accent.withValues(alpha: 0.3),
+                      color: tokens.accent.withValues(alpha: 0.32),
                     ),
-                    boxShadow: Theme.of(context).brightness == Brightness.dark
-                        ? [
-                            BoxShadow(
-                              color: LabColors.sageGreen.withValues(alpha: 0.14),
-                              blurRadius: 16,
-                            ),
-                          ]
-                        : null,
                   ),
                   alignment: Alignment.center,
                   child: const BotanicalEmblem(size: 36),
@@ -1147,18 +1135,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         icon: isCloudLinked
                             ? Icons.cloud_done_outlined
                             : Icons.phonelink_lock_outlined,
-                        backgroundColor: Theme.of(context).brightness ==
-                                Brightness.dark
-                            ? (isCloudLinked
-                                ? LabColors.sageBgDark
-                                : LabColors.warmBeigeBgDark)
-                            : tokens.accentSoft,
-                        textColor: Theme.of(context).brightness ==
-                                Brightness.dark
-                            ? (isCloudLinked
-                                ? LabColors.sageGreen
-                                : LabColors.warmBeige)
-                            : tokens.accent,
+                        backgroundColor:
+                            isCloudLinked ? tokens.accentSoft : tokens.warmSoft,
+                        textColor: isCloudLinked ? tokens.accent : tokens.warm,
                       ),
                     ],
                   ),
@@ -1246,6 +1225,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           color: tokens.textSecondary,
                           letterSpacing: 0.8,
                         ),
+                      ),
+                      const SizedBox(height: 10),
+                      _buildThemeSwatchStrip(
+                        tokens: tokens,
+                        strings: strings,
+                        themeIndex: themeIndex,
                       ),
                       const SizedBox(height: 10),
                       MindSegmented(
@@ -1610,6 +1595,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     Color? titleColor,
     required VoidCallback onTap,
   }) {
+    final stackTrailingBadge = trailingText != null &&
+        trailingText.isNotEmpty &&
+        subtitle != null &&
+        subtitle.isNotEmpty &&
+        trailingText.length > 14;
+
     return Semantics(
       button: true,
       label: title,
@@ -1649,13 +1640,42 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ),
                     ],
+                    if (stackTrailingBadge) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: tokens.accentSoft,
+                          borderRadius: BorderRadius.circular(tokens.chipRadius),
+                          border: Border.all(
+                            color: tokens.accent.withValues(alpha: 0.32),
+                          ),
+                        ),
+                        child: Text(
+                          trailingText,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
+                            color: tokens.accent,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
-              if (trailingText != null && trailingText.isNotEmpty) ...[
+              if (!stackTrailingBadge &&
+                  trailingText != null &&
+                  trailingText.isNotEmpty) ...[
                 const SizedBox(width: 10),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 168),
+                Flexible(
+                  fit: FlexFit.loose,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 9,
@@ -1666,14 +1686,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                       border: Border.all(color: tokens.border),
                     ),
-                    child: Text(
-                      trailingText,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w700,
-                        color: tokens.textPrimary,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        trailingText,
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.textPrimary,
+                        ),
                       ),
                     ),
                   ),
@@ -1689,6 +1711,216 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildThemeSwatchStrip({
+    required MindTokens tokens,
+    required AppStrings strings,
+    required int themeIndex,
+  }) {
+    Widget buildCard({
+      required int idx,
+      required String semanticLabel,
+      required ThemeMode targetMode,
+      required Widget preview,
+    }) {
+      final selected = themeIndex == idx;
+      return Expanded(
+        child: Semantics(
+          button: true,
+          selected: selected,
+          label: semanticLabel,
+          child: MindPressable(
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              ref.read(themeControllerProvider.notifier).setTheme(targetMode);
+            },
+            borderRadius: BorderRadius.circular(tokens.chipRadius),
+            child: Container(
+              height: 54,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                border: Border.all(
+                  color: selected ? tokens.accent : tokens.border,
+                  width: selected ? 1.8 : 1.0,
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(tokens.chipRadius - 1.5),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    preview,
+                    if (selected)
+                      PositionedDirectional(
+                        top: 5,
+                        end: 5,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: tokens.accent,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    Widget buildMiniFrame({
+      required Color bg,
+      required Color card,
+      required Color border,
+      required Color bar,
+      required Color subBar,
+    }) {
+      return ColoredBox(
+        color: bg,
+        child: Padding(
+          padding: const EdgeInsets.all(7),
+          child: Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: card,
+              borderRadius: BorderRadius.circular(7),
+              border: Border.all(color: border, width: 0.8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 24,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: bar,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Container(
+                  width: 38,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: subBar,
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        buildCard(
+          idx: 0,
+          semanticLabel: strings.themeDaylight,
+          targetMode: ThemeMode.light,
+          preview: buildMiniFrame(
+            bg: LabColors.daylightBackground,
+            card: LabColors.daylightSurface,
+            border: LabColors.daylightBorder,
+            bar: LabColors.daylightAccent,
+            subBar: LabColors.daylightTextSecondary.withValues(alpha: 0.35),
+          ),
+        ),
+        const SizedBox(width: 8),
+        buildCard(
+          idx: 1,
+          semanticLabel: strings.themeNight,
+          targetMode: ThemeMode.dark,
+          preview: buildMiniFrame(
+            bg: LabColors.nightBackground,
+            card: LabColors.nightSurface,
+            border: LabColors.nightBorder,
+            bar: LabColors.nightAccent,
+            subBar: LabColors.nightTextSecondary.withValues(alpha: 0.4),
+          ),
+        ),
+        const SizedBox(width: 8),
+        buildCard(
+          idx: 2,
+          semanticLabel: strings.themeSystem,
+          targetMode: ThemeMode.system,
+          preview: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: ColoredBox(
+                  color: LabColors.daylightBackground,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Container(
+                      width: 14,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: LabColors.daylightSurface,
+                        borderRadius: const BorderRadiusDirectional.horizontal(
+                          start: Radius.circular(6),
+                        ),
+                        border: Border.all(
+                          color: LabColors.daylightBorder,
+                          width: 0.8,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: LabColors.daylightAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: ColoredBox(
+                  color: LabColors.nightBackground,
+                  child: Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: Container(
+                      width: 14,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: LabColors.nightSurface,
+                        borderRadius: const BorderRadiusDirectional.horizontal(
+                          end: Radius.circular(6),
+                        ),
+                        border: Border.all(
+                          color: LabColors.nightBorder,
+                          width: 0.8,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Container(
+                        width: 6,
+                        height: 6,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: LabColors.nightAccent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

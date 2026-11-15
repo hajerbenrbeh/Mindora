@@ -338,14 +338,14 @@ class PsychologicalProfileView extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: surfaceColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(context.tokens.cardRadius),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onEdit,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(context.tokens.cardRadius),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

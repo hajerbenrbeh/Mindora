@@ -460,7 +460,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           const SizedBox(width: 6),
           MindPressable(
             semanticLabel: strings.onboardingSkip,
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(tokens.chipRadius),
             onPressed: _skipCurrentStep,
             child: Container(
               constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
@@ -1031,7 +1031,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   alignment: AlignmentDirectional.centerEnd,
                   child: MindPressable(
                     semanticLabel: strings.openCrisisResourcesLabel,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(tokens.chipRadius),
                     onPressed: () => SupportModalSheet.show(context),
                     child: Container(
                       constraints: const BoxConstraints(minHeight: 48),
@@ -1222,7 +1222,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: tokens.surfaceSecondary,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(tokens.chipRadius),
       ),
       child: Text(
         label,

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
+import '../../../app/theme/mind_tokens.dart';
 import '../../case_file/data/clinical_export_log_service.dart';
 import '../../case_file/domain/clinical_export_record.dart';
 
@@ -63,15 +63,14 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surface = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.background;
+    final surface = tokens.surface;
+    final border = tokens.border;
+    final textPrimary = tokens.textPrimary;
+    final textSecondary = tokens.textSecondary;
 
     return Container(
       constraints: BoxConstraints(
@@ -79,7 +78,7 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
       ),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
         border: Border(top: BorderSide(color: border, width: 1)),
       ),
       child: SafeArea(
@@ -93,7 +92,7 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF262626) : const Color(0xFFE4E4E7),
+                  color: tokens.border,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -174,7 +173,7 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                               padding: const EdgeInsets.all(14),
                               decoration: BoxDecoration(
                                 color: surface,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(tokens.cardRadius),
                                 border: Border.all(color: border, width: 1),
                               ),
                               child: Column(
@@ -194,10 +193,10 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                                         ),
                                       ),
                                       Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                         decoration: BoxDecoration(
-                                          color: isDark ? const Color(0xFF1F1F1F) : const Color(0xFFE4E4E7),
-                                          borderRadius: BorderRadius.circular(4),
+                                          color: tokens.surfaceSecondary,
+                                          borderRadius: BorderRadius.circular(tokens.chipRadius),
                                         ),
                                         child: Text(
                                           '${r.sessionNumbers.length} SESSIONS',
@@ -250,10 +249,12 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                   width: double.infinity,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: LabColors.safetyWarmth,
+                      foregroundColor: tokens.safetyWarmth,
                       side: BorderSide(color: border, width: 1),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                      ),
                     ),
                     onPressed: _clearHistory,
                     child: Text(
