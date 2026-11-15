@@ -18,6 +18,7 @@ import '../../../core/widgets/mind_card.dart';
 import '../../../core/widgets/mind_pill.dart';
 import '../../../core/widgets/mind_pressable.dart';
 import '../../../core/widgets/mind_segmented.dart';
+import '../../../core/widgets/mood_emblem.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../home/presentation/widgets/home_organic_exercise_art.dart';
 import '../../investigation/controllers/investigation_providers.dart';
@@ -592,7 +593,10 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 const SizedBox(height: 16),
                 TrackIntensitySlider(
                   value: _moodIntensity,
-                  moodColor: trackMoodOptionFor(_selectedMood).color,
+                  moodColor: LabColors.moodColorFor(
+                    _selectedMood,
+                    isDark: Theme.of(context).brightness == Brightness.dark,
+                  ),
                   strings: strings,
                   onChanged: (v) {
                     setState(() {
@@ -605,9 +609,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 Container(
                   padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 10),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).brightness == Brightness.dark
-                        ? const Color(0xFF0C0C0F)
-                        : tokens.surface,
+                    color: tokens.surface,
                     borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(color: tokens.border),
                   ),
@@ -1148,9 +1150,13 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   ),
                 ),
               ),
-            ...visibleTraces
-                .take(20)
-                .map((t) => _buildTraceCard(t, tokens, strings)),
+            for (var i = 0; i < visibleTraces.take(20).length; i++)
+              _buildTraceCard(
+                visibleTraces[i],
+                tokens,
+                strings,
+                isLast: i == visibleTraces.take(20).length - 1,
+              ),
             if (_selectedDateKey == null && cases.isNotEmpty) ...[
               const SizedBox(height: 14),
               Text(
@@ -1175,10 +1181,13 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
   Widget _buildTraceCard(
     MindTraceModel t,
     MindTokens tokens,
-    AppStrings strings,
-  ) {
+    AppStrings strings, {
+    bool isLast = false,
+  }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final moodStyle = trackMoodOptionFor(t.overallMood);
+    final moodColor = LabColors.moodColorFor(t.overallMood, isDark: isDark);
+    final moodSoft = LabColors.moodSoftFor(t.overallMood, isDark: isDark);
     final moodText = trackMoodLabel(t.overallMood, strings);
     final triggers = (t.situation ?? '')
         .split(',')
@@ -1186,136 +1195,184 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
         .where((s) => s.isNotEmpty)
         .toList();
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: MindCard(
-        padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 12, 14),
-        onTap: () => _handleInspectTrace(t, strings),
-        semanticLabel: '${t.dateKey} $moodText ${t.moodIntensity}/10',
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 48,
-              constraints: const BoxConstraints(minHeight: 48),
-              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-              decoration: BoxDecoration(
-                color: tokens.surfaceSecondary,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: tokens.border),
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '${t.date.day}',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
-                      fontFeatures: const [FontFeature.tabularFigures()],
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            width: 22,
+            child: Column(
+              children: [
+                const SizedBox(height: 20),
+                Container(
+                  width: 14,
+                  height: 14,
+                  decoration: BoxDecoration(
+                    color: moodSoft,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: moodColor, width: 2.2),
+                  ),
+                ),
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      width: 1.5,
+                      margin: const EdgeInsets.only(top: 6),
+                      color: tokens.border,
                     ),
                   ),
-                  Text(
-                    strings.shortMonthName(t.date.month),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: strings.isArabic ? 0 : 0.3,
-                      color: tokens.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(moodStyle.icon, size: 16, color: moodStyle.color),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          '$moodText · ${t.moodIntensity}/10',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14.5,
-                            fontWeight: FontWeight.w700,
-                            color: tokens.textPrimary,
-                            fontFeatures: const [FontFeature.tabularFigures()],
-                          ),
-                        ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
+              child: MindCard(
+                padding: const EdgeInsetsDirectional.fromSTEB(14, 14, 12, 14),
+                onTap: () => _handleInspectTrace(t, strings),
+                semanticLabel: '${t.dateKey} $moodText ${t.moodIntensity}/10',
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 48,
+                      constraints: const BoxConstraints(minHeight: 48),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 6,
                       ),
-                    ],
-                  ),
-                  if (triggers.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: triggers
-                          .map(
-                            (trig) => Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 3,
+                      decoration: BoxDecoration(
+                        color: tokens.surfaceSecondary,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: tokens.border),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${t.date.day}',
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                              color: tokens.textPrimary,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                          Text(
+                            strings.shortMonthName(t.date.month),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: strings.isArabic ? 0 : 0.3,
+                              color: tokens.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              MoodEmblem(
+                                moodKey: t.overallMood,
+                                size: 17,
+                                color: moodColor,
                               ),
-                              decoration: BoxDecoration(
-                                color: tokens.surfaceSecondary,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: tokens.border),
-                              ),
-                              child: Text(
-                                strings.trackTriggerDisplay(trig),
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 11.5,
-                                  color: tokens.textSecondary,
+                              const SizedBox(width: 7),
+                              Flexible(
+                                child: Text(
+                                  '$moodText · ${t.moodIntensity}/10',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'Inter',
+                                    fontSize: 14.5,
+                                    fontWeight: FontWeight.w700,
+                                    color: tokens.textPrimary,
+                                    fontFeatures: const [
+                                      FontFeature.tabularFigures(),
+                                    ],
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
+                          if (triggers.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              children: triggers
+                                  .map(
+                                    (trig) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 3,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: tokens.surfaceSecondary,
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: tokens.border,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        strings.trackTriggerDisplay(trig),
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 11.5,
+                                          color: tokens.textSecondary,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
                             ),
-                          )
-                          .toList(),
+                          ],
+                          if (t.journalText != null &&
+                              t.journalText!.trim().isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              t.journalText!.trim(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                color: tokens.textSecondary,
+                                fontSize: 13,
+                                height: 1.4,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
-                  ],
-                  if (t.journalText != null &&
-                      t.journalText!.trim().isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      t.journalText!.trim(),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        color: tokens.textSecondary,
-                        fontSize: 13,
-                        height: 1.4,
+                    const SizedBox(width: 6),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12),
+                      child: Icon(
+                        isRtl
+                            ? Icons.chevron_left_rounded
+                            : Icons.chevron_right_rounded,
+                        size: 18,
+                        color: tokens.textTertiary,
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
             ),
-            const SizedBox(width: 6),
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Icon(
-                isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
-                size: 18,
-                color: tokens.textTertiary,
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

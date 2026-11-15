@@ -256,20 +256,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color _getMoodColor(String key) {
-    switch (key) {
-      case 'calm':
-        return LabColors.moodCalm;
-      case 'anxious':
-        return LabColors.moodAnxious; // Warm Sand / Desert Dune (replaces bright pink)
-      case 'frustrated':
-        return LabColors.moodFrustrated; // Warm Amber
-      case 'heavy':
-        return LabColors.moodHeavy; // Soft Iris
-      case 'restless':
-        return LabColors.moodRestless; // Mineral Mist
-      default:
-        return LabColors.moodCalm;
-    }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return LabColors.moodColorFor(key, isDark: isDark);
   }
 
   @override
@@ -295,9 +283,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
 
-    final activeMoodKey = _moodOptions[_selectedMoodIndex].key;
-    final activeMoodColor = _getMoodColor(activeMoodKey);
-
     return Scaffold(
       backgroundColor: tokens.background,
       appBar: AppBar(
@@ -311,7 +296,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               width: 30,
               height: 30,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF111114) : tokens.accentSoft,
+                color: tokens.accentSoft,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 border: Border.all(color: tokens.border),
               ),
@@ -347,30 +332,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: Stack(
         children: [
-          if (isDark)
-            Positioned(
-              top: -90,
-              left: 0,
-              right: 0,
-              height: 300,
-              child: IgnorePointer(
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeOutCubic,
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: const Alignment(0, -0.55),
-                      radius: 1.0,
-                      colors: [
-                        activeMoodColor.withValues(alpha: 0.11),
-                        activeMoodColor.withValues(alpha: 0.03),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
           SafeArea(
             child: RefreshIndicator(
           onRefresh: () async {
@@ -948,8 +909,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildQuickAccessGrid(MindTokens tokens, AppStrings strings) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final toolsAccent = tokens.warm;
+    final toolsSoft = tokens.warmSoft;
+    final calendarAccent = LabColors.moodColorFor('restless', isDark: isDark);
+    final calendarSoft = LabColors.moodSoftFor('restless', isDark: isDark);
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           strings.quickAccessHeader,
@@ -961,26 +928,97 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
         const SizedBox(height: 10),
-        Row(
-          children: [
-            Expanded(
-              child: _buildQuickAccessTile(
-                title: strings.navAiGuide,
-                subtitle: strings.quickAiSubtitle,
-                icon: Icons.psychology_alt_outlined,
-                tokens: tokens,
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  context.go(AppRouter.companion);
-                },
+        // Featured asymmetric Hero AI Companion launcher
+        MindPressable(
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            context.go(AppRouter.companion);
+          },
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 74),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: isDark ? tokens.surface : tokens.accentSoft.withValues(alpha: 0.55),
+              borderRadius: BorderRadius.circular(tokens.cardRadius),
+              border: Border.all(
+                color: tokens.accent.withValues(alpha: isDark ? 0.35 : 0.25),
+                width: 1.0,
               ),
             ),
-            const SizedBox(width: 10),
+            child: Row(
+              children: [
+                Container(
+                  width: 42,
+                  height: 42,
+                  decoration: BoxDecoration(
+                    color: tokens.accent,
+                    borderRadius: BorderRadius.circular(tokens.chipRadius),
+                  ),
+                  child: Icon(
+                    Icons.psychology_alt_outlined,
+                    size: 21,
+                    color: tokens.onAccent,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        strings.navAiGuide,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 14.5,
+                          fontWeight: FontWeight.w700,
+                          color: tokens.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        strings.quickAiSubtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: tokens.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: tokens.surface,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: tokens.border),
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 16,
+                    color: tokens.accent,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
             Expanded(
               child: _buildQuickAccessTile(
                 title: strings.quickToolsTitle,
                 subtitle: strings.quickToolsSubtitle,
                 icon: Icons.spa_outlined,
+                iconAccent: toolsAccent,
+                iconBg: toolsSoft,
                 tokens: tokens,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -988,16 +1026,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children: [
+            const SizedBox(width: 10),
             Expanded(
               child: _buildQuickAccessTile(
                 title: strings.quickCalendarTitle,
                 subtitle: strings.quickCalendarSubtitle,
                 icon: Icons.calendar_month_outlined,
+                iconAccent: calendarAccent,
+                iconBg: calendarSoft,
                 tokens: tokens,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -1005,20 +1041,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
               ),
             ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildQuickAccessTile(
-                title: strings.quickInsightsTitle,
-                subtitle: strings.quickInsightsSubtitle,
-                icon: Icons.insights_outlined,
-                tokens: tokens,
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  context.go(AppRouter.insights);
-                },
-              ),
-            ),
           ],
+        ),
+        const SizedBox(height: 10),
+        _buildQuickAccessTile(
+          title: strings.quickInsightsTitle,
+          subtitle: strings.quickInsightsSubtitle,
+          icon: Icons.insights_outlined,
+          iconAccent: tokens.accent,
+          iconBg: tokens.accentSoft,
+          tokens: tokens,
+          onTap: () {
+            HapticFeedback.lightImpact();
+            context.go(AppRouter.insights);
+          },
         ),
       ],
     );
@@ -1028,18 +1064,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required String title,
     required String subtitle,
     required IconData icon,
+    required Color iconAccent,
+    required Color iconBg,
     required MindTokens tokens,
     required VoidCallback onTap,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final tileRadius = isDark ? tokens.cardRadius : 18.0;
-    final iconBoxRadius = isDark ? tokens.chipRadius : 11.0;
+    final tileRadius = tokens.cardRadius;
+    final iconBoxRadius = tokens.chipRadius;
 
     return MindPressable(
       onPressed: onTap,
       borderRadius: BorderRadius.circular(tileRadius),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 72),
+        constraints: const BoxConstraints(minHeight: 70),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: tokens.surface,
@@ -1052,11 +1090,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: tokens.accentSoft,
+                color: iconBg,
                 borderRadius: BorderRadius.circular(iconBoxRadius),
-                border: isDark ? Border.all(color: tokens.border, width: 1.0) : null,
+                border: isDark
+                    ? Border.all(color: iconAccent.withValues(alpha: 0.28))
+                    : null,
               ),
-              child: Icon(icon, size: 18, color: tokens.accent),
+              child: Icon(icon, size: 18, color: iconAccent),
             ),
             const SizedBox(width: 10),
             Expanded(
