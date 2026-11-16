@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
@@ -65,13 +64,13 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -102,7 +101,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
 
               Text(
                 strings.sectionCommunication,
-                style: LabTheme.serifStyle(
+                style: LabTheme.textStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: textPrimary,
@@ -134,7 +133,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: context.tokens.accent,
+                        color: context.tokens.ink,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -153,18 +152,18 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? context.tokens.accentSoft
-                                  : context.tokens.surfaceSecondary,
+                                  ? context.tokens.cardTint
+                                  : context.tokens.surface2,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: isSelected ? context.tokens.accent : border,
+                                color: isSelected ? context.tokens.ink : border,
                                 width: isSelected ? 1.2 : 0.8,
                               ),
                             ),
                             child: Row(
                               children: [
                                 if (tone.icon != null) ...[
-                                  Icon(tone.icon, size: 16, color: isSelected ? context.tokens.accent : textSecondary),
+                                  Icon(tone.icon, size: 16, color: isSelected ? context.tokens.ink : textSecondary),
                                   const SizedBox(width: 8),
                                 ],
                                 Expanded(
@@ -178,7 +177,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                                   ),
                                 ),
                                 if (isSelected)
-                                  Icon(Icons.check_rounded, size: 14, color: context.tokens.accent),
+                                  Icon(Icons.check_rounded, size: 14, color: context.tokens.ink),
                               ],
                             ),
                           ),
@@ -200,7 +199,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: context.tokens.accent,
+                        color: context.tokens.ink,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -221,11 +220,11 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
                                   color: isSelected
-                                      ? context.tokens.accentSoft
-                                      : context.tokens.surfaceSecondary,
+                                      ? context.tokens.cardTint
+                                      : context.tokens.surface2,
                                   borderRadius: BorderRadius.circular(context.tokens.chipRadius),
                                   border: Border.all(
-                                    color: isSelected ? context.tokens.accent : border,
+                                    color: isSelected ? context.tokens.ink : border,
                                   ),
                                 ),
                                 child: Text(
@@ -234,7 +233,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                                   style: TextStyle(
                                     fontSize: 10.5,
                                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                    color: isSelected ? context.tokens.accent : textSecondary,
+                                    color: isSelected ? context.tokens.ink : textSecondary,
                                   ),
                                 ),
                               ),
@@ -258,7 +257,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: context.tokens.accent,
+                        color: context.tokens.ink,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -284,11 +283,11 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? context.tokens.accentSoft
-                                  : context.tokens.surfaceSecondary,
+                                  ? context.tokens.cardTint
+                                  : context.tokens.surface2,
                               borderRadius: BorderRadius.circular(context.tokens.chipRadius),
                               border: Border.all(
-                                color: isSelected ? context.tokens.accent : border,
+                                color: isSelected ? context.tokens.ink : border,
                                 width: isSelected ? 1 : 0.8,
                               ),
                             ),
@@ -296,7 +295,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (isSelected) ...[
-                                  Icon(Icons.check_rounded, size: 12, color: context.tokens.accent),
+                                  Icon(Icons.check_rounded, size: 12, color: context.tokens.ink),
                                   const SizedBox(width: 4),
                                 ],
                                 Text(
@@ -304,7 +303,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                    color: isSelected ? context.tokens.accent : textSecondary,
+                                    color: isSelected ? context.tokens.ink : textSecondary,
                                   ),
                                 ),
                               ],
@@ -328,7 +327,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: context.tokens.safetyWarmth,
+                        color: context.tokens.safety,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -354,11 +353,11 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? context.tokens.safetyWarmthSoft
-                                  : context.tokens.surfaceSecondary,
+                                  ? context.tokens.safetySoft
+                                  : context.tokens.surface2,
                               borderRadius: BorderRadius.circular(context.tokens.chipRadius),
                               border: Border.all(
-                                color: isSelected ? context.tokens.safetyWarmth : border,
+                                color: isSelected ? context.tokens.safety : border,
                                 width: isSelected ? 1 : 0.8,
                               ),
                             ),
@@ -366,7 +365,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 if (isSelected) ...[
-                                  Icon(Icons.remove_circle_outline_rounded, size: 12, color: context.tokens.safetyWarmth),
+                                  Icon(Icons.remove_circle_outline_rounded, size: 12, color: context.tokens.safety),
                                   const SizedBox(width: 4),
                                 ],
                                 Text(
@@ -374,7 +373,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                                    color: isSelected ? context.tokens.safetyWarmth : textSecondary,
+                                    color: isSelected ? context.tokens.safety : textSecondary,
                                   ),
                                 ),
                               ],
@@ -397,7 +396,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                   width: double.infinity,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: context.tokens.accent,
+                    color: context.tokens.ink,
                     borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                   ),
                   alignment: Alignment.center,
@@ -412,7 +411,7 @@ class _EditCommunicationSheetState extends ConsumerState<EditCommunicationSheet>
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: isDark ? context.tokens.background : Colors.white,
+                      color: context.tokens.bg,
                     ),
                   ),
                 ),

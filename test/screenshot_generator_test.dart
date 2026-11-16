@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mind_forensics/app/theme/lab_colors.dart';
 import 'package:mind_forensics/app/theme/lab_theme.dart';
+import 'package:mind_forensics/app/theme/mind_tokens.dart';
 import 'package:mind_forensics/features/home/presentation/home_screen.dart';
 import 'package:mind_forensics/features/insights/presentation/insights_screen.dart';
 import 'package:mind_forensics/features/investigation/presentation/ai_companion_hub_view.dart';
@@ -120,7 +120,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: RepaintBoundary(
               key: repaintKey,
               child: const HomeScreen(),
@@ -162,7 +162,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.nightTheme,
+            theme: buildMindTheme(Brightness.dark),
             home: RepaintBoundary(
               key: repaintKey,
               child: const HomeScreen(),
@@ -190,7 +190,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: RepaintBoundary(
               key: repaintKey,
               child: const HomeScreen(),
@@ -222,7 +222,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: RepaintBoundary(
               key: repaintKey,
               child: const TrackScreen(),
@@ -250,13 +250,13 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.nightTheme,
+            theme: buildMindTheme(Brightness.dark),
             home: Scaffold(
-              backgroundColor: LabColors.nightBackground,
+              backgroundColor: MindTokens.darkBg,
               body: RepaintBoundary(
                 key: repaintKey,
                 child: Container(
-                  color: LabColors.nightBackground,
+                  color: MindTokens.darkBg,
                   child: const AiCompanionHubView(),
                 ),
               ),
@@ -301,7 +301,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: RepaintBoundary(
               key: repaintKey,
               child: const InsightsScreen(),
@@ -350,7 +350,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: RepaintBoundary(
               key: repaintKey,
               child: const PsychologicalProfileScreen(),

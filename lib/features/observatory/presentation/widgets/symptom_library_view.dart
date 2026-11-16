@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../profile/controllers/profile_controller.dart';
 import '../../controllers/observatory_controllers.dart';
 import '../../domain/symptom_entry.dart';
@@ -25,21 +25,21 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
     BuildContext context,
     SymptomReport report,
     AppStrings strings,
-    bool isDark,
+    MindTokens tokens,
   ) async {
     final isAr = strings.isArabic;
-    final dialogBg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
-    final deleteColor = isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth;
+    final dialogBg = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
+    final deleteColor = tokens.safety;
 
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: dialogBg,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
           side: BorderSide(color: borderColor),
         ),
         title: Text(
@@ -96,15 +96,14 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final surfaceColor = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     final filteredSymptoms = ref.watch(filteredSymptomsProvider);
     final selectedIds = ref.watch(selectedSymptomIdsProvider);
@@ -135,11 +134,11 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                     color: !_showHistory ? textPrimary : textSecondary,
                   ),
                   backgroundColor: surfaceColor,
-                  selectedColor: LabColors.sageGreen.withValues(alpha: 0.22),
+                  selectedColor: tokens.selectedTintFor(tokens.m1),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.chipRadius),
                     side: BorderSide(
-                      color: !_showHistory ? LabColors.sageGreen : borderColor,
+                      color: !_showHistory ? tokens.m1 : borderColor,
                     ),
                   ),
                   showCheckmark: false,
@@ -163,11 +162,11 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                     color: _showHistory ? textPrimary : textSecondary,
                   ),
                   backgroundColor: surfaceColor,
-                  selectedColor: LabColors.sageGreen.withValues(alpha: 0.22),
+                  selectedColor: tokens.selectedTintFor(tokens.m1),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.chipRadius),
                     side: BorderSide(
-                      color: _showHistory ? LabColors.sageGreen : borderColor,
+                      color: _showHistory ? tokens.m1 : borderColor,
                     ),
                   ),
                   showCheckmark: false,
@@ -211,7 +210,7 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                         padding: const EdgeInsets.all(14),
                         decoration: BoxDecoration(
                           color: surfaceColor,
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(tokens.cardRadius),
                           border: Border.all(color: borderColor),
                         ),
                         child: Column(
@@ -232,22 +231,23 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                   decoration: BoxDecoration(
-                                    color: LabColors.sageGreen.withValues(alpha: 0.16),
-                                    borderRadius: BorderRadius.circular(6),
+                                    color: tokens.selectedTintFor(tokens.m1),
+                                    borderRadius: BorderRadius.circular(tokens.chipRadius),
+                                    border: Border.all(color: tokens.m1),
                                   ),
                                   child: Text(
                                     '${r.intensity}/10',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 11,
                                       fontWeight: FontWeight.w800,
-                                      color: LabColors.sageGreen,
+                                      color: textPrimary,
                                     ),
                                   ),
                                 ),
                                 IconButton(
                                   tooltip: strings.deleteEntryBtn,
                                   icon: Icon(Icons.delete_outline_rounded, size: 18, color: textSecondary),
-                                  onPressed: () => _confirmDeleteReport(context, r, strings, isDark),
+                                  onPressed: () => _confirmDeleteReport(context, r, strings, tokens),
                                 ),
                               ],
                             ),
@@ -280,10 +280,10 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: LabColors.sageGreen.withValues(alpha: 0.10),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: tokens.cardTintFor(tokens.m1),
+                                  borderRadius: BorderRadius.circular(tokens.rowRadius),
                                   border: Border.all(
-                                    color: LabColors.sageGreen.withValues(alpha: 0.35),
+                                    color: tokens.m1.withValues(alpha: 0.35),
                                   ),
                                 ),
                                 child: Text(
@@ -319,24 +319,24 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                             ? 'Rechercher parmi tous les ressentis...'
                             : 'Search across all symptoms...'),
                     hintStyle: TextStyle(
-                      color: textSecondary.withValues(alpha: 0.6),
+                      color: tokens.ink3,
                       fontSize: 12,
                     ),
                     prefixIcon: Icon(Icons.search_rounded, size: 18, color: textSecondary),
                     filled: true,
-                    fillColor: surfaceColor,
+                    fillColor: tokens.surface2,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(tokens.inputRadius),
                       borderSide: BorderSide(color: borderColor),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(tokens.inputRadius),
                       borderSide: BorderSide(color: borderColor),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: LabColors.sageGreen, width: 1.5),
+                      borderRadius: BorderRadius.circular(tokens.inputRadius),
+                      borderSide: BorderSide(color: tokens.focusRing, width: 1.5),
                     ),
                   ),
                 ),
@@ -352,7 +352,7 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                 style: IconButton.styleFrom(
                   foregroundColor: textPrimary,
                   side: BorderSide(color: borderColor),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.iconButtonRadius)),
                 ),
                 onPressed: () => CustomSymptomSheet.show(context),
               ),
@@ -377,11 +377,11 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                   color: activeDomain == null ? textPrimary : textSecondary,
                 ),
                 backgroundColor: surfaceColor,
-                selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+                selectedColor: tokens.selectedTintFor(tokens.m1),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
                   side: BorderSide(
-                    color: activeDomain == null ? LabColors.sageGreen : borderColor,
+                    color: activeDomain == null ? tokens.m1 : borderColor,
                   ),
                 ),
                 showCheckmark: false,
@@ -404,11 +404,11 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                       color: isSelected ? textPrimary : textSecondary,
                     ),
                     backgroundColor: surfaceColor,
-                    selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+                    selectedColor: tokens.selectedTintFor(tokens.m1),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(tokens.chipRadius),
                       side: BorderSide(
-                        color: isSelected ? LabColors.sageGreen : borderColor,
+                        color: isSelected ? tokens.m1 : borderColor,
                       ),
                     ),
                     showCheckmark: false,
@@ -443,7 +443,7 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                     final isSelected = selectedIds.contains(symptom.id);
 
                     return InkWell(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(tokens.rowRadius),
                       onTap: () {
                         HapticFeedback.selectionClick();
                         ref.read(selectedSymptomIdsProvider.notifier).toggle(symptom.id);
@@ -452,11 +452,11 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? LabColors.sageGreen.withValues(alpha: 0.12)
+                              ? tokens.selectedTintFor(tokens.m1)
                               : surfaceColor,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(tokens.rowRadius),
                           border: Border.all(
-                            color: isSelected ? LabColors.sageGreen : borderColor,
+                            color: isSelected ? tokens.m1 : borderColor,
                             width: isSelected ? 1.5 : 1,
                           ),
                         ),
@@ -465,8 +465,8 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                           children: [
                             Checkbox(
                               value: isSelected,
-                              activeColor: LabColors.sageGreen,
-                              checkColor: Colors.black,
+                              activeColor: tokens.m1,
+                              checkColor: tokens.onMood,
                               visualDensity: VisualDensity.compact,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4),
@@ -497,7 +497,7 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 6, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: LabColors.warmBeige.withValues(alpha: 0.2),
+                                            color: tokens.selectedTintFor(MindTokens.moodRestless),
                                             borderRadius: BorderRadius.circular(4),
                                           ),
                                           child: Text(
@@ -519,7 +519,7 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 5, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: LabColors.sageGreenGlow.withValues(alpha: 0.15),
+                                            color: tokens.selectedTintFor(tokens.m1),
                                             borderRadius: BorderRadius.circular(4),
                                           ),
                                           child: Text(
@@ -528,11 +528,11 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                                                 : (strings.isFrench
                                                     ? 'PROFIL'
                                                     : 'INTAKE'),
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 8.5,
                                               fontWeight: FontWeight.w800,
                                               letterSpacing: 0.3,
-                                              color: LabColors.sageGreenGlow,
+                                              color: textPrimary,
                                             ),
                                           ),
                                         ),
@@ -566,13 +566,7 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
             decoration: BoxDecoration(
               color: surfaceColor,
               border: Border(top: BorderSide(color: borderColor)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -3),
-                ),
-              ],
+              boxShadow: tokens.shadows,
             ),
             child: SafeArea(
               top: false,
@@ -616,9 +610,10 @@ class _SymptomLibraryViewState extends ConsumerState<SymptomLibraryView> {
                       SymptomAssessmentSheet.show(context, selectedSymptoms: selected);
                     },
                     style: FilledButton.styleFrom(
-                      backgroundColor: textPrimary,
-                      foregroundColor: isDark ? Colors.black : Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      backgroundColor: tokens.ink,
+                      foregroundColor: tokens.bg,
+                      minimumSize: const Size(48, 48),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                     ),
                     child: Text(

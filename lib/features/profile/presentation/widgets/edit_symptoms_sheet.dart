@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
@@ -77,13 +76,13 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -114,7 +113,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
 
               Text(
                 strings.sectionSymptoms,
-                style: LabTheme.serifStyle(
+                style: LabTheme.textStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: textPrimary,
@@ -143,7 +142,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                           children: [
                             Row(
                               children: [
-                                Icon(cat.icon, size: 13, color: context.tokens.accent),
+                                Icon(cat.icon, size: 13, color: context.tokens.ink),
                                 const SizedBox(width: 6),
                                 Text(
                                   cat.localized(strings).toUpperCase(),
@@ -151,7 +150,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                     fontSize: 10,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.8,
-                                    color: context.tokens.accent,
+                                    color: context.tokens.ink,
                                   ),
                                 ),
                               ],
@@ -188,11 +187,11 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? context.tokens.accentSoft
-                                          : context.tokens.surfaceSecondary,
+                                          ? context.tokens.cardTint
+                                          : context.tokens.surface2,
                                       borderRadius: BorderRadius.circular(context.tokens.chipRadius),
                                       border: Border.all(
-                                        color: isSelected ? context.tokens.accent : border,
+                                        color: isSelected ? context.tokens.ink : border,
                                         width: isSelected ? 1 : 0.8,
                                       ),
                                     ),
@@ -200,7 +199,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         if (isSelected) ...[
-                                          Icon(Icons.check_rounded, size: 12, color: context.tokens.accent),
+                                          Icon(Icons.check_rounded, size: 12, color: context.tokens.ink),
                                           const SizedBox(width: 4),
                                         ],
                                         Text(
@@ -209,7 +208,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                             fontSize: 11,
                                             fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                                             color: isSelected
-                                                ? context.tokens.accent
+                                                ? context.tokens.ink
                                                 : textSecondary,
                                           ),
                                         ),
@@ -239,7 +238,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                       : '+ Add custom experience...'),
                               hintStyle: TextStyle(fontSize: 11, color: textSecondary.withValues(alpha: 0.6)),
                               filled: true,
-                              fillColor: context.tokens.surfaceSecondary,
+                              fillColor: context.tokens.surface2,
                               contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
                               enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
@@ -251,7 +250,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                         IconButton(
                           tooltip: strings.addItemTooltip,
                           icon: const Icon(Icons.add_circle_outline_rounded, size: 20),
-                          color: context.tokens.accent,
+                          color: context.tokens.ink,
                           onPressed: _addCustomSymptom,
                         ),
                       ],
@@ -287,11 +286,11 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                                 : 'Describe any patterns, triggers, or challenges without pressure...'),
                         hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
                         filled: true,
-                        fillColor: context.tokens.surfaceSecondary,
+                        fillColor: context.tokens.surface2,
                         contentPadding: const EdgeInsets.all(12),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
                         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.accent)),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.ink)),
                       ),
                     ),
 
@@ -309,7 +308,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                   width: double.infinity,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: context.tokens.accent,
+                    color: context.tokens.ink,
                     borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                   ),
                   alignment: Alignment.center,
@@ -324,7 +323,7 @@ class _EditSymptomsSheetState extends ConsumerState<EditSymptomsSheet> {
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: isDark ? context.tokens.background : Colors.white,
+                      color: context.tokens.bg,
                     ),
                   ),
                 ),

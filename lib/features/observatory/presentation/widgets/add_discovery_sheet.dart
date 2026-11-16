@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../journey/controllers/journey_controller.dart';
 
 class AddDiscoverySheet extends ConsumerStatefulWidget {
@@ -101,20 +101,19 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
     );
 
     if (mounted) {
+      final tokens = context.tokens;
       Navigator.of(context).pop();
       final s = ref.read(appStringsProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? LabColors.nightSurface
-              : LabColors.daylightTextPrimary,
+          backgroundColor: tokens.surface,
           content: Text(
             s.isArabic
                 ? 'تم حفظ الخلاصة في سجل الاكتشافات'
                 : (s.isFrench
                     ? 'Réflexion enregistrée dans vos découvertes personnelles'
                     : 'Reflection saved to your personal discoveries'),
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12, color: tokens.ink),
           ),
         ),
       );
@@ -123,20 +122,19 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final surface = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surface = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? LabColors.nightBackground : LabColors.daylightBackground,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        color: tokens.surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border(top: BorderSide(color: border, width: 1.5)),
       ),
       padding: EdgeInsets.fromLTRB(
@@ -156,7 +154,7 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF333333) : const Color(0xFFD1D5DB),
+                  color: tokens.lineStrong,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -177,7 +175,7 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.8,
-                    color: LabColors.sageGreen,
+                    color: textPrimary,
                   ),
                 ),
                 IconButton(
@@ -228,11 +226,11 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
                         color: isSelected ? textPrimary : textSecondary,
                       ),
                       backgroundColor: surface,
-                      selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+                      selectedColor: tokens.selectedTintFor(tokens.m1),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(6),
+                        borderRadius: BorderRadius.circular(tokens.chipRadius),
                         side: BorderSide(
-                          color: isSelected ? LabColors.sageGreen : border,
+                          color: isSelected ? tokens.m1 : border,
                         ),
                       ),
                       showCheckmark: false,
@@ -265,9 +263,9 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
               children: _suggestions.map((s) {
                 final label = isAr ? s.titleAr : (strings.isFrench ? s.titleFr : s.titleEn);
                 return ActionChip(
-                  backgroundColor: surface,
+                  backgroundColor: tokens.surface2,
                   side: BorderSide(color: border),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.chipRadius)),
                   label: Text(
                     label,
                     style: TextStyle(fontSize: 11, color: textSecondary),
@@ -300,21 +298,21 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
                     : (strings.isFrench
                         ? 'ex. Faire une pause est un choix conscient...'
                         : 'e.g., Pausing is intentional...'),
-                hintStyle: TextStyle(fontSize: 12, color: textSecondary.withValues(alpha: 0.6)),
+                hintStyle: TextStyle(fontSize: 12, color: tokens.ink3),
                 filled: true,
-                fillColor: surface,
+                fillColor: tokens.surface2,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(tokens.inputRadius),
                   borderSide: BorderSide(color: border),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(tokens.inputRadius),
                   borderSide: BorderSide(color: border),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: LabColors.sageGreen, width: 1.5),
+                  borderRadius: BorderRadius.circular(tokens.inputRadius),
+                  borderSide: BorderSide(color: tokens.focusRing, width: 1.5),
                 ),
               ),
             ),
@@ -346,21 +344,21 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
                     : (strings.isFrench
                         ? 'En quoi ce recadrage vous apaise-t-il aujourd’hui ?'
                         : 'How does this shift support your ease today?'),
-                hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
+                hintStyle: TextStyle(fontSize: 11.5, color: tokens.ink3),
                 filled: true,
-                fillColor: surface,
+                fillColor: tokens.surface2,
                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(tokens.inputRadius),
                   borderSide: BorderSide(color: border),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(tokens.inputRadius),
                   borderSide: BorderSide(color: border),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                  borderSide: const BorderSide(color: LabColors.sageGreen, width: 1.5),
+                  borderRadius: BorderRadius.circular(tokens.inputRadius),
+                  borderSide: BorderSide(color: tokens.focusRing, width: 1.5),
                 ),
               ),
             ),
@@ -369,13 +367,14 @@ class _AddDiscoverySheetState extends ConsumerState<AddDiscoverySheet> {
             // Save Button
             SizedBox(
               width: double.infinity,
+              height: 48,
               child: FilledButton(
                 onPressed: _save,
                 style: FilledButton.styleFrom(
-                  backgroundColor: LabColors.sageGreen,
-                  foregroundColor: Colors.black,
+                  backgroundColor: tokens.ink,
+                  foregroundColor: tokens.bg,
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
                 ),
                 child: Text(
                   isAr

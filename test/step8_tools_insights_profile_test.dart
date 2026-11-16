@@ -112,7 +112,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.dark),
               home: const InnerObservatoryScreen(),
             ),
           ),
@@ -158,7 +158,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: LabTheme.daylightTheme,
+              theme: buildMindTheme(Brightness.light),
               home: const InnerObservatoryScreen(),
             ),
           ),
@@ -204,7 +204,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: const InsightsScreen(),
           ),
         ),
@@ -234,7 +234,7 @@ void main() {
           UncontrolledProviderScope(
             container: container,
             child: MaterialApp(
-              theme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.dark),
               home: const InsightsScreen(),
             ),
           ),
@@ -305,7 +305,7 @@ void main() {
           UncontrolledProviderScope(
             container: container,
             child: MaterialApp(
-              theme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.dark),
               home: const SettingsScreen(),
             ),
           ),

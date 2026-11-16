@@ -46,11 +46,11 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final bg = tokens.background;
+    final bg = tokens.bg;
     final surfaceColor = tokens.surface;
-    final borderColor = tokens.border;
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Scaffold(
       backgroundColor: bg,
@@ -73,7 +73,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
             icon: Icon(
               Icons.healing_outlined,
               size: 20,
-              color: tokens.accent,
+              color: tokens.ink,
             ),
             onPressed: () => ContextualSupportSheet.show(context),
           ),
@@ -180,7 +180,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
         decoration: BoxDecoration(
           color: tokens.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: tokens.border, width: 1.0),
+          border: Border.all(color: tokens.line, width: 1.0),
         ),
         child: Row(
           children: [
@@ -188,10 +188,10 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: tokens.accentSoft,
+                color: tokens.cardTint,
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
-              child: Icon(Icons.air_rounded, size: 19, color: tokens.accent),
+              child: Icon(Icons.air_rounded, size: 19, color: tokens.ink),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -203,7 +203,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -213,7 +213,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 12,
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                     ),
                   ),
                 ],
@@ -222,7 +222,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
             Icon(
               Icons.chevron_right_rounded,
               size: 18,
-              color: tokens.textTertiary,
+              color: tokens.ink3,
             ),
           ],
         ),
@@ -256,12 +256,12 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
           constraints: const BoxConstraints(minHeight: 48),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? tokens.accentSoft : tokens.background,
+            color: isSelected ? tokens.cardTint : tokens.bg,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
-                  ? tokens.accent.withValues(alpha: 0.45)
-                  : tokens.border,
+                  ? tokens.ink.withValues(alpha: 0.45)
+                  : tokens.line,
             ),
           ),
           child: Row(
@@ -270,7 +270,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
               Icon(
                 icon,
                 size: 16,
-                color: isSelected ? tokens.accent : tokens.textSecondary,
+                color: isSelected ? tokens.ink : tokens.ink2,
               ),
               const SizedBox(width: 6),
               Flexible(
@@ -281,7 +281,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? tokens.accent : tokens.textSecondary,
+                    color: isSelected ? tokens.ink : tokens.ink2,
                   ),
                 ),
               ),
@@ -445,7 +445,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                       ),
                     ),
                     style: TextButton.styleFrom(
-                      foregroundColor: context.tokens.accent,
+                      foregroundColor: context.tokens.ink,
                       minimumSize: const Size(48, 48),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -555,7 +555,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                 height: 6,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
               const SizedBox(width: 8),
@@ -631,7 +631,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                               child: Text(
                                 strings.deleteEntryBtn,
                                 style: TextStyle(
-                                  color: context.tokens.safetyWarmth,
+                                  color: context.tokens.safety,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
@@ -679,7 +679,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: context.tokens.surfaceSecondary,
+                color: context.tokens.surface2,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: borderColor),
               ),
@@ -720,7 +720,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
             ),
             child: Row(
               children: [
-                Icon(Icons.radar_outlined, size: 16, color: context.tokens.accent),
+                Icon(Icons.radar_outlined, size: 16, color: context.tokens.ink),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -753,7 +753,7 @@ class _InnerObservatoryScreenState extends ConsumerState<InnerObservatoryScreen>
                       horizontal: 12,
                       vertical: 10,
                     ),
-                    foregroundColor: context.tokens.accent,
+                    foregroundColor: context.tokens.ink,
                   ),
                   child: Text(
                     strings.contextualSupportTitle,

@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mind_forensics/app/localization/app_strings.dart';
 import 'package:mind_forensics/app/router/app_router.dart';
-import 'package:mind_forensics/app/theme/lab_colors.dart';
 import 'package:mind_forensics/app/theme/lab_theme.dart';
 import 'package:mind_forensics/app/theme/mind_tokens.dart';
 import 'package:mind_forensics/core/widgets/mind_pressable.dart';
@@ -32,13 +31,11 @@ void main() {
 
   group('Step 4 Design Token Hygiene, Typography & Motion Tests', () {
     test('LabTheme styles rely strictly on bundled Inter with no serif/monospace fallbacks', () {
-      expect(LabTheme.serifStyle().fontFamily, equals('Inter'));
-      expect(LabTheme.editorialSerif().fontFamily, equals('Inter'));
-      expect(LabTheme.monoStyle().fontFamily, equals('Inter'));
-      expect(LabTheme.daylightTheme.textTheme.bodyMedium?.fontFamily, equals('Inter'));
-      expect(LabTheme.nightTheme.textTheme.bodyMedium?.fontFamily, equals('Inter'));
-      expect(LabTheme.daylightTheme.textTheme.bodyMedium?.height, equals(1.5));
-      expect(LabTheme.nightTheme.textTheme.bodyMedium?.height, equals(1.5));
+      expect(LabTheme.textStyle().fontFamily, equals('Inter'));
+      expect(buildMindTheme(Brightness.light).textTheme.bodyMedium?.fontFamily, equals('Inter'));
+      expect(buildMindTheme(Brightness.dark).textTheme.bodyMedium?.fontFamily, equals('Inter'));
+      expect(buildMindTheme(Brightness.light).textTheme.bodyMedium?.height, equals(1.5));
+      expect(buildMindTheme(Brightness.dark).textTheme.bodyMedium?.height, equals(1.5));
     });
 
     test('MindTokens light and dark text/safety pairs meet WCAG AA (>= 4.5:1)', () {
@@ -46,24 +43,24 @@ void main() {
       const dark = MindTokens.dark;
 
       // Light surfaces
-      expect(_contrastRatio(light.textPrimary, light.background), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.textSecondary, light.background), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.textSecondary, light.surfaceSecondary), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.textTertiary, light.background), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.textTertiary, light.surfaceSecondary), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.accent, light.accentSoft), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.onAccent, light.accent), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(light.safetyWarmth, light.safetyWarmthSoft), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.ink, light.bg), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.ink2, light.bg), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.ink2, light.surface2), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.ink3, light.bg), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.ink3, light.surface2), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.ink, light.cardTint), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.bg, light.ink), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(light.safety, light.safetySoft), greaterThanOrEqualTo(4.5));
 
       // Dark surfaces
-      expect(_contrastRatio(dark.textPrimary, dark.background), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.textSecondary, dark.surface), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.textSecondary, dark.surfaceSecondary), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.textTertiary, dark.surface), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.textTertiary, dark.surfaceSecondary), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.accent, dark.accentSoft), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.onAccent, dark.accent), greaterThanOrEqualTo(4.5));
-      expect(_contrastRatio(dark.safetyWarmth, dark.safetyWarmthSoft), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.ink, dark.bg), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.ink2, dark.surface), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.ink2, dark.surface2), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.ink3, dark.surface), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.ink3, dark.surface2), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.ink, dark.cardTint), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.bg, dark.ink), greaterThanOrEqualTo(4.5));
+      expect(_contrastRatio(dark.safety, dark.safetySoft), greaterThanOrEqualTo(4.5));
     });
 
     testWidgets('MindPressable applies organic scale+opacity motion and honors reduced motion', (tester) async {
@@ -142,7 +139,7 @@ void main() {
                   'restless' => s.moodRestless,
                   _ => key,
                 },
-                getMoodColor: (_) => LabColors.moodCalm,
+                getMoodColor: (_) => MindTokens.moodCalm,
               ),
             ),
           ),

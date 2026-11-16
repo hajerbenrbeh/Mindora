@@ -106,7 +106,7 @@ class ModeChooserSheet extends ConsumerWidget {
         color: tokens.surface,
         borderRadius:
             BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
-        border: Border.all(color: tokens.border),
+        border: Border.all(color: tokens.line),
       ),
       child: SafeArea(
         top: false,
@@ -120,7 +120,7 @@ class ModeChooserSheet extends ConsumerWidget {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: tokens.border,
+                  color: tokens.line,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -136,7 +136,7 @@ class ModeChooserSheet extends ConsumerWidget {
                       fontFamily: 'Inter',
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -145,7 +145,7 @@ class ModeChooserSheet extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 13,
                       height: 1.45,
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                     ),
                   ),
                 ],
@@ -179,11 +179,11 @@ class ModeChooserSheet extends ConsumerWidget {
                       padding: const EdgeInsets.all(14),
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? tokens.accentSoft
-                            : tokens.surfaceSecondary,
+                            ? tokens.cardTint
+                            : tokens.surface2,
                         borderRadius: BorderRadius.circular(tokens.cardRadius),
                         border: Border.all(
-                          color: isSelected ? tokens.accent : tokens.border,
+                          color: isSelected ? tokens.ink : tokens.line,
                           width: isSelected ? 1.5 : 1.0,
                         ),
                       ),
@@ -195,21 +195,21 @@ class ModeChooserSheet extends ConsumerWidget {
                             height: 36,
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? tokens.accent.withValues(alpha: 0.16)
+                                  ? tokens.ink.withValues(alpha: 0.16)
                                   : tokens.surface,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
                                 color: isSelected
-                                    ? tokens.accent.withValues(alpha: 0.35)
-                                    : tokens.border,
+                                    ? tokens.ink.withValues(alpha: 0.35)
+                                    : tokens.line,
                               ),
                             ),
                             child: Icon(
                               iconForConversationMode(mode),
                               size: 18,
                               color: isSelected
-                                  ? tokens.accent
-                                  : tokens.textSecondary,
+                                  ? tokens.ink
+                                  : tokens.ink2,
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -226,8 +226,8 @@ class ModeChooserSheet extends ConsumerWidget {
                                           fontSize: 14,
                                           fontWeight: FontWeight.w700,
                                           color: isSelected
-                                              ? tokens.accent
-                                              : tokens.textPrimary,
+                                              ? tokens.ink
+                                              : tokens.ink,
                                         ),
                                       ),
                                     ),
@@ -235,7 +235,7 @@ class ModeChooserSheet extends ConsumerWidget {
                                       Icon(
                                         Icons.check_circle_rounded,
                                         size: 18,
-                                        color: tokens.accent,
+                                        color: tokens.ink,
                                       ),
                                   ],
                                 ),
@@ -245,7 +245,7 @@ class ModeChooserSheet extends ConsumerWidget {
                                   style: TextStyle(
                                     fontSize: 12.5,
                                     height: 1.4,
-                                    color: tokens.textSecondary,
+                                    color: tokens.ink2,
                                   ),
                                 ),
                               ],

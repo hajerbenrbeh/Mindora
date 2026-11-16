@@ -13,7 +13,6 @@ class SlideToAnchor extends StatefulWidget {
     this.accentColor,
     this.backgroundColor,
     this.height = 54.0,
-    @Deprecated('Removed in Step 5') this.isDark = true,
   });
 
   final String label;
@@ -21,7 +20,6 @@ class SlideToAnchor extends StatefulWidget {
   final Color? accentColor;
   final Color? backgroundColor;
   final double height;
-  final bool isDark;
 
   @override
   State<SlideToAnchor> createState() => _SlideToAnchorState();

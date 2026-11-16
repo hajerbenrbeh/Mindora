@@ -27,7 +27,7 @@ Widget createLocalizedTestApp({
     builder: (context, ref, _) {
       final locale = ref.watch(localeControllerProvider);
       return MaterialApp(
-        theme: LabTheme.daylightTheme,
+        theme: buildMindTheme(Brightness.light),
         locale: locale,
         supportedLocales: const [
           Locale('en'),
@@ -338,7 +338,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp.router(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             routerConfig: testRouter,
           ),
         ),

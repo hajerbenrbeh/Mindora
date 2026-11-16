@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:mind_forensics/app/theme/lab_colors.dart';
+import 'package:mind_forensics/app/theme/mind_tokens.dart';
 import 'package:mind_forensics/core/widgets/fingerprint_thread_signature.dart';
 import 'package:mind_forensics/core/widgets/neural_brain_wireframe.dart';
 import 'package:mind_forensics/core/widgets/radial_mood_dial.dart';
@@ -149,8 +149,8 @@ void main() {
                     FingerprintThreadSignature(
                       size: 72,
                       animated: true,
-                      primaryColor: LabColors.warmBeige,
-                      accentColor: LabColors.sageGreen,
+                      primaryColor: MindTokens.moodRestless,
+                      accentColor: MindTokens.moodCalm,
                     ),
                     NeuralBrainWireframe(size: 80, animate: true),
                     VagalBreathingVisualizer(

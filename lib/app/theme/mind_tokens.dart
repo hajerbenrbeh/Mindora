@@ -211,50 +211,6 @@ class MindTokens extends ThemeExtension<MindTokens> {
   static const Color darkScrim = Color.fromRGBO(0, 0, 0, 0.70);
   static const Color darkFocusRing = Color.fromRGBO(255, 255, 255, 0.90);
 
-  // ---------------------------------------------------------------------------
-  // Temporary Bridge Constants for Legacy Forensic Labels & LabColors (Removed in Step 5)
-  // ---------------------------------------------------------------------------
-  @Deprecated('Removed in Step 5')
-  static const Color legacyFactBgLight = Color(0xFFEAF2FC);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyFactBgDark = Color(0xFF0F1824);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyFactBorderLight = Color(0x4D5B9BEA);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyFactBorderDark = Color(0x4D5B9BEA);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyAssumptionBgLight = Color(0xFFFCF6E8);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyAssumptionBgDark = Color(0xFF1E170A);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyAssumptionBorderLight = Color(0x4DEDB23E);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyAssumptionBorderDark = Color(0x4DEDB23E);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyInterpretationBgLight = Color(0xFFF1EFFC);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyInterpretationBgDark = Color(0xFF161326);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyInterpretationBorderDark = Color(0x4D8A7BE0);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyCalmBgLight = Color(0xFFE8F5F0);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyCalmBgDark = Color(0xFF0D1D17);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyCalmBorderLight = Color(0x4D4FB896);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyCalmBorderDark = Color(0x4D4FB896);
-  @Deprecated('Removed in Step 5')
-  static const Color legacySafetyBorderLight = Color(0x4DC0324E);
-  @Deprecated('Removed in Step 5')
-  static const Color legacySafetyBorderDark = Color(0x4DFF6166);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyCalmGlow = Color(0x334FB896);
-  @Deprecated('Removed in Step 5')
-  static const Color legacySafetyGlow = Color(0x33C0324E);
-  @Deprecated('Removed in Step 5')
-  static const Color legacyRestlessGlow = Color(0x33EDB23E);
-
   /// Light ("Dawn") token preset from prototype-v2.
   static const MindTokens light = MindTokens(
     brightness: Brightness.light,
@@ -503,51 +459,6 @@ class MindTokens extends ThemeExtension<MindTokens> {
   /// Hairline badge border derived from [labelColor].
   Color labelBorder(LabelType label) =>
       labelColor(label).withValues(alpha: 0.30);
-
-  // ---------------------------------------------------------------------------
-  // Transitional Aliases for Steps 2–5 Backward Compatibility (Removed in Step 5)
-  // ---------------------------------------------------------------------------
-  @Deprecated('Removed in Step 5')
-  Color get background => bg;
-
-  @Deprecated('Removed in Step 5')
-  Color get surfaceSecondary => surface2;
-
-  @Deprecated('Removed in Step 5')
-  Color get surfaceElevated => surface3;
-
-  @Deprecated('Removed in Step 5')
-  Color get border => line;
-
-  @Deprecated('Removed in Step 5')
-  Color get textPrimary => ink;
-
-  @Deprecated('Removed in Step 5')
-  Color get textSecondary => ink2;
-
-  @Deprecated('Removed in Step 5')
-  Color get textTertiary => ink3;
-
-  @Deprecated('Removed in Step 5')
-  Color get accent => ink;
-
-  @Deprecated('Removed in Step 5')
-  Color get onAccent => bg;
-
-  @Deprecated('Removed in Step 5')
-  Color get accentSoft => cardTint;
-
-  @Deprecated('Removed in Step 5')
-  Color get warm => m1;
-
-  @Deprecated('Removed in Step 5')
-  Color get warmSoft => selectedTint;
-
-  @Deprecated('Removed in Step 5')
-  Color get safetyWarmth => safety;
-
-  @Deprecated('Removed in Step 5')
-  Color get safetyWarmthSoft => safetySoft;
 
   @override
   MindTokens copyWith({

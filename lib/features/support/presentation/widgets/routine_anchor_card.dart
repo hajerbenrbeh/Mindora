@@ -20,21 +20,26 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
   int _selectedAnchorIndex = 0;
   bool _isAdopted = false;
 
-  final List<({
-    String titleEn,
-    String titleFr,
-    String titleAr,
-    String descEn,
-    String descFr,
-    String descAr,
-    IconData icon,
-  })> _anchors = const [
+  final List<
+    ({
+      String titleEn,
+      String titleFr,
+      String titleAr,
+      String descEn,
+      String descFr,
+      String descAr,
+      IconData icon,
+    })
+  >
+  _anchors = const [
     (
       titleEn: 'Daylight & Hydration',
       titleFr: 'Lumière & Hydratation',
       titleAr: 'ضوء النهار وشرب الماء',
-      descEn: 'Drink a glass of water near a window within 30 minutes of waking.',
-      descFr: 'Boire un grand verre d’eau près d’une fenêtre dans les 30 min du réveil.',
+      descEn:
+          'Drink a glass of water near a window within 30 minutes of waking.',
+      descFr:
+          'Boire un grand verre d’eau près d’une fenêtre dans les 30 min du réveil.',
       descAr: 'شرب كأس ماء والتعرض لضوء النافذة في أول نصف ساعة بعد الاستيقاظ.',
       icon: Icons.wb_sunny_outlined,
     ),
@@ -42,18 +47,24 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
       titleEn: 'Somatic Posture Reset',
       titleFr: 'Pause Posture & Respiration',
       titleAr: 'إعادة ضبط وضعية الجسد',
-      descEn: 'Release jaw tension, roll shoulders back, and take 3 slow grounding breaths.',
-      descFr: 'Détendre la mâchoire, rouler les épaules et prendre 3 lentes respirations.',
-      descAr: 'إرخاء الفك، تحريك الكتفين للخلف، وأخذ 3 أنفاس عميقة لتخفيف الشد.',
+      descEn:
+          'Release jaw tension, roll shoulders back, and take 3 slow grounding breaths.',
+      descFr:
+          'Détendre la mâchoire, rouler les épaules et prendre 3 lentes respirations.',
+      descAr:
+          'إرخاء الفك، تحريك الكتفين للخلف، وأخذ 3 أنفاس عميقة لتخفيف الشد.',
       icon: Icons.accessibility_new_rounded,
     ),
     (
       titleEn: 'Evening Digital Buffer',
       titleFr: 'Sas Numérique du Soir',
       titleAr: 'حاجز رقمي قبل النوم',
-      descEn: 'Place your phone screen-down across the room 15 minutes before bed.',
-      descFr: 'Poser son téléphone écran vers le bas loin du lit 15 min avant de dormir.',
-      descAr: 'وضع الهاتف مقلوباً بعيداً عن السرير بـ 15 دقيقة قبل النوم لتهدئة الذهن.',
+      descEn:
+          'Place your phone screen-down across the room 15 minutes before bed.',
+      descFr:
+          'Poser son téléphone écran vers le bas loin du lit 15 min avant de dormir.',
+      descAr:
+          'وضع الهاتف مقلوباً بعيداً عن السرير بـ 15 دقيقة قبل النوم لتهدئة الذهن.',
       icon: Icons.bedtime_outlined,
     ),
     (
@@ -61,7 +72,8 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
       titleFr: 'Instant de Calme à Midi',
       titleAr: 'لحظة سكون في منتصف اليوم',
       descEn: 'Pause for 60 seconds with no notifications before eating lunch.',
-      descFr: 'Une minute de silence sans écran ni notification avant le déjeuner.',
+      descFr:
+          'Une minute de silence sans écran ni notification avant le déjeuner.',
       descAr: 'دقيقة صمت واحدة دون شاشات أو إشعارات قبل بدء وجبة الغداء.',
       icon: Icons.pause_circle_outline_rounded,
     ),
@@ -69,8 +81,6 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
     final tokens = context.tokens;
     final isAr = strings.isArabic;
@@ -121,7 +131,9 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                 child: Text(
                   isAr
                       ? 'نقطة توازن واحدة'
-                      : (isFr ? 'UN POINT D’ANCRAGE DOUX' : 'ONE GENTLE ANCHOR'),
+                      : (isFr
+                            ? 'UN POINT D’ANCRAGE DOUX'
+                            : 'ONE GENTLE ANCHOR'),
                   style: TextStyle(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
@@ -136,8 +148,8 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
             isAr
                 ? 'لا داعي لإصلاح روتينك بالكامل. اختر نقطة ارتكاز صغيرة تثبتك اليوم بدون أي التزام أو ضغط.'
                 : (isFr
-                    ? 'Inutile de tout bouleverser. Choisissez un petit point d’ancrage physique pour stabiliser votre journée sans pression.'
-                    : 'No need to overhaul your life. Choose one small physical anchor to steady your day without streak pressure.'),
+                      ? 'Inutile de tout bouleverser. Choisissez un petit point d’ancrage physique pour stabiliser votre journée sans pression.'
+                      : 'No need to overhaul your life. Choose one small physical anchor to steady your day without streak pressure.'),
             style: TextStyle(fontSize: 12, color: textSecondary, height: 1.35),
           ),
           const SizedBox(height: 16),
@@ -149,7 +161,9 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
             children: List.generate(_anchors.length, (idx) {
               final a = _anchors[idx];
               final isSelected = idx == _selectedAnchorIndex;
-              final pillTitle = isAr ? a.titleAr : (isFr ? a.titleFr : a.titleEn);
+              final pillTitle = isAr
+                  ? a.titleAr
+                  : (isFr ? a.titleFr : a.titleEn);
 
               return ChoiceChip(
                 label: Text(pillTitle),
@@ -253,14 +267,19 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
               child: Text(
                 _isAdopted
                     ? (isAr
-                        ? 'تم اعتماد نقطة التوازن لليوم'
-                        : (isFr ? 'Adopté pour aujourd’hui' : 'Adopted for Today'))
+                          ? 'تم اعتماد نقطة التوازن لليوم'
+                          : (isFr
+                                ? 'Adopté pour aujourd’hui'
+                                : 'Adopted for Today'))
                     : (isAr
-                        ? 'اعتماد هذه النقطة لليوم'
-                        : (isFr
-                            ? 'Adopter comme repère du jour'
-                            : 'Adopt as My Anchor Today')),
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5),
+                          ? 'اعتماد هذه النقطة لليوم'
+                          : (isFr
+                                ? 'Adopter comme repère du jour'
+                                : 'Adopt as My Anchor Today')),
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12.5,
+                ),
               ),
             ),
           ),
@@ -269,7 +288,9 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
             Center(
               child: TextButton.icon(
                 onPressed: () async {
-                  await ref.read(journeyControllerProvider.notifier).addCustomDiscovery(
+                  await ref
+                      .read(journeyControllerProvider.notifier)
+                      .addCustomDiscovery(
                         title: title,
                         notes: desc,
                         category: 'Daily Routine Anchor',
@@ -281,8 +302,8 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                           isAr
                               ? 'تم حفظ نقطة التوازن في اكتشافاتك'
                               : (isFr
-                                  ? 'Repère enregistré dans vos découvertes'
-                                  : 'Routine anchor saved to Discoveries'),
+                                    ? 'Repère enregistré dans vos découvertes'
+                                    : 'Routine anchor saved to Discoveries'),
                           style: const TextStyle(fontSize: 12),
                         ),
                         duration: const Duration(seconds: 2),
@@ -295,9 +316,12 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                   isAr
                       ? 'حفظ نقطة التوازن في اكتشافاتي'
                       : (isFr
-                          ? 'Enregistrer dans mes découvertes'
-                          : 'Save Anchor to Discoveries'),
-                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                            ? 'Enregistrer dans mes découvertes'
+                            : 'Save Anchor to Discoveries'),
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 style: TextButton.styleFrom(
                   foregroundColor: tokens.m1,
@@ -311,4 +335,3 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
     );
   }
 }
-

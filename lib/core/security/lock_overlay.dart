@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/localization/app_strings.dart';
-import '../../app/theme/lab_colors.dart';
+import '../../app/theme/mind_tokens.dart';
 import '../widgets/bouncing_widget.dart';
 import 'app_lock_provider.dart';
 
@@ -46,8 +46,8 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
   Widget build(BuildContext context) {
     final lockState = ref.watch(appLockProvider);
     final strings = ref.watch(appStringsProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
+    final tokens = context.tokens;
+    final bg = tokens.bg;
 
     if (!lockState.isInitialized) {
       return ColoredBox(
@@ -60,10 +60,10 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
       return widget.child;
     }
 
-    final surface = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surface = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Directionality(
       textDirection: strings.isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -100,9 +100,9 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
-                      color: LabColors.beigeBackground(isDark: isDark),
+                      color: tokens.surface2,
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: LabColors.beigeBorder(isDark: isDark)),
+                      border: Border.all(color: border),
                     ),
                     child: Text(
                       strings.biometricVaultLockedTitle.toUpperCase(),
@@ -110,7 +110,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark,
+                        color: tokens.ink2,
                       ),
                     ),
                   ),
@@ -151,10 +151,10 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                         if (!success && context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              backgroundColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightTextPrimary,
+                              backgroundColor: tokens.surface,
                               content: Text(
                                 strings.biometricFailedSnackbar,
-                                style: const TextStyle(color: Colors.white, fontSize: 12.5),
+                                style: TextStyle(color: tokens.ink, fontSize: 12.5),
                               ),
                               duration: const Duration(seconds: 2),
                             ),
@@ -164,10 +164,10 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         decoration: BoxDecoration(
-                          color: isDark ? LabColors.nightAccent : LabColors.daylightAccent,
+                          color: tokens.ink,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: isDark ? LabColors.nightBorder : LabColors.daylightBorder,
+                            color: border,
                             width: 1,
                           ),
                         ),
@@ -177,7 +177,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                             Icon(
                               Icons.lock_open_rounded,
                               size: 16,
-                              color: isDark ? LabColors.nightOnAccent : LabColors.daylightOnAccent,
+                              color: tokens.bg,
                             ),
                             const SizedBox(width: 8),
                             Text(
@@ -186,7 +186,7 @@ class _LockOverlayState extends ConsumerState<LockOverlay>
                                 fontSize: 12,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.6,
-                                color: isDark ? LabColors.nightOnAccent : LabColors.daylightOnAccent,
+                                color: tokens.bg,
                               ),
                             ),
                           ],

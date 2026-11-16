@@ -191,7 +191,7 @@ void main() {
             key: repaintKey,
             child: MaterialApp.router(
               debugShowCheckedModeBanner: false,
-              theme: LabTheme.daylightTheme,
+              theme: buildMindTheme(Brightness.light),
               locale: const Locale('en'),
               supportedLocales: const [Locale('en'), Locale('fr'), Locale('ar')],
               localizationsDelegates: const [
@@ -250,7 +250,7 @@ void main() {
             key: darkKey,
             child: MaterialApp.router(
               debugShowCheckedModeBanner: false,
-              theme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.dark),
               locale: const Locale('en'),
               supportedLocales: const [Locale('en'), Locale('fr'), Locale('ar')],
               localizationsDelegates: const [
@@ -280,7 +280,7 @@ void main() {
             key: toolKey,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              theme: LabTheme.daylightTheme,
+              theme: buildMindTheme(Brightness.light),
               home: const InnerObservatoryScreen(),
             ),
           ),
@@ -297,7 +297,7 @@ void main() {
             key: toolsOnlyKey,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              theme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.dark),
               home: const InnerObservatoryScreen(),
             ),
           ),
@@ -332,7 +332,7 @@ void main() {
               key: key,
               child: MaterialApp.router(
                 debugShowCheckedModeBanner: false,
-                theme: LabTheme.daylightTheme,
+                theme: buildMindTheme(Brightness.light),
                 locale: Locale(lang),
                 supportedLocales: const [Locale('en'), Locale('fr'), Locale('ar')],
                 localizationsDelegates: const [
@@ -386,7 +386,7 @@ void main() {
             key: onboardingKey,
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
-              theme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.dark),
               locale: const Locale('ar'),
               supportedLocales: const [Locale('en'), Locale('fr'), Locale('ar')],
               localizationsDelegates: const [
@@ -424,7 +424,7 @@ void main() {
           UncontrolledProviderScope(
             container: container,
             child: MaterialApp.router(
-              theme: LabTheme.daylightTheme,
+              theme: buildMindTheme(Brightness.light),
               locale: Locale(lang),
               supportedLocales: const [Locale('en'), Locale('fr'), Locale('ar')],
               localizationsDelegates: const [

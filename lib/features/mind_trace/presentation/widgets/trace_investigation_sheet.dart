@@ -106,12 +106,12 @@ class _TraceInvestigationSheetState
                 : 'Thought reflection saved to your record.');
         messenger?.showSnackBar(
           SnackBar(
-            backgroundColor: context.tokens.surfaceSecondary,
+            backgroundColor: context.tokens.surface2,
             content: Text(
               highestSafety == 1
                   ? '$savedMsg ${strings.needSupportBtn}'
                   : savedMsg,
-              style: TextStyle(color: context.tokens.textPrimary, fontSize: 13),
+              style: TextStyle(color: context.tokens.ink, fontSize: 13),
             ),
             action: highestSafety == 1
                 ? SnackBarAction(
@@ -138,7 +138,6 @@ class _TraceInvestigationSheetState
     final strings = ref.watch(appStringsProvider);
     final media = MediaQuery.of(context);
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       height: media.size.height * 0.90,
@@ -146,9 +145,9 @@ class _TraceInvestigationSheetState
         color: tokens.surface,
         borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
         border: Border(
-          top: BorderSide(color: tokens.border, width: 1),
-          left: BorderSide(color: tokens.border, width: 1),
-          right: BorderSide(color: tokens.border, width: 1),
+          top: BorderSide(color: tokens.line, width: 1),
+          left: BorderSide(color: tokens.line, width: 1),
+          right: BorderSide(color: tokens.line, width: 1),
         ),
       ),
       child: Column(
@@ -159,7 +158,7 @@ class _TraceInvestigationSheetState
             width: 36,
             height: 4,
             decoration: BoxDecoration(
-              color: tokens.textSecondary.withValues(alpha: 0.3),
+              color: tokens.ink2.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -183,7 +182,7 @@ class _TraceInvestigationSheetState
                           fontSize: 11,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.4,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -195,7 +194,7 @@ class _TraceInvestigationSheetState
                                 : 'Explore this moment with curiosity and compassion. Every question is optional.'),
                         style: TextStyle(
                           fontSize: 12,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                           height: 1.35,
                         ),
                       ),
@@ -204,14 +203,14 @@ class _TraceInvestigationSheetState
                 ),
                 IconButton(
                   tooltip: strings.closeBtn,
-                  icon: Icon(Icons.close, color: tokens.textSecondary),
+                  icon: Icon(Icons.close, color: tokens.ink2),
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ],
             ),
           ),
 
-          Divider(color: tokens.border, height: 1),
+          Divider(color: tokens.line, height: 1),
 
           // Scrollable inquiry questions
           Expanded(
@@ -222,10 +221,10 @@ class _TraceInvestigationSheetState
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(
-                      color: tokens.accent.withValues(alpha: 0.3),
+                      color: tokens.ink.withValues(alpha: 0.3),
                       width: 1,
                     ),
                   ),
@@ -239,7 +238,7 @@ class _TraceInvestigationSheetState
                             height: 6,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: tokens.accent,
+                              color: tokens.ink,
                             ),
                           ),
                           const SizedBox(width: 8),
@@ -253,7 +252,7 @@ class _TraceInvestigationSheetState
                               fontSize: 10,
                               fontWeight: FontWeight.w700,
                               letterSpacing: 1.2,
-                              color: tokens.textSecondary,
+                              color: tokens.ink2,
                             ),
                           ),
                         ],
@@ -265,7 +264,7 @@ class _TraceInvestigationSheetState
                           fontFamily: 'Inter',
                           fontSize: 14,
                           fontStyle: FontStyle.italic,
-                          color: tokens.textPrimary,
+                          color: tokens.ink,
                           height: 1.45,
                         ),
                       ),
@@ -300,7 +299,7 @@ class _TraceInvestigationSheetState
             decoration: BoxDecoration(
               color: tokens.surface,
               border: Border(
-                top: BorderSide(color: tokens.border, width: 1),
+                top: BorderSide(color: tokens.line, width: 1),
               ),
             ),
             child: SizedBox(
@@ -357,9 +356,9 @@ class _TraceInvestigationSheetState
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: tokens.surfaceSecondary,
+        color: tokens.surface2,
         borderRadius: BorderRadius.circular(tokens.cardRadius),
-        border: Border.all(color: tokens.border, width: 1),
+        border: Border.all(color: tokens.line, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,16 +368,16 @@ class _TraceInvestigationSheetState
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
+                  color: tokens.cardTint,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: tokens.accent.withValues(alpha: 0.3)),
+                  border: Border.all(color: tokens.ink.withValues(alpha: 0.3)),
                 ),
                 child: Text(
                   '0$index',
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -390,7 +389,7 @@ class _TraceInvestigationSheetState
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1.1,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
               ),
@@ -402,7 +401,7 @@ class _TraceInvestigationSheetState
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w600,
-              color: tokens.textPrimary,
+              color: tokens.ink,
               height: 1.3,
             ),
           ),
@@ -412,7 +411,7 @@ class _TraceInvestigationSheetState
             style: TextStyle(
               fontSize: 11,
               fontStyle: FontStyle.italic,
-              color: tokens.textSecondary.withValues(alpha: 0.85),
+              color: tokens.ink2.withValues(alpha: 0.85),
               height: 1.3,
             ),
           ),
@@ -423,7 +422,7 @@ class _TraceInvestigationSheetState
             minLines: 2,
             style: TextStyle(
               fontSize: 13,
-              color: tokens.textPrimary,
+              color: tokens.ink,
               height: 1.4,
             ),
             decoration: InputDecoration(
@@ -431,22 +430,22 @@ class _TraceInvestigationSheetState
               hintText: 'Record your observation (optional)...',
               hintStyle: TextStyle(
                 fontSize: 12,
-                color: tokens.textTertiary,
+                color: tokens.ink3,
               ),
               filled: true,
               fillColor: tokens.surface,
               contentPadding: const EdgeInsets.all(12),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                borderSide: BorderSide(color: tokens.border),
+                borderSide: BorderSide(color: tokens.line),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                borderSide: BorderSide(color: tokens.border),
+                borderSide: BorderSide(color: tokens.line),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                borderSide: BorderSide(color: tokens.accent, width: 1.2),
+                borderSide: BorderSide(color: tokens.ink, width: 1.2),
               ),
             ),
           ),

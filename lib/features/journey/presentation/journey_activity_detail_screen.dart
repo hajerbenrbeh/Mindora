@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
 import '../../../core/widgets/bouncing_widget.dart';
@@ -81,28 +80,23 @@ class _JourneyActivityDetailScreenState
 
     if (mounted) {
       final strings = ref.read(appStringsProvider);
+      final tokens = context.tokens;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? LabColors.nightSurface
-              : LabColors.daylightSurface,
+          backgroundColor: tokens.surface,
           content: Text(
             strings.reflectionSavedSnackbar,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? LabColors.nightTextPrimary
-                  : LabColors.daylightTextPrimary,
+              color: tokens.ink,
             ),
           ),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
             side: BorderSide(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? LabColors.nightBorder
-                  : LabColors.daylightBorder,
+              color: tokens.line,
             ),
           ),
         ),
@@ -117,20 +111,14 @@ class _JourneyActivityDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
-    final bg =
-        isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.bg;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Scaffold(
       backgroundColor: bg,
@@ -161,7 +149,7 @@ class _JourneyActivityDetailScreenState
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
-                    color: context.tokens.surfaceSecondary,
+                    color: context.tokens.surface2,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: borderColor, width: 1),
                   ),
@@ -183,12 +171,12 @@ class _JourneyActivityDetailScreenState
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                     decoration: BoxDecoration(
                       color: _isCompleted
-                          ? context.tokens.accentSoft
-                          : context.tokens.surfaceSecondary,
+                          ? context.tokens.cardTint
+                          : context.tokens.surface2,
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: _isCompleted
-                            ? context.tokens.accent
+                            ? context.tokens.ink
                             : borderColor,
                         width: 1,
                       ),
@@ -202,7 +190,7 @@ class _JourneyActivityDetailScreenState
                               : Icons.radio_button_unchecked_rounded,
                           size: 13,
                           color: _isCompleted
-                              ? LabColors.sageGreenGlow
+                              ? tokens.m1
                               : textSecondary,
                         ),
                         const SizedBox(width: 5),
@@ -214,7 +202,7 @@ class _JourneyActivityDetailScreenState
                             fontSize: 10,
                             fontWeight: FontWeight.w800,
                             color: _isCompleted
-                                ? LabColors.sageGreenGlow
+                                ? tokens.m1
                                 : textSecondary,
                           ),
                         ),
@@ -257,7 +245,7 @@ class _JourneyActivityDetailScreenState
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.8,
-                      color: LabColors.sageGreenGlow,
+                      color: tokens.m1,
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -280,7 +268,7 @@ class _JourneyActivityDetailScreenState
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: context.tokens.surfaceSecondary,
+                color: context.tokens.surface2,
                 borderRadius: BorderRadius.circular(context.tokens.cardRadius),
                 border: Border.all(color: borderColor, width: 1),
               ),
@@ -329,9 +317,7 @@ class _JourneyActivityDetailScreenState
                         height: 22,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: isDark
-                              ? const Color(0xFF1E1E1E)
-                              : const Color(0xFFE4E4E7),
+                          color: context.tokens.surface3,
                           border: Border.all(color: borderColor, width: 0.8),
                         ),
                         alignment: Alignment.center,
@@ -398,7 +384,7 @@ class _JourneyActivityDetailScreenState
                           Icon(
                             Icons.help_outline_rounded,
                             size: 15,
-                            color: LabColors.warmBeige,
+                            color: MindTokens.moodRestless,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -430,23 +416,23 @@ class _JourneyActivityDetailScreenState
                             color: textSecondary.withValues(alpha: 0.6),
                           ),
                           filled: true,
-                          fillColor: context.tokens.surfaceSecondary,
+                          fillColor: context.tokens.surface2,
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 10),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(context.tokens.inputRadius),
                             borderSide:
                                 BorderSide(color: borderColor, width: 1),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(context.tokens.inputRadius),
                             borderSide:
                                 BorderSide(color: borderColor, width: 1),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(context.tokens.inputRadius),
                             borderSide:
-                                BorderSide(color: context.tokens.accent, width: 1.2),
+                                BorderSide(color: context.tokens.m1, width: 1.2),
                           ),
                         ),
                       ),
@@ -484,20 +470,20 @@ class _JourneyActivityDetailScreenState
                   color: textSecondary.withValues(alpha: 0.6),
                 ),
                 filled: true,
-                fillColor: context.tokens.surfaceSecondary,
+                fillColor: context.tokens.surface2,
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(context.tokens.inputRadius),
                   borderSide: BorderSide(color: borderColor, width: 1),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(context.tokens.inputRadius),
                   borderSide: BorderSide(color: borderColor, width: 1),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: context.tokens.accent, width: 1.2),
+                  borderRadius: BorderRadius.circular(context.tokens.inputRadius),
+                  borderSide: BorderSide(color: context.tokens.m1, width: 1.2),
                 ),
               ),
             ),
@@ -511,7 +497,7 @@ class _JourneyActivityDetailScreenState
                 width: double.infinity,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                   borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                 ),
                 alignment: Alignment.center,
@@ -521,7 +507,7 @@ class _JourneyActivityDetailScreenState
                     fontSize: 12.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.6,
-                    color: isDark ? context.tokens.background : Colors.white,
+                    color: context.tokens.bg,
                   ),
                 ),
               ),
@@ -533,7 +519,7 @@ class _JourneyActivityDetailScreenState
               child: TextButton.icon(
                 style: TextButton.styleFrom(
                   foregroundColor: _isCompleted
-                      ? LabColors.sageGreenGlow
+                      ? MindTokens.moodCalm
                       : textSecondary,
                   visualDensity: VisualDensity.compact,
                 ),

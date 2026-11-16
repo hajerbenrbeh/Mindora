@@ -123,8 +123,6 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
     final tokens = context.tokens;
     final isAr = strings.isArabic;

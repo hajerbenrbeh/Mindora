@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
@@ -59,7 +58,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                   ? 'Effacer les notes libres ?'
                   : 'Clear Free-Text Notes?'),
           style: TextStyle(
-            color: context.tokens.textPrimary,
+            color: context.tokens.ink,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
@@ -70,7 +69,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
               : (strings.isFrench
                   ? 'Ceci efface vos notes personnelles tout en conservant vos expériences, objectifs et préférences.'
                   : 'This clears your free-text notes while preserving selected conditions, goals, and preferences.'),
-          style: TextStyle(fontSize: 12, color: context.tokens.textSecondary),
+          style: TextStyle(fontSize: 12, color: context.tokens.ink2),
         ),
         actions: [
           TextButton(
@@ -81,8 +80,8 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: context.tokens.accent,
-              foregroundColor: isDark ? context.tokens.background : Colors.white,
+              backgroundColor: context.tokens.ink,
+              foregroundColor: context.tokens.bg,
             ),
             onPressed: () async {
               Navigator.pop(ctx);
@@ -102,13 +101,14 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
 
   void _confirmDeleteProfile(AppStrings strings, bool isDark) {
     HapticFeedback.heavyImpact();
+    final tokens = context.tokens;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: isDark ? LabColors.safetySoftBgDark : LabColors.safetySoftBgLight,
+        backgroundColor: tokens.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: isDark ? LabColors.safetyBorderDark : LabColors.safetyBorderLight, width: 1),
+          borderRadius: BorderRadius.circular(tokens.cardRadius),
+          side: BorderSide(color: tokens.lineStrong, width: 1),
         ),
         title: Text(
           strings.isArabic
@@ -117,7 +117,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                   ? 'Supprimer le profil psychologique ?'
                   : 'Delete Psychological Profile?'),
           style: TextStyle(
-            color: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
+            color: tokens.ink,
             fontSize: 14,
             fontWeight: FontWeight.w700,
           ),
@@ -128,7 +128,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
               : (strings.isFrench
                   ? 'Attention : supprimer votre profil réinitialise vos préférences et expériences. Votre compte et votre journal restent protégés.'
                   : 'Important: Deleting your psychological profile resets all conditions and profile preferences. Your application account and journal entries remain safe.'),
-          style: TextStyle(fontSize: 12, color: isDark ? Colors.grey.shade300 : Colors.black87),
+          style: TextStyle(fontSize: 12, color: tokens.ink2),
         ),
         actions: [
           TextButton(
@@ -139,8 +139,8 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: LabColors.cherryRed,
-              foregroundColor: Colors.white,
+              backgroundColor: tokens.ink,
+              foregroundColor: tokens.bg,
             ),
             onPressed: () async {
               Navigator.pop(ctx);
@@ -162,12 +162,13 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final surfaceColor = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final surfaceColor = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -199,7 +200,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
 
                 Text(
                   strings.sectionPrivacy,
-                  style: LabTheme.serifStyle(
+                  style: LabTheme.textStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: textPrimary,
@@ -218,11 +219,11 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: _allowAi
-                        ? context.tokens.accentSoft
-                        : context.tokens.surfaceSecondary,
+                        ? context.tokens.cardTint
+                        : context.tokens.surface2,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: _allowAi ? context.tokens.accent : border,
+                      color: _allowAi ? context.tokens.ink : border,
                     ),
                   ),
                   child: Column(
@@ -245,7 +246,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                           ),
                           Switch.adaptive(
                             value: _allowAi,
-                            activeTrackColor: context.tokens.accent,
+                            activeTrackColor: context.tokens.ink,
                             onChanged: _toggleAi,
                           ),
                         ],
@@ -271,13 +272,13 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: context.tokens.surfaceSecondary,
+                    color: context.tokens.surface2,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: border),
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.lock_outline_rounded, size: 16, color: context.tokens.accent),
+                      Icon(Icons.lock_outline_rounded, size: 16, color: context.tokens.ink),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -304,13 +305,13 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: context.tokens.surfaceSecondary,
+                      color: context.tokens.surface2,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: border),
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.psychology_outlined, size: 20, color: context.tokens.accent),
+                        Icon(Icons.psychology_outlined, size: 20, color: context.tokens.ink),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -393,9 +394,9 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(vertical: 11),
                     decoration: BoxDecoration(
-                      color: isDark ? LabColors.safetySoftBgDark : LabColors.safetySoftBgLight,
+                      color: tokens.surface2,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: isDark ? LabColors.safetyBorderDark : LabColors.safetyBorderLight),
+                      border: Border.all(color: tokens.lineStrong),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -407,7 +408,7 @@ class _PrivacyManagementSheetState extends ConsumerState<PrivacyManagementSheet>
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
-                        color: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
+                        color: tokens.ink,
                       ),
                     ),
                   ),

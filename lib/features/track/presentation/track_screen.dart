@@ -848,7 +848,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   strings.whatsInfluencingMood,
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -861,7 +861,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   textAlign: TextAlign.end,
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: strings.isArabic ? 0 : 0.6,
@@ -898,7 +898,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
             strings.whatHelpedTodayLabel,
             style: TextStyle(
               fontFamily: 'Inter',
-              color: tokens.textPrimary,
+              color: tokens.ink,
               fontSize: 13.5,
               fontWeight: FontWeight.w700,
             ),
@@ -1012,7 +1012,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: 'Inter',
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                   fontSize: 13.5,
                   fontWeight: FontWeight.w600,
                 ),
@@ -1023,7 +1023,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
               '$formatted$unit',
               style: TextStyle(
                 fontFamily: 'Inter',
-                color: tokens.accent,
+                color: tokens.ink,
                 fontSize: 13.5,
                 fontWeight: FontWeight.w700,
                 fontFeatures: const [FontFeature.tabularFigures()],
@@ -1033,10 +1033,10 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: tokens.accent,
-            inactiveTrackColor: tokens.border,
-            thumbColor: tokens.textPrimary,
-            overlayColor: tokens.accent.withValues(alpha: 0.12),
+            activeTrackColor: tokens.ink,
+            inactiveTrackColor: tokens.line,
+            thumbColor: tokens.ink,
+            overlayColor: tokens.ink.withValues(alpha: 0.12),
             trackHeight: 3,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
           ),
@@ -1113,7 +1113,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                       fontFamily: 'Inter',
                       fontSize: 15,
                       fontWeight: FontWeight.w600,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -1133,7 +1133,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   strings.timelineOverline,
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: strings.isArabic ? 0 : 0.6,
@@ -1149,7 +1149,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
               ),
@@ -1166,7 +1166,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 strings.recentCasesSection,
                 style: TextStyle(
                   fontFamily: 'Inter',
-                  color: tokens.textSecondary,
+                  color: tokens.ink2,
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: strings.isArabic ? 0 : 0.6,
@@ -1220,7 +1220,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     child: Container(
                       width: 1.5,
                       margin: const EdgeInsets.only(top: 6),
-                      color: tokens.border,
+                      color: tokens.line,
                     ),
                   ),
               ],
@@ -1245,9 +1245,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: tokens.surfaceSecondary,
+                        color: tokens.surface2,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: tokens.border),
+                        border: Border.all(color: tokens.line),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -1258,7 +1258,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                               fontFamily: 'Inter',
                               fontSize: 15,
                               fontWeight: FontWeight.w700,
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                               fontFeatures: const [FontFeature.tabularFigures()],
                             ),
                           ),
@@ -1271,7 +1271,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
                               letterSpacing: strings.isArabic ? 0 : 0.3,
-                              color: tokens.textSecondary,
+                              color: tokens.ink2,
                             ),
                           ),
                         ],
@@ -1299,7 +1299,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                                     fontFamily: 'Inter',
                                     fontSize: 14.5,
                                     fontWeight: FontWeight.w700,
-                                    color: tokens.textPrimary,
+                                    color: tokens.ink,
                                     fontFeatures: const [
                                       FontFeature.tabularFigures(),
                                     ],
@@ -1321,10 +1321,10 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                                         vertical: 3,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: tokens.surfaceSecondary,
+                                        color: tokens.surface2,
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: tokens.border,
+                                          color: tokens.line,
                                         ),
                                       ),
                                       child: Text(
@@ -1332,7 +1332,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                                         style: TextStyle(
                                           fontFamily: 'Inter',
                                           fontSize: 11.5,
-                                          color: tokens.textSecondary,
+                                          color: tokens.ink2,
                                         ),
                                       ),
                                     ),
@@ -1349,7 +1349,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontFamily: 'Inter',
-                                color: tokens.textSecondary,
+                                color: tokens.ink2,
                                 fontSize: 13,
                                 height: 1.4,
                               ),
@@ -1366,7 +1366,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                             ? Icons.chevron_left_rounded
                             : Icons.chevron_right_rounded,
                         size: 18,
-                        color: tokens.textTertiary,
+                        color: tokens.ink3,
                       ),
                     ),
                   ],
@@ -1392,13 +1392,13 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: tokens.accentSoft,
+                color: tokens.cardTint,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
               ),
               child: Icon(
                 Icons.psychology_outlined,
                 size: 16,
-                color: tokens.accent,
+                color: tokens.ink,
               ),
             ),
             const SizedBox(width: 12),
@@ -1414,7 +1414,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                       fontWeight: FontWeight.w600,
                       fontSize: 13.5,
                     ),
@@ -1432,7 +1432,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                             : (strings.isFrench ? 'En cours' : 'In Progress')),
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                       fontSize: 12,
                     ),
                   ),
@@ -1442,7 +1442,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
             Icon(
               isRtl ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
               size: 18,
-              color: tokens.textTertiary,
+              color: tokens.ink3,
             ),
           ],
         ),

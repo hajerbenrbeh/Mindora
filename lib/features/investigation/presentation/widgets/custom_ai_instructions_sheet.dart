@@ -98,15 +98,14 @@ class _CustomAiInstructionsSheetState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
     final bg = tokens.surface;
-    final surfaceColor = tokens.surfaceSecondary;
-    final borderColor = tokens.border;
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
+    final surfaceColor = tokens.surface2;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       padding: EdgeInsets.only(
@@ -122,7 +121,7 @@ class _CustomAiInstructionsSheetState
         ),
         border: Border(
           top: BorderSide(
-            color: tokens.border,
+            color: tokens.line,
             width: 1,
           ),
         ),
@@ -136,13 +135,13 @@ class _CustomAiInstructionsSheetState
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
+                  color: tokens.cardTint,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.tune_rounded,
                   size: 16,
-                  color: tokens.accent,
+                  color: tokens.ink,
                 ),
               ),
               const SizedBox(width: 10),
@@ -156,7 +155,7 @@ class _CustomAiInstructionsSheetState
                           : (strings.isFrench
                               ? 'Instructions personnalisées'
                               : 'Custom AI Instructions'),
-                      style: LabTheme.serifStyle(
+                      style: LabTheme.textStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w700,
                         color: textPrimary,
@@ -194,7 +193,7 @@ class _CustomAiInstructionsSheetState
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.6,
-              color: tokens.accent,
+              color: tokens.ink,
             ),
           ),
           const SizedBox(height: 8),
@@ -241,7 +240,7 @@ class _CustomAiInstructionsSheetState
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.6,
-              color: tokens.accent,
+              color: tokens.ink,
             ),
           ),
           const SizedBox(height: 6),
@@ -270,7 +269,7 @@ class _CustomAiInstructionsSheetState
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                borderSide: BorderSide(color: tokens.accent, width: 1.4),
+                borderSide: BorderSide(color: tokens.ink, width: 1.4),
               ),
             ),
           ),

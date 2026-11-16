@@ -262,7 +262,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                   strings.isArabic
                       ? 'إضافة شعور مخصص'
                       : (strings.isFrench ? 'Émotion personnalisée' : 'Custom Emotion'),
-                  style: LabTheme.serifStyle(
+                  style: LabTheme.textStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: textPrimary,
@@ -399,7 +399,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                   fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1.0,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
               Text(
@@ -445,8 +445,8 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
           child: LinearProgressIndicator(
             value: progress,
             minHeight: 4,
-            backgroundColor: context.tokens.surfaceSecondary,
-            valueColor: AlwaysStoppedAnimation<Color>(context.tokens.accent),
+            backgroundColor: context.tokens.surface2,
+            valueColor: AlwaysStoppedAnimation<Color>(context.tokens.ink),
           ),
         ),
       ],
@@ -496,7 +496,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
           strings.isArabic
               ? 'اختر المشاعر التي تعبّر عن حالتك الآن'
               : 'Select all emotions that reflect your inner state right now.',
-          style: LabTheme.serifStyle(
+          style: LabTheme.textStyle(
             fontSize: 16,
             height: 1.3,
             fontWeight: FontWeight.w600,
@@ -556,12 +556,12 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? context.tokens.accentSoft
+                      ? context.tokens.cardTint
                       : surfaceColor,
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(
                     color: isSelected
-                        ? context.tokens.accent
+                        ? context.tokens.ink
                         : borderColor,
                     width: isSelected ? 1.2 : 1.0,
                   ),
@@ -572,7 +572,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       desc.icon,
                       size: 16,
                       color: isSelected
-                          ? context.tokens.accent
+                          ? context.tokens.ink
                           : textSecondary,
                     ),
                     const SizedBox(width: 8),
@@ -586,7 +586,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                           fontWeight:
                               isSelected ? FontWeight.w700 : FontWeight.w500,
                           color: isSelected
-                              ? context.tokens.accent
+                              ? context.tokens.ink
                               : textPrimary,
                         ),
                       ),
@@ -595,7 +595,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       Icon(
                         Icons.check_rounded,
                         size: 14,
-                        color: context.tokens.accent,
+                        color: context.tokens.ink,
                       ),
                   ],
                 ),
@@ -615,15 +615,15 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                 .map((custom) => Chip(
                       label: Text(
                         custom,
-                        style: TextStyle(fontSize: 11, color: context.tokens.accent),
+                        style: TextStyle(fontSize: 11, color: context.tokens.ink),
                       ),
-                      backgroundColor: context.tokens.accentSoft,
-                      deleteIcon: Icon(Icons.close, size: 12, color: context.tokens.accent),
+                      backgroundColor: context.tokens.cardTint,
+                      deleteIcon: Icon(Icons.close, size: 12, color: context.tokens.ink),
                       onDeleted: () {
                         setState(() => _selectedEmotions.remove(custom));
                       },
                       side: BorderSide(
-                        color: context.tokens.accent.withValues(alpha: 0.4),
+                        color: context.tokens.ink.withValues(alpha: 0.4),
                         width: 0.8,
                       ),
                     ))
@@ -668,7 +668,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
               : (strings.isFrench
                   ? 'Avec quelle intensité ressentez-vous cela ?'
                   : 'How intensely do you feel this right now?'),
-          style: LabTheme.serifStyle(
+          style: LabTheme.textStyle(
             fontSize: 16,
             height: 1.3,
             fontWeight: FontWeight.w600,
@@ -690,7 +690,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 24),
             decoration: BoxDecoration(
-              color: context.tokens.surfaceSecondary,
+              color: context.tokens.surface2,
               borderRadius: BorderRadius.circular(context.tokens.cardRadius),
               border: Border.all(
                 color: borderColor,
@@ -706,9 +706,9 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                     fontWeight: FontWeight.w900,
                     letterSpacing: -1.0,
                     color: intensityVal >= 8
-                        ? context.tokens.safetyWarmth
+                        ? context.tokens.safety
                         : (intensityVal <= 3
-                            ? context.tokens.accent
+                            ? context.tokens.ink
                             : textPrimary),
                   ),
                 ),
@@ -724,10 +724,10 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: context.tokens.accentSoft,
+                    color: context.tokens.cardTint,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: context.tokens.accent.withValues(alpha: 0.35),
+                      color: context.tokens.ink.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Text(
@@ -736,7 +736,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: context.tokens.accent,
+                      color: context.tokens.ink,
                     ),
                   ),
                 ),
@@ -771,12 +771,12 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
                             color: isCurrent
-                                ? context.tokens.accent
+                                ? context.tokens.ink
                                 : surfaceColor,
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
                               color: isCurrent
-                                  ? context.tokens.accent
+                                  ? context.tokens.ink
                                   : borderColor,
                             ),
                           ),
@@ -805,10 +805,10 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
 
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: context.tokens.accent,
-            inactiveTrackColor: context.tokens.surfaceSecondary,
-            thumbColor: context.tokens.accent,
-            overlayColor: context.tokens.accent.withValues(alpha: 0.16),
+            activeTrackColor: context.tokens.ink,
+            inactiveTrackColor: context.tokens.surface2,
+            thumbColor: context.tokens.ink,
+            overlayColor: context.tokens.ink.withValues(alpha: 0.16),
             trackHeight: 4,
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
           ),
@@ -865,7 +865,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                     : (strings.isFrench
                         ? 'Comment fonctionne votre esprit aujourd’hui ?'
                         : 'How is your mind operating today?'),
-                style: LabTheme.serifStyle(
+                style: LabTheme.textStyle(
                   fontSize: 16,
                   height: 1.3,
                   fontWeight: FontWeight.w600,
@@ -876,7 +876,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: context.tokens.surfaceSecondary,
+                color: context.tokens.surface2,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: borderColor),
               ),
@@ -1006,7 +1006,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
               fontSize: 10,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.8,
-              color: context.tokens.accent,
+              color: context.tokens.ink,
             ),
           ),
           const SizedBox(height: 10),
@@ -1045,7 +1045,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                             fontSize: 11,
                             color: textSecondary.withValues(alpha: 0.65)),
                         filled: true,
-                        fillColor: context.tokens.surfaceSecondary,
+                        fillColor: context.tokens.surface2,
                         contentPadding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 10),
                         border: OutlineInputBorder(
@@ -1094,7 +1094,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                     : (strings.isFrench
                         ? 'Que communique votre corps ?'
                         : 'What is your body communicating?'),
-                style: LabTheme.serifStyle(
+                style: LabTheme.textStyle(
                   fontSize: 16,
                   height: 1.3,
                   fontWeight: FontWeight.w600,
@@ -1105,7 +1105,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: context.tokens.surfaceSecondary,
+                color: context.tokens.surface2,
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(color: borderColor),
               ),
@@ -1182,7 +1182,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
-                      color: context.tokens.accent,
+                      color: context.tokens.ink,
                     ),
                   ),
                 ],
@@ -1190,9 +1190,9 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
               const SizedBox(height: 6),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: context.tokens.accent,
-                  inactiveTrackColor: context.tokens.surfaceSecondary,
-                  thumbColor: context.tokens.accent,
+                  activeTrackColor: context.tokens.ink,
+                  inactiveTrackColor: context.tokens.surface2,
+                  thumbColor: context.tokens.ink,
                   trackHeight: 3,
                   thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
                 ),
@@ -1241,7 +1241,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
-                      color: context.tokens.accent,
+                      color: context.tokens.ink,
                     ),
                   ),
                 ],
@@ -1270,11 +1270,11 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? context.tokens.accentSoft
-                                  : context.tokens.surfaceSecondary,
+                                  ? context.tokens.cardTint
+                                  : context.tokens.surface2,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: isSelected ? context.tokens.accent : borderColor,
+                                color: isSelected ? context.tokens.ink : borderColor,
                               ),
                             ),
                             child: Text(
@@ -1283,7 +1283,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                                 fontSize: 12,
                                 fontWeight:
                                     isSelected ? FontWeight.w800 : FontWeight.w600,
-                                color: isSelected ? context.tokens.accent : textSecondary,
+                                color: isSelected ? context.tokens.ink : textSecondary,
                               ),
                             ),
                           ),
@@ -1349,11 +1349,11 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             height: 72,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: context.tokens.accentSoft,
-              border: Border.all(color: context.tokens.accent, width: 1.5),
+              color: context.tokens.cardTint,
+              border: Border.all(color: context.tokens.ink, width: 1.5),
               boxShadow: [
                 BoxShadow(
-                  color: context.tokens.accent.withValues(alpha: 0.16),
+                  color: context.tokens.ink.withValues(alpha: 0.16),
                   blurRadius: 20,
                   spreadRadius: 2,
                 ),
@@ -1372,7 +1372,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                 ? 'تم توثيق أثر اليوم بنجاح'
                 : "Today's trace has been recorded.",
             textAlign: TextAlign.center,
-            style: LabTheme.serifStyle(
+            style: LabTheme.textStyle(
               fontSize: 21,
               fontWeight: FontWeight.w700,
               color: textPrimary,
@@ -1418,13 +1418,13 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: context.tokens.accent,
+                        color: context.tokens.ink,
                       ),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: context.tokens.surfaceSecondary,
+                        color: context.tokens.surface2,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: borderColor),
                       ),
@@ -1451,14 +1451,14 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       return Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: context.tokens.surfaceSecondary,
+                          color: context.tokens.surface2,
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(color: borderColor),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(icon, size: 12, color: context.tokens.accent),
+                            Icon(icon, size: 12, color: context.tokens.ink),
                             const SizedBox(width: 5),
                             Text(
                               emotion,
@@ -1502,7 +1502,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                           : (strings.isFrench
                               ? '« Observer et nommer vos émotions crée un espace précieux entre impulsion et réponse. Votre empreinte est préservée. »'
                               : '“Noticing and naming your emotional experiences creates valuable space between impulse and response. Your trace is safely preserved.”')),
-                  style: LabTheme.editorialSerif(
+                  style: LabTheme.textStyle(
                     fontSize: 13,
                     fontStyle: FontStyle.italic,
                     height: 1.4,
@@ -1522,7 +1522,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
               width: double.infinity,
               height: 50,
               decoration: BoxDecoration(
-                color: context.tokens.accent,
+                color: context.tokens.ink,
                 borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
               ),
               alignment: Alignment.center,
@@ -1700,7 +1700,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: context.tokens.accent,
+                color: context.tokens.ink,
                 borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
               ),
               alignment: Alignment.center,
@@ -1779,16 +1779,16 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w800,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
             ],
           ),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
-              activeTrackColor: context.tokens.accent,
-              inactiveTrackColor: context.tokens.surfaceSecondary,
-              thumbColor: context.tokens.accent,
+              activeTrackColor: context.tokens.ink,
+              inactiveTrackColor: context.tokens.surface2,
+              thumbColor: context.tokens.ink,
               trackHeight: 3,
               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 7),
             ),

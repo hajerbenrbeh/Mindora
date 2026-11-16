@@ -57,7 +57,8 @@ class _PerspectiveExplorationCardState
       'factFr': 'Le responsable a demandé des modifications sur la partie 2.',
       'thought': '“My work was a complete disaster and I cannot deliver.”',
       'thoughtAr': '“الخدمة متاعي كارثة وما نعرف نعمل حتى شي صحيح.”',
-      'thoughtFr': '« Tout mon travail est raté et je ne suis pas à la hauteur. »',
+      'thoughtFr':
+          '« Tout mon travail est raté et je ne suis pas à la hauteur. »',
       'label': LabelType.interpretation,
       'alternatives': [
         'Feedback is a normal collaborative iteration, not a verdict on competence.',
@@ -111,14 +112,12 @@ class _PerspectiveExplorationCardState
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
     final isFr = strings.isFrench;
 
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     final scenario = _scenarios[_scenarioIndex];
     final fact = isAr
@@ -127,9 +126,13 @@ class _PerspectiveExplorationCardState
     final thought = isAr
         ? scenario['thoughtAr']
         : (isFr ? scenario['thoughtFr'] : scenario['thought']);
-    final alternatives = (isAr
-        ? scenario['alternativesAr']
-        : (isFr ? scenario['alternativesFr'] : scenario['alternatives'])) as List<String>;
+    final alternatives =
+        (isAr
+                ? scenario['alternativesAr']
+                : (isFr
+                      ? scenario['alternativesFr']
+                      : scenario['alternatives']))
+            as List<String>;
 
     return MindCard(
       padding: const EdgeInsets.all(16),
@@ -179,14 +182,14 @@ class _PerspectiveExplorationCardState
                             fontFamily: 'Inter',
                             fontSize: 12.5,
                             fontWeight: FontWeight.w700,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                         const SizedBox(width: 4),
                         Icon(
                           Icons.refresh_rounded,
                           size: 16,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       ],
                     ),
@@ -204,9 +207,7 @@ class _PerspectiveExplorationCardState
             decoration: BoxDecoration(
               color: tokens.surface2,
               borderRadius: BorderRadius.circular(tokens.chipRadius),
-              border: Border.all(
-                color: tokens.line,
-              ),
+              border: Border.all(color: tokens.line),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,9 +246,7 @@ class _PerspectiveExplorationCardState
             decoration: BoxDecoration(
               color: tokens.surface2,
               borderRadius: BorderRadius.circular(tokens.chipRadius),
-              border: Border.all(
-                color: tokens.line,
-              ),
+              border: Border.all(color: tokens.line),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,8 +255,8 @@ class _PerspectiveExplorationCardState
                   isAr
                       ? 'ما قفز إليه العقل (THOUGHT)'
                       : (isFr
-                          ? 'INTERPRÉTATION AUTOMATIQUE'
-                          : 'AUTOMATIC INTERPRETATION'),
+                            ? 'INTERPRÉTATION AUTOMATIQUE'
+                            : 'AUTOMATIC INTERPRETATION'),
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 11.5,
@@ -287,8 +286,8 @@ class _PerspectiveExplorationCardState
             isAr
                 ? 'احتمالات أخرى واقعية:'
                 : (isFr
-                    ? 'Autres possibilités fondées sur les faits :'
-                    : 'Alternative grounded possibilities:'),
+                      ? 'Autres possibilités fondées sur les faits :'
+                      : 'Alternative grounded possibilities:'),
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12,
@@ -301,12 +300,15 @@ class _PerspectiveExplorationCardState
             children: alternatives.map((alt) {
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
+                  color: tokens.cardTint,
                   borderRadius: BorderRadius.circular(tokens.chipRadius),
                   border: Border.all(
-                    color: tokens.accent.withValues(alpha: 0.3),
+                    color: tokens.ink.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Row(
@@ -317,7 +319,7 @@ class _PerspectiveExplorationCardState
                       child: Icon(
                         Icons.check_circle_outline_rounded,
                         size: 16,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -342,8 +344,8 @@ class _PerspectiveExplorationCardState
             text: isAr
                 ? 'تفكيك فكرة أو موقف خاص بك'
                 : (isFr
-                    ? 'Explorer une de vos propres pensées'
-                    : 'Deconstruct a thought of your own'),
+                      ? 'Explorer une de vos propres pensées'
+                      : 'Deconstruct a thought of your own'),
             leadingIcon: Icons.tune_rounded,
             variant: MindButtonVariant.soft,
             isFullWidth: true,

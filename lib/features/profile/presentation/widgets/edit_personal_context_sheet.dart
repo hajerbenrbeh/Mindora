@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
@@ -62,13 +61,13 @@ class _EditPersonalContextSheetState
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -104,7 +103,7 @@ class _EditPersonalContextSheetState
                       : (strings.isFrench
                           ? 'Que souhaitez-vous que Mind Forensics comprenne de vous ?'
                           : 'What would you like Mind Forensics to understand about you?'),
-                  style: LabTheme.serifStyle(
+                  style: LabTheme.textStyle(
                     fontSize: 16,
                     height: 1.3,
                     fontWeight: FontWeight.w700,
@@ -135,11 +134,11 @@ class _EditPersonalContextSheetState
                             : 'Share freely and without pressure... this space is private and stored only on your device.'),
                     hintStyle: TextStyle(fontSize: 12, color: textSecondary.withValues(alpha: 0.6)),
                     filled: true,
-                    fillColor: context.tokens.surfaceSecondary,
+                    fillColor: context.tokens.surface2,
                     contentPadding: const EdgeInsets.all(14),
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
                     enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.accent)),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.ink)),
                   ),
                 ),
 
@@ -151,7 +150,7 @@ class _EditPersonalContextSheetState
                     width: double.infinity,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: context.tokens.accent,
+                      color: context.tokens.ink,
                       borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                     ),
                     alignment: Alignment.center,
@@ -166,7 +165,7 @@ class _EditPersonalContextSheetState
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
-                        color: isDark ? context.tokens.background : Colors.white,
+                        color: context.tokens.bg,
                       ),
                     ),
                   ),

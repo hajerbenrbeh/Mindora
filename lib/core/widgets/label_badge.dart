@@ -54,11 +54,7 @@ class LabelBadge extends ConsumerWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            _iconForLabel(),
-            size: compact ? 12 : 13.5,
-            color: accentColor,
-          ),
+          Icon(_iconForLabel(), size: compact ? 12 : 13.5, color: accentColor),
           const SizedBox(width: 4),
           Text(
             label.letter,

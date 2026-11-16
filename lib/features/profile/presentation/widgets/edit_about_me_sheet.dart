@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
@@ -15,7 +14,10 @@ class EditAboutMeSheet extends ConsumerStatefulWidget {
 
   final PsychologicalProfileModel profile;
 
-  static Future<void> show(BuildContext context, PsychologicalProfileModel profile) {
+  static Future<void> show(
+    BuildContext context,
+    PsychologicalProfileModel profile,
+  ) {
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -61,7 +63,9 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
       case '':
         return 'prefer_not_to_say';
       default:
-        return _ageRanges.contains(normalized) ? normalized : 'prefer_not_to_say';
+        return _ageRanges.contains(normalized)
+            ? normalized
+            : 'prefer_not_to_say';
     }
   }
 
@@ -69,8 +73,12 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.profile.preferredName);
-    _introController = TextEditingController(text: widget.profile.personalIntroduction);
-    _additionalController = TextEditingController(text: widget.profile.additionalContext);
+    _introController = TextEditingController(
+      text: widget.profile.personalIntroduction,
+    );
+    _additionalController = TextEditingController(
+      text: widget.profile.additionalContext,
+    );
     _selectedAgeRange = _normalizeAgeRange(widget.profile.ageRange);
     _selectedLanguage = widget.profile.preferredLanguage.isNotEmpty
         ? widget.profile.preferredLanguage
@@ -87,13 +95,15 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
 
   Future<void> _save() async {
     HapticFeedback.mediumImpact();
-    await ref.read(profileControllerProvider.notifier).updateAboutMe(
-      preferredName: _nameController.text.trim(),
-      ageRange: _selectedAgeRange,
-      preferredLanguage: _selectedLanguage,
-      personalIntroduction: _introController.text.trim(),
-      additionalContext: _additionalController.text.trim(),
-    );
+    await ref
+        .read(profileControllerProvider.notifier)
+        .updateAboutMe(
+          preferredName: _nameController.text.trim(),
+          ageRange: _selectedAgeRange,
+          preferredLanguage: _selectedLanguage,
+          personalIntroduction: _introController.text.trim(),
+          additionalContext: _additionalController.text.trim(),
+        );
 
     if (mounted) {
       Navigator.pop(context);
@@ -102,16 +112,18 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: bg,
@@ -140,7 +152,7 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
 
                 Text(
                   strings.sectionAboutMe,
-                  style: LabTheme.serifStyle(
+                  style: LabTheme.textStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
                     color: textPrimary,
@@ -158,7 +170,9 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                 Text(
                   (strings.isArabic
                           ? 'الاسم أو اللقب المفضل'
-                          : (strings.isFrench ? 'PRÉNOM OU SURNOM' : 'PREFERRED NAME'))
+                          : (strings.isFrench
+                                ? 'PRÉNOM OU SURNOM'
+                                : 'PREFERRED NAME'))
                       .toUpperCase(),
                   style: TextStyle(
                     fontSize: 10,
@@ -175,15 +189,30 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                     hintText: strings.isArabic
                         ? 'كيف تحب أن نناديك؟'
                         : (strings.isFrench
-                            ? 'Comment souhaitez-vous être appelé(e) ?'
-                            : 'How should we address you?'),
-                    hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
+                              ? 'Comment souhaitez-vous être appelé(e) ?'
+                              : 'How should we address you?'),
+                    hintStyle: TextStyle(
+                      fontSize: 11.5,
+                      color: textSecondary.withValues(alpha: 0.6),
+                    ),
                     filled: true,
-                    fillColor: context.tokens.surfaceSecondary,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.accent)),
+                    fillColor: context.tokens.surface2,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: context.tokens.ink),
+                    ),
                   ),
                 ),
 
@@ -194,8 +223,8 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                   (strings.isArabic
                           ? 'الفئة العمرية (اختياري)'
                           : (strings.isFrench
-                              ? 'TRANCHE D’ÂGE (OPTIONNEL)'
-                              : 'AGE RANGE (OPTIONAL)'))
+                                ? 'TRANCHE D’ÂGE (OPTIONNEL)'
+                                : 'AGE RANGE (OPTIONAL)'))
                       .toUpperCase(),
                   style: TextStyle(
                     fontSize: 10,
@@ -215,16 +244,23 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                         HapticFeedback.selectionClick();
                         setState(() => _selectedAgeRange = range);
                       },
-                      borderRadius: BorderRadius.circular(context.tokens.chipRadius),
+                      borderRadius: BorderRadius.circular(
+                        context.tokens.chipRadius,
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? context.tokens.accentSoft
-                              : context.tokens.surfaceSecondary,
-                          borderRadius: BorderRadius.circular(context.tokens.chipRadius),
+                              ? context.tokens.cardTint
+                              : context.tokens.surface2,
+                          borderRadius: BorderRadius.circular(
+                            context.tokens.chipRadius,
+                          ),
                           border: Border.all(
-                            color: isSelected ? context.tokens.accent : border,
+                            color: isSelected ? context.tokens.ink : border,
                             width: isSelected ? 1 : 0.8,
                           ),
                         ),
@@ -232,9 +268,11 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                           strings.ageRangeDisplayName(range),
                           style: TextStyle(
                             fontSize: 11,
-                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            fontWeight: isSelected
+                                ? FontWeight.w700
+                                : FontWeight.w500,
                             color: isSelected
-                                ? context.tokens.accent
+                                ? context.tokens.ink
                                 : textSecondary,
                           ),
                         ),
@@ -250,8 +288,8 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                   (strings.isArabic
                           ? 'مقدمة شخصية قصيرة'
                           : (strings.isFrench
-                              ? 'PRÉSENTATION PERSONNELLE'
-                              : 'PERSONAL INTRODUCTION'))
+                                ? 'PRÉSENTATION PERSONNELLE'
+                                : 'PERSONAL INTRODUCTION'))
                       .toUpperCase(),
                   style: TextStyle(
                     fontSize: 10,
@@ -269,15 +307,27 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                     hintText: strings.isArabic
                         ? 'مقدمة حرة ومريحة عن نفسك وتجربتك...'
                         : (strings.isFrench
-                            ? 'Quelques mots simples que vous souhaitez partager...'
-                            : 'Brief introductory thoughts you feel comfortable sharing...'),
-                    hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
+                              ? 'Quelques mots simples que vous souhaitez partager...'
+                              : 'Brief introductory thoughts you feel comfortable sharing...'),
+                    hintStyle: TextStyle(
+                      fontSize: 11.5,
+                      color: textSecondary.withValues(alpha: 0.6),
+                    ),
                     filled: true,
-                    fillColor: context.tokens.surfaceSecondary,
+                    fillColor: context.tokens.surface2,
                     contentPadding: const EdgeInsets.all(12),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.accent)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: border),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: context.tokens.ink),
+                    ),
                   ),
                 ),
 
@@ -290,20 +340,24 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
                     width: double.infinity,
                     height: 46,
                     decoration: BoxDecoration(
-                      color: context.tokens.accent,
-                      borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
+                      color: context.tokens.ink,
+                      borderRadius: BorderRadius.circular(
+                        context.tokens.buttonRadius,
+                      ),
                     ),
                     alignment: Alignment.center,
                     child: Text(
                       (strings.isArabic
                               ? 'حفظ المعلومات'
-                              : (strings.isFrench ? 'ENREGISTRER' : 'SAVE CHANGES'))
+                              : (strings.isFrench
+                                    ? 'ENREGISTRER'
+                                    : 'SAVE CHANGES'))
                           .toUpperCase(),
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
-                        color: isDark ? context.tokens.background : Colors.white,
+                        color: context.tokens.bg,
                       ),
                     ),
                   ),
@@ -316,4 +370,3 @@ class _EditAboutMeSheetState extends ConsumerState<EditAboutMeSheet> {
     );
   }
 }
-

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../app/localization/app_strings.dart';
-import '../../app/theme/lab_colors.dart';
+import '../../app/theme/mind_tokens.dart';
 import 'crisis_keywords.dart';
 import 'support_button.dart';
 
@@ -31,14 +31,14 @@ class SafetyInterceptor {
   /// Dual-theme sanctuary dialog: warm charcoal dark / sunlit linen light,
   /// hairline borders, outline vector shield icon, non-dismissible barrier.
   static void showCrisisPauseDialog(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = AppStrings.of(context);
 
-    final dialogBg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final surfaceSubtle = isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final dialogBg = tokens.surface;
+    final borderColor = tokens.line;
+    final surfaceSubtle = tokens.surface2;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     showDialog(
       context: context,
@@ -54,11 +54,11 @@ class SafetyInterceptor {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isDark ? LabColors.safetySoftBgDark : LabColors.safetySoftBgLight,
+                color: tokens.safetySoft,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(Icons.shield_outlined,
-                  color: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth, size: 20),
+                  color: tokens.safety, size: 20),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -98,7 +98,7 @@ class SafetyInterceptor {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: isDark ? LabColors.factBlueDark : LabColors.factBlue,
+                      color: tokens.m1,
                     ),
                   ),
                 ],
@@ -116,8 +116,8 @@ class SafetyInterceptor {
           ),
           FilledButton.icon(
             style: FilledButton.styleFrom(
-              backgroundColor: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
-              foregroundColor: isDark ? LabColors.nightBackground : Colors.white,
+              backgroundColor: tokens.safety,
+              foregroundColor: tokens.bg,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
             ),
             icon: const Icon(Icons.shield_outlined, size: 15),

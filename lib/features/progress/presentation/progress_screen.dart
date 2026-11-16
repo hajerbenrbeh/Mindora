@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/router/app_router.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/lab_theme.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
@@ -64,11 +63,12 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
     final analytics = ref.watch(progressAnalyticsProvider);
     final selectedWindow = ref.watch(selectedTimeWindowProvider);
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surfaceColor = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final tokens = context.tokens;
+    final bg = tokens.bg;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Scaffold(
       backgroundColor: bg,
@@ -89,8 +89,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
         bottom: TabBar(
           controller: _tabController,
           isScrollable: true,
-          indicatorColor: context.tokens.accent,
-          labelColor: context.tokens.accent,
+          indicatorColor: context.tokens.ink,
+          labelColor: context.tokens.ink,
           unselectedLabelColor: textSecondary,
           labelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 0.5),
           tabAlignment: TabAlignment.start,
@@ -197,10 +197,10 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
           // Framing psychological quote
           Text(
             '"${strings.progressQuote}"',
-            style: LabTheme.editorialSerif(
+            style: LabTheme.textStyle(
               fontSize: 12,
               fontStyle: FontStyle.italic,
-              color: context.tokens.textSecondary,
+              color: context.tokens.ink2,
               height: 1.35,
             ),
           ),
@@ -226,11 +226,11 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? context.tokens.accentSoft
+                                  ? context.tokens.cardTint
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: isSelected ? context.tokens.accent : borderColor,
+                                color: isSelected ? context.tokens.ink : borderColor,
                                 width: isSelected ? 1.2 : 0.8,
                               ),
                             ),
@@ -240,7 +240,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                 fontSize: 10,
                                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
                                 letterSpacing: 0.4,
-                                color: isSelected ? context.tokens.accent : textSecondary,
+                                color: isSelected ? context.tokens.ink : textSecondary,
                               ),
                             ),
                           ),
@@ -255,7 +255,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.tokens.surfaceSecondary,
+                  color: context.tokens.surface2,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: borderColor, width: 0.6),
                 ),
@@ -392,6 +392,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
     required AppStrings strings,
   }) {
     final traces = analytics.chronologicalTraces;
+    final tokens = context.tokens;
 
     return Container(
       decoration: BoxDecoration(
@@ -409,7 +410,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
               children: [
                 Row(
                   children: [
-                    Icon(Icons.fingerprint_rounded, size: 16, color: context.tokens.accent),
+                    Icon(Icons.fingerprint_rounded, size: 16, color: tokens.m1),
                     const SizedBox(width: 8),
                     Text(
                       strings.thoughtTraceTitle.toUpperCase(),
@@ -417,7 +418,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: context.tokens.accent,
+                        color: tokens.ink,
                       ),
                     ),
                   ],
@@ -433,7 +434,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               strings.thoughtTraceQuote,
-              style: LabTheme.editorialSerif(
+              style: LabTheme.textStyle(
                 fontSize: 11.5,
                 fontStyle: FontStyle.italic,
                 color: textSecondary,
@@ -450,11 +451,11 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                   children: [
                     Text(
                       strings.thoughtTraceWaitingTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.8,
-                        color: LabColors.textPrimary,
+                        color: tokens.ink,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -467,8 +468,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                     ElevatedButton(
                       onPressed: () => context.push(AppRouter.mindTrace),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: LabColors.textPrimary,
-                        foregroundColor: LabColors.surface0,
+                        backgroundColor: tokens.ink,
+                        foregroundColor: tokens.bg,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                       ),
                       child: Text(
@@ -499,7 +500,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: context.tokens.surfaceSecondary,
+                          color: context.tokens.surface2,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: borderColor, width: 0.8),
                         ),
@@ -520,16 +521,16 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: context.tokens.accentSoft,
+                                    color: context.tokens.cardTint,
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: context.tokens.accent.withValues(alpha: 0.3), width: 0.6),
+                                    border: Border.all(color: context.tokens.ink.withValues(alpha: 0.3), width: 0.6),
                                   ),
                                   child: Text(
                                     '${trace.overallMood.toUpperCase()} • ${trace.moodIntensity}/10',
                                     style: TextStyle(
                                       fontSize: 9.5,
                                       fontWeight: FontWeight.bold,
-                                      color: context.tokens.accent,
+                                      color: context.tokens.ink,
                                     ),
                                   ),
                                 ),
@@ -556,7 +557,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                   return Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                     decoration: BoxDecoration(
-                                      color: context.tokens.surfaceSecondary,
+                                      color: context.tokens.surface2,
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: Text(
@@ -583,7 +584,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 width: double.infinity,
                 child: TextButton.icon(
                   onPressed: () => context.push(AppRouter.mindTrace),
-                  icon: Icon(Icons.timeline_rounded, size: 14, color: context.tokens.accent),
+                  icon: Icon(Icons.timeline_rounded, size: 14, color: context.tokens.ink),
                   label: Text(
                     strings.isArabic
                         ? 'فتح الخط الزمني الكامل لأثر الأفكار'
@@ -594,7 +595,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                       fontSize: 10.5,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.6,
-                      color: context.tokens.accent,
+                      color: context.tokens.ink,
                     ),
                   ),
                 ),
@@ -753,7 +754,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w700,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
             ],
@@ -803,8 +804,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                       child: LinearProgressIndicator(
                         value: ratio,
                         minHeight: 5,
-                        backgroundColor: context.tokens.surfaceSecondary,
-                        valueColor: AlwaysStoppedAnimation<Color>(context.tokens.accent),
+                        backgroundColor: context.tokens.surface2,
+                        valueColor: AlwaysStoppedAnimation<Color>(context.tokens.ink),
                       ),
                     ),
                   ],
@@ -839,13 +840,13 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
             height: 42,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: context.tokens.accentSoft,
-              border: Border.all(color: context.tokens.accent.withValues(alpha: 0.35), width: 0.8),
+              color: context.tokens.cardTint,
+              border: Border.all(color: context.tokens.ink.withValues(alpha: 0.35), width: 0.8),
             ),
             child: Icon(
               Icons.palette_outlined,
               size: 20,
-              color: context.tokens.accent,
+              color: context.tokens.ink,
             ),
           ),
           const SizedBox(width: 14),
@@ -859,7 +860,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.8,
-                    color: context.tokens.accent,
+                    color: context.tokens.ink,
                   ),
                 ),
                 const SizedBox(height: 3),
@@ -924,7 +925,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w800,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
             ],
@@ -962,8 +963,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                           height: 56 * heightRatio,
                           decoration: BoxDecoration(
                             color: item.intensity >= 7
-                                ? context.tokens.safetyWarmth.withValues(alpha: 0.75)
-                                : context.tokens.accent.withValues(alpha: 0.75),
+                                ? context.tokens.safety.withValues(alpha: 0.75)
+                                : context.tokens.ink.withValues(alpha: 0.75),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -1013,15 +1014,15 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
         children: [
           Row(
             children: [
-              const Icon(Icons.bedtime_outlined, size: 16, color: LabColors.warmBeige),
+              Icon(Icons.bedtime_outlined, size: 16, color: MindTokens.moodRestless),
               const SizedBox(width: 8),
               Text(
                 strings.energyAndSleepTitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: LabColors.warmBeige,
+                  color: MindTokens.moodRestless,
                 ),
               ),
             ],
@@ -1074,7 +1075,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: context.tokens.surfaceSecondary,
+                color: context.tokens.surface2,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: borderColor),
               ),
@@ -1113,7 +1114,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: context.tokens.surfaceSecondary,
+        color: context.tokens.surface2,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: borderColor, width: 0.8),
       ),
@@ -1178,7 +1179,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                   children: [
                     Row(
                       children: [
-                        Icon(ins.icon, size: 16, color: context.tokens.accent),
+                        Icon(ins.icon, size: 16, color: context.tokens.ink),
                         const SizedBox(width: 8),
                         Text(
                           ins.title,
@@ -1268,7 +1269,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.calendar_month_outlined, size: 16, color: context.tokens.accent),
+                      Icon(Icons.calendar_month_outlined, size: 16, color: context.tokens.ink),
                       const SizedBox(width: 8),
                       Text(
                         '${_getMonthName(_calendarMonth.month, strings).toUpperCase()} ${_calendarMonth.year}',
@@ -1276,7 +1277,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.6,
-                          color: context.tokens.accent,
+                          color: context.tokens.ink,
                         ),
                       ),
                     ],
@@ -1382,18 +1383,18 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                     child: Container(
                       decoration: BoxDecoration(
                         color: isSelected
-                            ? context.tokens.accent
+                            ? context.tokens.ink
                             : (isLogged
-                                ? context.tokens.accentSoft
-                                : context.tokens.surfaceSecondary),
+                                ? context.tokens.cardTint
+                                : context.tokens.surface2),
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(
                           color: isToday
-                              ? context.tokens.accent
+                              ? context.tokens.ink
                               : (isSelected
-                                  ? context.tokens.accent
+                                  ? context.tokens.ink
                                   : (isLogged
-                                      ? context.tokens.accent.withValues(alpha: 0.35)
+                                      ? context.tokens.ink.withValues(alpha: 0.35)
                                       : borderColor)),
                           width: isToday || isSelected ? 1.5 : 0.8,
                         ),
@@ -1405,9 +1406,9 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                             fontSize: 11,
                             fontWeight: isLogged || isToday ? FontWeight.w800 : FontWeight.w500,
                             color: isSelected
-                                ? (isDark ? context.tokens.background : Colors.white)
+                                ? context.tokens.bg
                                 : (isLogged
-                                    ? context.tokens.accent
+                                    ? context.tokens.ink
                                     : (isToday ? textPrimary : textSecondary.withValues(alpha: 0.5))),
                           ),
                         ),
@@ -1423,9 +1424,9 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: context.tokens.surfaceSecondary,
+                    color: context.tokens.surface2,
                     borderRadius: BorderRadius.circular(context.tokens.cardRadius),
-                    border: Border.all(color: context.tokens.accent.withValues(alpha: 0.45)),
+                    border: Border.all(color: context.tokens.ink.withValues(alpha: 0.45)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1440,7 +1441,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                 style: TextStyle(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w800,
-                                  color: context.tokens.accent,
+                                  color: context.tokens.ink,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -1468,7 +1469,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                         const SizedBox(height: 8),
                         Text(
                           '"${_selectedCalendarTrace!.journalText!}"',
-                          style: LabTheme.editorialSerif(fontSize: 11.5, fontStyle: FontStyle.italic, color: textPrimary),
+                          style: LabTheme.textStyle(fontSize: 11.5, fontStyle: FontStyle.italic, color: textPrimary),
                         ),
                       ],
                       const SizedBox(height: 10),
@@ -1479,7 +1480,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                           TextButton(
                             onPressed: () => _confirmDeleteTrace(context, _selectedCalendarTrace!, strings),
                             style: TextButton.styleFrom(
-                              foregroundColor: LabColors.cherryRedGlow,
+                              foregroundColor: context.tokens.safety,
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1498,8 +1499,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: context.tokens.accent,
-                              foregroundColor: isDark ? context.tokens.background : Colors.white,
+                              backgroundColor: context.tokens.ink,
+                              foregroundColor: context.tokens.bg,
                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1568,8 +1569,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                     height: 36,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: context.tokens.accentSoft,
-                      border: Border.all(color: context.tokens.accent.withValues(alpha: 0.35), width: 0.8),
+                      color: context.tokens.cardTint,
+                      border: Border.all(color: context.tokens.ink.withValues(alpha: 0.35), width: 0.8),
                     ),
                     child: Center(
                       child: Text(
@@ -1577,7 +1578,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
-                          color: context.tokens.accent,
+                          color: context.tokens.ink,
                         ),
                       ),
                     ),
@@ -1653,7 +1654,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
               await ref.read(mindTraceControllerProvider.notifier).deleteCheckIn(trace.id);
               setState(() => _selectedCalendarTrace = null);
             },
-            style: TextButton.styleFrom(foregroundColor: LabColors.cherryRedGlow),
+            style: TextButton.styleFrom(foregroundColor: context.tokens.safety),
             child: Text(strings.deleteEntryBtn),
           ),
         ],
@@ -1707,7 +1708,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 decoration: InputDecoration(
                   hintText: strings.searchReflectionsHint,
                   hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
-                  prefixIcon: Icon(Icons.search, size: 16, color: context.tokens.accent),
+                  prefixIcon: Icon(Icons.search, size: 16, color: context.tokens.ink),
                   suffixIcon: query.isNotEmpty
                       ? IconButton(
                           tooltip: strings.clearSearchTooltip,
@@ -1719,7 +1720,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                         )
                       : null,
                   filled: true,
-                  fillColor: context.tokens.surfaceSecondary,
+                  fillColor: context.tokens.surface2,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   isDense: true,
                   border: OutlineInputBorder(
@@ -1805,7 +1806,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                             children: [
                               Row(
                                 children: [
-                                  Icon(item.sourceType.icon, size: 14, color: context.tokens.accent),
+                                  Icon(item.sourceType.icon, size: 14, color: context.tokens.ink),
                                   const SizedBox(width: 6),
                                   Text(
                                     item.sourceTitle,
@@ -1813,7 +1814,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                       fontSize: 10.5,
                                       fontWeight: FontWeight.w800,
                                       letterSpacing: 0.4,
-                                      color: context.tokens.accent,
+                                      color: context.tokens.ink,
                                     ),
                                   ),
                                 ],
@@ -1827,7 +1828,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                           const SizedBox(height: 8),
                           Text(
                             '"${item.text}"',
-                            style: LabTheme.editorialSerif(
+                            style: LabTheme.textStyle(
                               fontSize: 12.5,
                               fontStyle: FontStyle.italic,
                               color: textPrimary,
@@ -1853,7 +1854,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                                     fontSize: 9.5,
                                     fontWeight: FontWeight.w800,
                                     letterSpacing: 0.5,
-                                    color: context.tokens.accent,
+                                    color: context.tokens.ink,
                                   ),
                                 ),
                               ),
@@ -1887,10 +1888,10 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? context.tokens.accentSoft : Colors.transparent,
+          color: isSelected ? context.tokens.cardTint : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? context.tokens.accent : borderColor,
+            color: isSelected ? context.tokens.ink : borderColor,
             width: isSelected ? 1.0 : 0.8,
           ),
         ),
@@ -1898,7 +1899,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
           mainAxisSize: MainAxisSize.min,
           children: [
             if (icon != null) ...[
-              Icon(icon, size: 12, color: isSelected ? context.tokens.accent : textSecondary),
+              Icon(icon, size: 12, color: isSelected ? context.tokens.ink : textSecondary),
               const SizedBox(width: 4),
             ],
             Text(
@@ -1906,7 +1907,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w800 : FontWeight.w500,
-                color: isSelected ? context.tokens.accent : textSecondary,
+                color: isSelected ? context.tokens.ink : textSecondary,
               ),
             ),
           ],
@@ -1965,7 +1966,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: context.tokens.accent,
+                      color: context.tokens.ink,
                     ),
                   ),
                 ],
@@ -1976,8 +1977,8 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                 child: LinearProgressIndicator(
                   value: journeyRatio,
                   minHeight: 6,
-                  backgroundColor: context.tokens.surfaceSecondary,
-                  valueColor: AlwaysStoppedAnimation<Color>(context.tokens.accent),
+                  backgroundColor: context.tokens.surface2,
+                  valueColor: AlwaysStoppedAnimation<Color>(context.tokens.ink),
                 ),
               ),
               const SizedBox(height: 12),
@@ -2019,11 +2020,11 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: m.isUnlocked
-                  ? context.tokens.accentSoft
-                  : context.tokens.surfaceSecondary,
+                  ? context.tokens.cardTint
+                  : context.tokens.surface2,
               borderRadius: BorderRadius.circular(context.tokens.cardRadius),
               border: Border.all(
-                color: m.isUnlocked ? context.tokens.accent.withValues(alpha: 0.45) : borderColor,
+                color: m.isUnlocked ? context.tokens.ink.withValues(alpha: 0.45) : borderColor,
                 width: 0.8,
               ),
             ),
@@ -2035,17 +2036,17 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: m.isUnlocked
-                        ? context.tokens.accentSoft
+                        ? context.tokens.cardTint
                         : context.tokens.surface,
                     border: Border.all(
-                      color: m.isUnlocked ? context.tokens.accent : borderColor,
+                      color: m.isUnlocked ? context.tokens.ink : borderColor,
                       width: 0.8,
                     ),
                   ),
                   child: Icon(
                     m.isUnlocked ? Icons.star_rounded : Icons.star_border_rounded,
                     size: 16,
-                    color: m.isUnlocked ? context.tokens.accent : textSecondary,
+                    color: m.isUnlocked ? context.tokens.ink : textSecondary,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -2091,7 +2092,7 @@ class _ProgressScreenState extends ConsumerState<ProgressScreen>
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
-                    color: m.isUnlocked ? context.tokens.accent : textSecondary.withValues(alpha: 0.6),
+                    color: m.isUnlocked ? context.tokens.ink : textSecondary.withValues(alpha: 0.6),
                   ),
                 ),
               ],

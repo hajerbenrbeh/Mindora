@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
 import '../../controllers/journal_memory_controller.dart';
 import '../../domain/journal_memory_model.dart';
@@ -28,16 +28,15 @@ class JournalMemorySheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surface = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
-    final accent = isDark ? LabColors.nightAccent : LabColors.daylightAccent;
+    final bg = tokens.surface;
+    final surface = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
+    final accent = tokens.m1;
 
     final memoriesAsync = ref.watch(journalMemoryControllerProvider);
     final memories = memoriesAsync.value ?? [];
@@ -113,7 +112,7 @@ class JournalMemorySheet extends ConsumerWidget {
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: border, width: 1),
             ),
@@ -188,7 +187,6 @@ class JournalMemorySheet extends ConsumerWidget {
                         textPrimary: textPrimary,
                         textSecondary: textSecondary,
                         accent: accent,
-                        isDark: isDark,
                       );
                     },
                   ),
@@ -207,12 +205,12 @@ class JournalMemorySheet extends ConsumerWidget {
     required Color textPrimary,
     required Color textSecondary,
     required Color accent,
-    required bool isDark,
   }) {
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
     final statusColor = item.isConfirmed
-        ? (isDark ? LabColors.sageGreen : LabColors.daylightAccent)
-        : (item.isRejected ? (isDark ? LabColors.cherryRedGlow : LabColors.cherryRed) : textSecondary);
+        ? tokens.m1
+        : (item.isRejected ? tokens.safety : textSecondary);
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -232,7 +230,7 @@ class JournalMemorySheet extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
+                  color: tokens.surface2,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(

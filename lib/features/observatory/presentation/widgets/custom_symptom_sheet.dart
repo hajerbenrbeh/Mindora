@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../controllers/observatory_controllers.dart';
 import '../../domain/symptom_entry.dart';
 
@@ -61,15 +61,14 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       padding: EdgeInsets.only(
@@ -80,7 +79,7 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
       ),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: SafeArea(
@@ -97,7 +96,7 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
-                    color: isDark ? LabColors.nightBorder : LabColors.daylightBorder,
+                    color: tokens.lineStrong,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -149,12 +148,12 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                       color: isSelected ? textPrimary : textSecondary,
                     ),
-                    backgroundColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
-                    selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+                    backgroundColor: tokens.surface2,
+                    selectedColor: tokens.selectedTintFor(tokens.m1),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(tokens.chipRadius),
                       side: BorderSide(
-                        color: isSelected ? LabColors.sageGreen : borderColor,
+                        color: isSelected ? tokens.m1 : borderColor,
                       ),
                     ),
                     showCheckmark: false,
@@ -183,21 +182,21 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
                       : (strings.isFrench
                           ? 'ex. Brouillard mental l’après-midi'
                           : 'e.g., Afternoon mental fog'),
-                  hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.6), fontSize: 12),
+                  hintStyle: TextStyle(color: tokens.ink3, fontSize: 12),
                   filled: true,
-                  fillColor: isDark ? LabColors.nightBackground : LabColors.daylightBackground,
+                  fillColor: tokens.surface2,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.inputRadius),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.inputRadius),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: LabColors.sageGreen, width: 1.5),
+                    borderRadius: BorderRadius.circular(tokens.inputRadius),
+                    borderSide: BorderSide(color: tokens.focusRing, width: 1.5),
                   ),
                 ),
               ),
@@ -223,21 +222,21 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
                       : (strings.isFrench
                           ? 'Comment se manifeste ce ressenti ?'
                           : 'How does it usually manifest?'),
-                  hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.6), fontSize: 12),
+                  hintStyle: TextStyle(color: tokens.ink3, fontSize: 12),
                   filled: true,
-                  fillColor: isDark ? LabColors.nightBackground : LabColors.daylightBackground,
+                  fillColor: tokens.surface2,
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.inputRadius),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.inputRadius),
                     borderSide: BorderSide(color: borderColor),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: LabColors.sageGreen, width: 1.5),
+                    borderRadius: BorderRadius.circular(tokens.inputRadius),
+                    borderSide: BorderSide(color: tokens.focusRing, width: 1.5),
                   ),
                 ),
               ),
@@ -246,13 +245,13 @@ class _CustomSymptomSheetState extends ConsumerState<CustomSymptomSheet> {
               // Action button
               SizedBox(
                 width: double.infinity,
-                height: 44,
+                height: 48,
                 child: FilledButton(
                   onPressed: _saveSymptom,
                   style: FilledButton.styleFrom(
-                    backgroundColor: textPrimary,
-                    foregroundColor: isDark ? Colors.black : Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    backgroundColor: tokens.ink,
+                    foregroundColor: tokens.bg,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
                   ),
                   child: Text(
                     isAr

@@ -243,7 +243,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: const Scaffold(
               body: SingleChildScrollView(
                 child: AiEngineConfigSheet(),
@@ -292,7 +292,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: Scaffold(
               body: LiveDialogueView(caseModel: buildCase()),
             ),
@@ -424,7 +424,7 @@ void main() {
       try {
         await tester.pumpWidget(
           MaterialApp(
-            theme: LabTheme.daylightTheme,
+            theme: buildMindTheme(Brightness.light),
             home: Scaffold(
               body: Center(
                 child: MindPill(
@@ -475,7 +475,7 @@ void main() {
           UncontrolledProviderScope(
             container: container,
             child: MaterialApp(
-              theme: LabTheme.daylightTheme,
+              theme: buildMindTheme(Brightness.light),
               home: const Scaffold(
                 body: JournalMemorySheet(),
               ),

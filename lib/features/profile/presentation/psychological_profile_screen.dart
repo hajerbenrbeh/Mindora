@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
+import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
 import 'psychological_profile_view.dart';
 
@@ -12,17 +12,11 @@ class PsychologicalProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
-    final bg =
-        isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: tokens.bg,
       appBar: AppBar(
         title: Text(
           strings.myPsychologicalProfileTitle.toUpperCase(),
@@ -30,7 +24,7 @@ class PsychologicalProfileScreen extends ConsumerWidget {
             fontWeight: FontWeight.w800,
             fontSize: 13.5,
             letterSpacing: 1.0,
-            color: textPrimary,
+            color: tokens.ink,
           ),
         ),
         actions: const [

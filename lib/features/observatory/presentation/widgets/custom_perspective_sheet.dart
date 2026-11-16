@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../journey/controllers/journey_controller.dart';
 
 class CustomPerspectiveSheet extends ConsumerStatefulWidget {
@@ -88,20 +88,19 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
     );
 
     if (mounted) {
+      final tokens = context.tokens;
       Navigator.of(context).pop();
       final s = ref.read(appStringsProvider);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? LabColors.nightSurface
-              : LabColors.daylightTextPrimary,
+          backgroundColor: tokens.surface,
           content: Text(
             s.isArabic
                 ? 'تم حفظ زاوية النظر البديلة في سجل الاكتشافات'
                 : (s.isFrench
                     ? 'Perspective alternative enregistrée dans vos découvertes'
                     : 'Alternative perspective saved to Personal Discoveries'),
-            style: const TextStyle(fontSize: 12),
+            style: TextStyle(fontSize: 12, color: tokens.ink),
           ),
         ),
       );
@@ -110,20 +109,19 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final surface = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surface = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark ? LabColors.nightBackground : LabColors.daylightBackground,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        color: surface,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border(top: BorderSide(color: border, width: 1.5)),
       ),
       padding: EdgeInsets.fromLTRB(
@@ -143,7 +141,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF333333) : const Color(0xFFD1D5DB),
+                  color: tokens.lineStrong,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -164,13 +162,13 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                     fontSize: 12,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.8,
-                    color: LabColors.sageGreen,
+                    color: textPrimary,
                   ),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: surface,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(4),
                     border: Border.all(color: border),
                   ),
@@ -209,7 +207,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.rowRadius),
                     onTap: () {
                       HapticFeedback.selectionClick();
                       setState(() {
@@ -220,10 +218,10 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected ? LabColors.sageGreen.withValues(alpha: 0.15) : surface,
-                        borderRadius: BorderRadius.circular(8),
+                        color: isSelected ? tokens.selectedTintFor(tokens.m1) : tokens.surface2,
+                        borderRadius: BorderRadius.circular(tokens.rowRadius),
                         border: Border.all(
-                          color: isSelected ? LabColors.sageGreen : border,
+                          color: isSelected ? tokens.m1 : border,
                         ),
                       ),
                       child: Row(
@@ -231,7 +229,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                           Icon(
                             Icons.fact_check_outlined,
                             size: 16,
-                            color: isSelected ? LabColors.sageGreen : textSecondary,
+                            color: isSelected ? textPrimary : textSecondary,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -279,7 +277,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.rowRadius),
                     onTap: () {
                       HapticFeedback.selectionClick();
                       setState(() {
@@ -290,10 +288,10 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected ? LabColors.sageGreen.withValues(alpha: 0.15) : surface,
-                        borderRadius: BorderRadius.circular(8),
+                        color: isSelected ? tokens.selectedTintFor(tokens.m1) : tokens.surface2,
+                        borderRadius: BorderRadius.circular(tokens.rowRadius),
                         border: Border.all(
-                          color: isSelected ? LabColors.sageGreen : border,
+                          color: isSelected ? tokens.m1 : border,
                         ),
                       ),
                       child: Row(
@@ -301,7 +299,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                           Icon(
                             Icons.psychology_outlined,
                             size: 16,
-                            color: isSelected ? LabColors.sageGreen : textSecondary,
+                            color: isSelected ? textPrimary : textSecondary,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -349,7 +347,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(tokens.rowRadius),
                     onTap: () {
                       HapticFeedback.selectionClick();
                       setState(() => _selectedAlternative = label);
@@ -357,10 +355,10 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected ? LabColors.sageGreen.withValues(alpha: 0.2) : surface,
-                        borderRadius: BorderRadius.circular(8),
+                        color: isSelected ? tokens.selectedTintFor(tokens.m1) : tokens.surface2,
+                        borderRadius: BorderRadius.circular(tokens.rowRadius),
                         border: Border.all(
-                          color: isSelected ? LabColors.sageGreen : border,
+                          color: isSelected ? tokens.m1 : border,
                           width: isSelected ? 1.5 : 1,
                         ),
                       ),
@@ -369,7 +367,7 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                           Icon(
                             isSelected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
                             size: 16,
-                            color: isSelected ? LabColors.sageGreen : textSecondary,
+                            color: isSelected ? tokens.m1 : textSecondary,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -403,11 +401,11 @@ class _CustomPerspectiveSheetState extends ConsumerState<CustomPerspectiveSheet>
                     ),
                     onPressed: _saveAsDiscovery,
                     style: FilledButton.styleFrom(
-                      backgroundColor: isDark ? LabColors.sageGreen : LabColors.daylightAccent,
-                      foregroundColor: isDark ? Colors.black : Colors.white,
+                      backgroundColor: tokens.ink,
+                      foregroundColor: tokens.bg,
                       minimumSize: const Size.fromHeight(48),
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
                     ),
                   ),
                 ),

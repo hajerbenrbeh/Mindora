@@ -37,7 +37,6 @@ class TrackMonthCalendar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
     final daysInMonth = DateUtils.getDaysInMonth(month.year, month.month);
     final firstDayOffset = DateTime(month.year, month.month, 1).weekday - 1;

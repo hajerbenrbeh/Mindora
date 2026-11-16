@@ -126,26 +126,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final authState = ref.watch(authControllerProvider);
     final lockState = ref.watch(appLockProvider);
 
-    final bg = tokens.background;
+    final bg = tokens.bg;
     final surfaceColor = tokens.surface;
-    final borderColor = tokens.border;
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
-    final sageAccent = tokens.accent;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
+    final sageAccent = tokens.ink;
 
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
         title: Text(
           'Mind Forensics',
-          style: LabTheme.serifStyle(
+          style: LabTheme.textStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.5,
@@ -174,7 +172,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 Text(
                   strings.authTitle,
                   textAlign: TextAlign.center,
-                  style: LabTheme.serifStyle(
+                  style: LabTheme.textStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     letterSpacing: -0.3,
@@ -198,7 +196,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(tokens.buttonRadius),
                     border: Border.all(color: borderColor, width: 1),
                   ),
@@ -220,7 +218,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: !_isSignUp
-                                  ? tokens.accent
+                                  ? tokens.ink
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(tokens.buttonRadius - 2),
                             ),
@@ -232,7 +230,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.5,
                                 color: !_isSignUp
-                                    ? tokens.onAccent
+                                    ? tokens.bg
                                     : textSecondary,
                               ),
                             ),
@@ -256,7 +254,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 10),
                             decoration: BoxDecoration(
                               color: _isSignUp
-                                  ? tokens.accent
+                                  ? tokens.ink
                                   : Colors.transparent,
                               borderRadius: BorderRadius.circular(tokens.buttonRadius - 2),
                             ),
@@ -268,7 +266,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 0.5,
                                 color: _isSignUp
-                                    ? tokens.onAccent
+                                    ? tokens.bg
                                     : textSecondary,
                               ),
                             ),
@@ -287,10 +285,10 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                     margin: const EdgeInsets.only(bottom: 16),
                     decoration: BoxDecoration(
-                      color: tokens.safetyWarmthSoft,
+                      color: tokens.safetySoft,
                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                       border: Border.all(
-                        color: tokens.safetyWarmth.withValues(alpha: 0.45),
+                        color: tokens.safety.withValues(alpha: 0.45),
                       ),
                     ),
                     child: Row(
@@ -298,14 +296,14 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         Icon(
                           Icons.error_outline_rounded,
                           size: 16,
-                          color: tokens.safetyWarmth,
+                          color: tokens.safety,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             strings.localizeAuthError(authState.errorMessage!),
                             style: TextStyle(
-                              color: tokens.safetyWarmth,
+                              color: tokens.safety,
                               fontSize: 11.5,
                               fontWeight: FontWeight.w600,
                             ),
@@ -396,8 +394,8 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                   width: double.infinity,
                   child: FilledButton(
                     style: FilledButton.styleFrom(
-                      backgroundColor: tokens.accent,
-                      foregroundColor: isDark ? tokens.background : Colors.white,
+                      backgroundColor: tokens.ink,
+                      foregroundColor: tokens.bg,
                       minimumSize: const Size.fromHeight(48),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(tokens.buttonRadius),
@@ -413,7 +411,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                             height: 16,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              color: isDark ? tokens.background : Colors.white,
+                              color: tokens.bg,
                             ),
                           )
                         : Text(
@@ -497,15 +495,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                         color: borderColor,
                         width: 1,
                       ),
-                      boxShadow: isDark
-                          ? const []
-                          : [
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.03),
-                                blurRadius: 10,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
+                      boxShadow: tokens.shadows,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -624,7 +614,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
-                            color: tokens.accent,
+                            color: tokens.ink,
                             decoration: TextDecoration.underline,
                           ),
                         ),
@@ -683,7 +673,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
-        borderSide: BorderSide(color: context.tokens.accent, width: 1.2),
+        borderSide: BorderSide(color: context.tokens.ink, width: 1.2),
       ),
     );
   }

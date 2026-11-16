@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
@@ -60,13 +59,13 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
@@ -97,7 +96,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
 
               Text(
                 strings.sectionGoals,
-                style: LabTheme.serifStyle(
+                style: LabTheme.textStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   color: textPrimary,
@@ -148,11 +147,11 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
                               color: isSelected
-                                  ? context.tokens.accentSoft
-                                  : context.tokens.surfaceSecondary,
+                                  ? context.tokens.cardTint
+                                  : context.tokens.surface2,
                               borderRadius: BorderRadius.circular(14),
                               border: Border.all(
-                                color: isSelected ? context.tokens.accent : border,
+                                color: isSelected ? context.tokens.ink : border,
                                 width: isSelected ? 1.2 : 0.8,
                               ),
                             ),
@@ -161,7 +160,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                                 Icon(
                                   isSelected ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
                                   size: 16,
-                                  color: isSelected ? context.tokens.accent : textSecondary,
+                                  color: isSelected ? context.tokens.ink : textSecondary,
                                 ),
                                 const SizedBox(width: 10),
                                 Expanded(
@@ -171,7 +170,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                                       fontSize: 12,
                                       fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                                       color: isSelected
-                                          ? context.tokens.accent
+                                          ? context.tokens.ink
                                           : textPrimary,
                                     ),
                                   ),
@@ -212,11 +211,11 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                                 : 'Enter any other goal meaningful to you...'),
                         hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
                         filled: true,
-                        fillColor: context.tokens.surfaceSecondary,
+                        fillColor: context.tokens.surface2,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
                         enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: border)),
-                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.accent)),
+                        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: context.tokens.ink)),
                       ),
                     ),
 
@@ -234,7 +233,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                   width: double.infinity,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: context.tokens.accent,
+                    color: context.tokens.ink,
                     borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                   ),
                   alignment: Alignment.center,
@@ -249,7 +248,7 @@ class _EditGoalsSheetState extends ConsumerState<EditGoalsSheet> {
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: isDark ? context.tokens.background : Colors.white,
+                      color: context.tokens.bg,
                     ),
                   ),
                 ),

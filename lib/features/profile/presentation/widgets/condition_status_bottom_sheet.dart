@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/bouncing_widget.dart';
 import '../../controllers/profile_controller.dart';
@@ -71,16 +70,13 @@ class _ConditionStatusBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -130,7 +126,7 @@ class _ConditionStatusBottomSheetState
                   if (widget.isSelected)
                     TextButton(
                       style: TextButton.styleFrom(
-                        foregroundColor: LabColors.cherryRedGlow,
+                        foregroundColor: context.tokens.safety,
                         visualDensity: VisualDensity.compact,
                       ),
                       onPressed: () {
@@ -188,12 +184,12 @@ class _ConditionStatusBottomSheetState
                             horizontal: 14, vertical: 10),
                         decoration: BoxDecoration(
                           color: isCurrent
-                              ? context.tokens.accentSoft
-                              : context.tokens.surfaceSecondary,
+                              ? context.tokens.cardTint
+                              : context.tokens.surface2,
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
                             color: isCurrent
-                                ? context.tokens.accent
+                                ? context.tokens.ink
                                 : border,
                             width: 1,
                           ),
@@ -217,7 +213,7 @@ class _ConditionStatusBottomSheetState
                               Icon(
                                 Icons.check_circle_rounded,
                                 size: 16,
-                                color: context.tokens.accent,
+                                color: context.tokens.ink,
                               ),
                           ],
                         ),
@@ -255,7 +251,7 @@ class _ConditionStatusBottomSheetState
                     color: textSecondary.withValues(alpha: 0.6),
                   ),
                   filled: true,
-                  fillColor: context.tokens.surfaceSecondary,
+                  fillColor: context.tokens.surface2,
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
@@ -305,7 +301,7 @@ class _ConditionStatusBottomSheetState
                   width: double.infinity,
                   height: 46,
                   decoration: BoxDecoration(
-                    color: context.tokens.accent,
+                    color: context.tokens.ink,
                     borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                   ),
                   alignment: Alignment.center,
@@ -317,7 +313,7 @@ class _ConditionStatusBottomSheetState
                       fontSize: 12.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.4,
-                      color: isDark ? context.tokens.background : Colors.white,
+                      color: context.tokens.bg,
                     ),
                   ),
                 ),

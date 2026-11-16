@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/localization/app_strings.dart';
-import '../../app/theme/lab_colors.dart';
 import '../../app/theme/mind_tokens.dart';
 import '../widgets/mind_pressable.dart';
 import 'safety_model.dart';
@@ -46,19 +45,17 @@ class SupportButton extends ConsumerWidget {
               width: 38,
               height: 38,
               decoration: BoxDecoration(
-                color: tokens.safetyWarmthSoft,
+                color: tokens.safetySoft,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? LabColors.safetyBorderDark
-                      : LabColors.safetyBorderLight,
+                  color: tokens.safety.withValues(alpha: 0.35),
                   width: 1.0,
                 ),
               ),
               child: Icon(
                 Icons.shield_outlined,
                 size: 19,
-                color: tokens.safetyWarmth,
+                color: tokens.safety,
               ),
             ),
           ),
@@ -149,16 +146,15 @@ class SupportModalSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final resources = CrisisResource.tunisianResources;
 
-    final sheetBg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final cardBg = isDark ? LabColors.nightSurfaceSubtle : LabColors.daylightBackground;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final sheetBg = tokens.surface;
+    final cardBg = tokens.surface2;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return SafeArea(
       child: Container(
@@ -177,11 +173,11 @@ class SupportModalSheet extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(7),
                 decoration: BoxDecoration(
-                  color: isDark ? LabColors.safetySoftBgDark : LabColors.safetySoftBgLight,
+                  color: tokens.safetySoft,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Icon(Icons.shield_outlined,
-                    color: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth, size: 18),
+                    color: tokens.safety, size: 18),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -263,7 +259,7 @@ class SupportModalSheet extends ConsumerWidget {
                                         : 'Toll-free 24/7'),
                                 style: TextStyle(
                                   fontSize: 11,
-                                  color: isDark ? LabColors.factBlueDark : LabColors.factBlue,
+                                  color: tokens.m1,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -275,8 +271,8 @@ class SupportModalSheet extends ConsumerWidget {
                       if (hasPhone)
                         FilledButton.icon(
                           style: FilledButton.styleFrom(
-                            backgroundColor: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
-                            foregroundColor: isDark ? LabColors.nightBackground : Colors.white,
+                            backgroundColor: tokens.safety,
+                            foregroundColor: tokens.bg,
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           ),

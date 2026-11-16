@@ -38,15 +38,13 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
     final bg = tokens.surface;
-    final border = tokens.border;
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     // Format time display
     final hour = trace.createdAt.hour.toString().padLeft(2, '0');
@@ -97,7 +95,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 1.4,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -120,7 +118,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                           tooltip: strings.isArabic
                               ? 'تعديل'
                               : (strings.isFrench ? 'Modifier' : 'Edit'),
-                          color: tokens.accent,
+                          color: tokens.ink,
                           onPressed: () {
                             Navigator.pop(context);
                             onEdit!();
@@ -141,7 +139,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                                 shape: RoundedRectangleBorder(
                                   borderRadius:
                                       BorderRadius.circular(tokens.cardRadius),
-                                  side: BorderSide(color: tokens.border),
+                                  side: BorderSide(color: tokens.line),
                                 ),
                                 title: Text(
                                   strings.deleteTraceConfirmTitle,
@@ -174,7 +172,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                                     child: Text(
                                       strings.deleteEntryBtn,
                                       style: TextStyle(
-                                        color: tokens.safetyWarmth,
+                                        color: tokens.safety,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
@@ -205,10 +203,10 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: tokens.surfaceSecondary,
+                  color: tokens.surface2,
                   borderRadius: BorderRadius.circular(tokens.cardRadius),
                   border: Border.all(
-                    color: tokens.accent.withValues(alpha: 0.3),
+                    color: tokens.ink.withValues(alpha: 0.3),
                     width: 1,
                   ),
                 ),
@@ -222,7 +220,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                           height: 6,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -264,9 +262,9 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                     decoration: BoxDecoration(
-                      color: tokens.accentSoft,
+                      color: tokens.cardTint,
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: tokens.accent.withValues(alpha: 0.3)),
+                      border: Border.all(color: tokens.ink.withValues(alpha: 0.3)),
                     ),
                     child: Text(
                       '${trace.overallMood.toUpperCase()} • ${trace.moodIntensity}/10',
@@ -274,7 +272,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                         fontSize: 11,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.8,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     ),
                   ),
@@ -283,15 +281,15 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: tokens.surfaceSecondary,
+                        color: tokens.surface2,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: tokens.accent.withValues(alpha: 0.35)),
+                        border: Border.all(color: tokens.ink.withValues(alpha: 0.35)),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(Icons.psychology_outlined,
-                              size: 13, color: tokens.accent),
+                              size: 13, color: tokens.ink),
                           const SizedBox(width: 5),
                           Text(
                             strings.isArabic ? 'تم الاستكشاف' : (strings.isFrench ? 'EXPLORÉ' : 'EXPLORED'),
@@ -317,7 +315,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: tokens.surfaceSecondary,
+                        color: tokens.surface2,
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: border, width: 0.8),
                       ),
@@ -393,7 +391,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                             ? 'SITUATION / DÉCLENCHEUR'
                             : 'SITUATION / TRIGGER'),
                     content: trace.situation!.trim(),
-                    surfaceSecondary: tokens.surfaceSecondary,
+                    surfaceSecondary: tokens.surface2,
                     radius: tokens.buttonRadius,
                     border: border,
                     textPrimary: textPrimary,
@@ -408,7 +406,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                             ? 'RÉPONSE COMPORTEMENTALE'
                             : 'BEHAVIORAL RESPONSE'),
                     content: trace.behavioralResponse!.trim(),
-                    surfaceSecondary: tokens.surfaceSecondary,
+                    surfaceSecondary: tokens.surface2,
                     radius: tokens.buttonRadius,
                     border: border,
                     textPrimary: textPrimary,
@@ -432,7 +430,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: tokens.surfaceSecondary,
+                  color: tokens.surface2,
                   borderRadius: BorderRadius.circular(tokens.cardRadius),
                   border: Border.all(color: border, width: 0.8),
                 ),
@@ -478,7 +476,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 1.1,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -493,7 +491,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                     margin: const EdgeInsets.only(bottom: 8),
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: tokens.surfaceSecondary,
+                      color: tokens.surface2,
                       borderRadius: BorderRadius.circular(tokens.buttonRadius),
                       border: Border.all(color: border),
                     ),
@@ -529,10 +527,10 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: tokens.accentSoft,
+                    color: tokens.cardTint,
                     borderRadius: BorderRadius.circular(tokens.cardRadius),
                     border: Border.all(
-                      color: tokens.accent.withValues(alpha: 0.35),
+                      color: tokens.ink.withValues(alpha: 0.35),
                       width: 1,
                     ),
                   ),
@@ -542,7 +540,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                       Row(
                         children: [
                           Icon(Icons.lightbulb_outline_rounded,
-                              size: 14, color: tokens.accent),
+                              size: 14, color: tokens.ink),
                           const SizedBox(width: 6),
                           Text(
                             strings.isArabic ? 'ملاحظة المساعد الذكي' : (strings.isFrench ? 'Observation réflexive de l’IA' : 'AI REFLECTIVE OBSERVATION'),
@@ -550,7 +548,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                               fontSize: 10,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 0.8,
-                              color: tokens.accent,
+                              color: tokens.ink,
                             ),
                           ),
                         ],
@@ -586,7 +584,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(tokens.buttonRadius),
                     border: Border.all(color: border),
                   ),

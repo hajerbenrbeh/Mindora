@@ -324,7 +324,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                     width: 36,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: sheetTokens.border,
+                      color: sheetTokens.line,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -340,14 +340,14 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                           fontSize: 12,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 0.7,
-                          color: sheetTokens.textPrimary,
+                          color: sheetTokens.ink,
                         ),
                       ),
                     ),
                     if (statement.distortionTag != null)
                       TextButton(
                         style: TextButton.styleFrom(
-                          foregroundColor: sheetTokens.safetyWarmth,
+                          foregroundColor: sheetTokens.safety,
                           visualDensity: VisualDensity.compact,
                         ),
                         onPressed: () {
@@ -371,7 +371,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   strings.cognitiveDistortionSheetDesc,
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: sheetTokens.textSecondary,
+                    color: sheetTokens.ink2,
                     height: 1.4,
                   ),
                 ),
@@ -400,15 +400,15 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                           ),
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? sheetTokens.accentSoft
-                                : sheetTokens.surfaceSecondary,
+                                ? sheetTokens.cardTint
+                                : sheetTokens.surface2,
                             borderRadius: BorderRadius.circular(
                               sheetTokens.buttonRadius,
                             ),
                             border: Border.all(
                               color: isSelected
-                                  ? sheetTokens.accent
-                                  : sheetTokens.border,
+                                  ? sheetTokens.ink
+                                  : sheetTokens.line,
                               width: isSelected ? 1.4 : 1,
                             ),
                           ),
@@ -426,8 +426,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                         fontSize: 13.5,
                                         fontWeight: FontWeight.w700,
                                         color: isSelected
-                                            ? sheetTokens.accent
-                                            : sheetTokens.textPrimary,
+                                            ? sheetTokens.ink
+                                            : sheetTokens.ink,
                                       ),
                                     ),
                                   ),
@@ -435,7 +435,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                     Icon(
                                       Icons.check_circle_outline,
                                       size: 17,
-                                      color: sheetTokens.accent,
+                                      color: sheetTokens.ink,
                                     ),
                                 ],
                               ),
@@ -444,7 +444,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                 item.desc,
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: sheetTokens.textSecondary,
+                                  color: sheetTokens.ink2,
                                   height: 1.35,
                                 ),
                               ),
@@ -502,13 +502,13 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                 style: TextStyle(
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
               ),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: tokens.border),
+                side: BorderSide(color: tokens.line),
               ),
             ),
           );
@@ -627,19 +627,19 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: tokens.safetyWarmthSoft,
-        border: Border(bottom: BorderSide(color: tokens.border)),
+        color: tokens.safetySoft,
+        border: Border(bottom: BorderSide(color: tokens.line)),
       ),
       child: Row(
         children: [
-          Icon(Icons.info_outline_rounded, size: 16, color: tokens.safetyWarmth),
+          Icon(Icons.info_outline_rounded, size: 16, color: tokens.safety),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               msg,
               style: TextStyle(
                 fontSize: 11.5,
-                color: tokens.textPrimary,
+                color: tokens.ink,
                 height: 1.3,
               ),
             ),
@@ -655,14 +655,14 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
               style: TextStyle(
                 fontSize: 11.5,
                 fontWeight: FontWeight.w700,
-                color: tokens.accent,
+                color: tokens.ink,
               ),
             ),
           ),
           IconButton(
             tooltip: strings.closeBtn,
             constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-            icon: Icon(Icons.close_rounded, size: 16, color: tokens.textSecondary),
+            icon: Icon(Icons.close_rounded, size: 16, color: tokens.ink2),
             onPressed: () => ref.read(aiRuntimeNoticeProvider.notifier).clear(),
           ),
         ],
@@ -687,7 +687,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
       decoration: BoxDecoration(
         color: tokens.surface,
-        border: Border(bottom: BorderSide(color: tokens.border)),
+        border: Border(bottom: BorderSide(color: tokens.line)),
       ),
       child: Wrap(
         spacing: 8,
@@ -703,10 +703,10 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
               constraints: const BoxConstraints(minHeight: 48),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: tokens.accentSoft,
+                color: tokens.cardTint,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(
-                  color: tokens.accent.withValues(alpha: 0.4),
+                  color: tokens.ink.withValues(alpha: 0.4),
                 ),
               ),
               child: Row(
@@ -715,7 +715,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   Icon(
                     iconForConversationMode(_currentMode),
                     size: 16,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                   const SizedBox(width: 7),
                   Flexible(
@@ -726,7 +726,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                       style: TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w700,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     ),
                   ),
@@ -734,7 +734,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   Icon(
                     Icons.keyboard_arrow_down_rounded,
                     size: 18,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                 ],
               ),
@@ -751,13 +751,13 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
                 color: hasCustomInstructions
-                    ? tokens.accentSoft
-                    : tokens.surfaceSecondary,
+                    ? tokens.cardTint
+                    : tokens.surface2,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: hasCustomInstructions
-                      ? tokens.accent.withValues(alpha: 0.4)
-                      : tokens.border,
+                      ? tokens.ink.withValues(alpha: 0.4)
+                      : tokens.line,
                 ),
               ),
               child: Row(
@@ -767,8 +767,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                     Icons.tune_rounded,
                     size: 15,
                     color: hasCustomInstructions
-                        ? tokens.accent
-                        : tokens.textSecondary,
+                        ? tokens.ink
+                        : tokens.ink2,
                   ),
                   const SizedBox(width: 5),
                   Flexible(
@@ -784,8 +784,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                         fontSize: 12,
                         fontWeight: FontWeight.w600,
                         color: hasCustomInstructions
-                            ? tokens.accent
-                            : tokens.textSecondary,
+                            ? tokens.ink
+                            : tokens.ink2,
                       ),
                     ),
                   ),
@@ -805,10 +805,10 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   vertical: 7,
                 ),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
+                  color: tokens.cardTint,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: tokens.accent.withValues(alpha: 0.45),
+                    color: tokens.ink.withValues(alpha: 0.45),
                   ),
                 ),
                 child: Row(
@@ -820,14 +820,14 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                         height: 13,
                         child: CircularProgressIndicator(
                           strokeWidth: 1.8,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       )
                     else
                       Icon(
                         Icons.fact_check_outlined,
                         size: 15,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     const SizedBox(width: 6),
                     Flexible(
@@ -838,7 +838,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       ),
                     ),
@@ -874,7 +874,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
             decoration: BoxDecoration(
               color: tokens.surface,
               borderRadius: BorderRadius.circular(tokens.cardRadius),
-              border: Border.all(color: tokens.border),
+              border: Border.all(color: tokens.line),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -885,16 +885,16 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                       width: 40,
                       height: 40,
                       decoration: BoxDecoration(
-                        color: tokens.accentSoft,
+                        color: tokens.cardTint,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: tokens.accent.withValues(alpha: 0.35),
+                          color: tokens.ink.withValues(alpha: 0.35),
                         ),
                       ),
                       child: Icon(
                         iconForConversationMode(_currentMode),
                         size: 20,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -905,9 +905,9 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: tokens.surfaceSecondary,
+                          color: tokens.surface2,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: tokens.border),
+                          border: Border.all(color: tokens.line),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -915,7 +915,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                             Icon(
                               Icons.lock_outline_rounded,
                               size: 13,
-                              color: tokens.textSecondary,
+                              color: tokens.ink2,
                             ),
                             const SizedBox(width: 6),
                             Flexible(
@@ -926,7 +926,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                 style: TextStyle(
                                   fontSize: 11.5,
                                   fontWeight: FontWeight.w600,
-                                  color: tokens.textSecondary,
+                                  color: tokens.ink2,
                                 ),
                               ),
                             ),
@@ -943,7 +943,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                     fontFamily: 'Inter',
                     fontSize: 21,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                     letterSpacing: -0.3,
                   ),
                 ),
@@ -953,7 +953,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
               ],
@@ -979,7 +979,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   decoration: BoxDecoration(
                     color: tokens.surface,
                     borderRadius: BorderRadius.circular(tokens.cardRadius),
-                    border: Border.all(color: tokens.border),
+                    border: Border.all(color: tokens.line),
                   ),
                   child: Row(
                     children: [
@@ -990,7 +990,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                             fontSize: 14,
                             height: 1.4,
                             fontWeight: FontWeight.w600,
-                            color: tokens.textPrimary,
+                            color: tokens.ink,
                           ),
                         ),
                       ),
@@ -998,7 +998,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                       Icon(
                         Icons.arrow_forward_rounded,
                         size: 18,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     ],
                   ),
@@ -1028,9 +1028,9 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: tokens.border),
+                    border: Border.all(color: tokens.line),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -1038,7 +1038,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                       Icon(
                         Icons.spa_outlined,
                         size: 16,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                       const SizedBox(width: 7),
                       Flexible(
@@ -1049,7 +1049,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: tokens.textPrimary,
+                            color: tokens.ink,
                           ),
                         ),
                       ),
@@ -1079,12 +1079,12 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
             LabelType.interpretation => MindTokens.moodHeavy,
           }
         : null;
-    final bubbleBg = isUser ? tokens.surfaceSecondary : tokens.surface;
+    final bubbleBg = isUser ? tokens.surface2 : tokens.surface;
     final bubbleBorder = epistemicColor != null
         ? epistemicColor.withValues(alpha: isDark ? 0.45 : 0.35)
         : (isUser
-            ? tokens.border
-            : (isLive ? tokens.accent.withValues(alpha: 0.35) : tokens.border));
+            ? tokens.line
+            : (isLive ? tokens.ink.withValues(alpha: 0.35) : tokens.line));
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -1101,7 +1101,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   height: 6,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: isLive ? tokens.accent : tokens.textSecondary,
+                    color: isLive ? tokens.ink : tokens.ink2,
                   ),
                 ),
                 const SizedBox(width: 6),
@@ -1110,7 +1110,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
-                    color: isLive ? tokens.accent : tokens.textSecondary,
+                    color: isLive ? tokens.ink : tokens.ink2,
                   ),
                 ),
               ] else ...[
@@ -1119,7 +1119,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                   style: TextStyle(
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
               ],
@@ -1153,7 +1153,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                             style: TextStyle(
                               fontSize: 15,
                               height: 1.55,
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                               fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
                             ),
                           ),
@@ -1187,7 +1187,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                           : tokens.surface,
                                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                                       border: Border.all(
-                                        color: epistemicColor ?? tokens.border,
+                                        color: epistemicColor ?? tokens.line,
                                         width: epistemicColor != null ? 1.2 : 1.0,
                                       ),
                                     ),
@@ -1199,7 +1199,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                               ? iconForStatementLabel(statement.label!)
                                               : Icons.label_outline_rounded,
                                           size: 14,
-                                          color: epistemicColor ?? tokens.textSecondary,
+                                          color: epistemicColor ?? tokens.ink2,
                                         ),
                                         const SizedBox(width: 5),
                                         Flexible(
@@ -1215,7 +1215,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                             style: TextStyle(
                                               fontSize: 11.5,
                                               fontWeight: FontWeight.w700,
-                                              color: epistemicColor ?? tokens.textSecondary,
+                                              color: epistemicColor ?? tokens.ink2,
                                             ),
                                           ),
                                         ),
@@ -1240,13 +1240,13 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                     ),
                                     decoration: BoxDecoration(
                                       color: statement.distortionTag != null
-                                          ? tokens.accentSoft
+                                          ? tokens.cardTint
                                           : tokens.surface,
                                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                                       border: Border.all(
                                         color: statement.distortionTag != null
-                                            ? tokens.accent
-                                            : tokens.border,
+                                            ? tokens.ink
+                                            : tokens.line,
                                         width: 1,
                                       ),
                                     ),
@@ -1256,8 +1256,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                         fontSize: 11.5,
                                         fontWeight: FontWeight.w700,
                                         color: statement.distortionTag != null
-                                            ? tokens.accent
-                                            : tokens.textSecondary,
+                                            ? tokens.ink
+                                            : tokens.ink2,
                                       ),
                                     ),
                                   ),
@@ -1295,9 +1295,9 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                   vertical: 6,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: tokens.surfaceSecondary,
+                                  color: tokens.surface2,
                                   borderRadius: BorderRadius.circular(tokens.chipRadius),
-                                  border: Border.all(color: tokens.border),
+                                  border: Border.all(color: tokens.line),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -1305,7 +1305,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                     Icon(
                                       Icons.bookmark_add_outlined,
                                       size: 14,
-                                      color: tokens.accent,
+                                      color: tokens.ink,
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
@@ -1313,7 +1313,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                       style: TextStyle(
                                         fontSize: 11.5,
                                         fontWeight: FontWeight.w700,
-                                        color: tokens.accent,
+                                        color: tokens.ink,
                                       ),
                                     ),
                                   ],
@@ -1351,8 +1351,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
       decoration: BoxDecoration(
-        color: tokens.background,
-        border: Border(top: BorderSide(color: tokens.border)),
+        color: tokens.bg,
+        border: Border(top: BorderSide(color: tokens.line)),
       ),
       child: Wrap(
         spacing: 8,
@@ -1401,12 +1401,12 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
         constraints: const BoxConstraints(minHeight: 38),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: highlighted ? tokens.accentSoft : tokens.surface,
+          color: highlighted ? tokens.cardTint : tokens.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: highlighted
-                ? tokens.accent.withValues(alpha: 0.4)
-                : tokens.border,
+                ? tokens.ink.withValues(alpha: 0.4)
+                : tokens.line,
           ),
         ),
         child: Row(
@@ -1415,7 +1415,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
             Icon(
               icon,
               size: 14,
-              color: highlighted ? tokens.accent : tokens.textSecondary,
+              color: highlighted ? tokens.ink : tokens.ink2,
             ),
             const SizedBox(width: 6),
             Flexible(
@@ -1424,7 +1424,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: highlighted ? tokens.accent : tokens.textPrimary,
+                  color: highlighted ? tokens.ink : tokens.ink,
                 ),
               ),
             ),
@@ -1447,7 +1447,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
       padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
       decoration: BoxDecoration(
         color: tokens.surface,
-        border: Border(top: BorderSide(color: tokens.border, width: 1)),
+        border: Border(top: BorderSide(color: tokens.line, width: 1)),
       ),
       child: Row(
         children: [
@@ -1459,7 +1459,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
               maxLines: 4,
               textInputAction: TextInputAction.send,
               onSubmitted: (_) => isPaused ? null : _sendMessage(),
-              style: TextStyle(fontSize: 14.5, color: tokens.textPrimary),
+              style: TextStyle(fontSize: 14.5, color: tokens.ink),
               decoration: InputDecoration(
                 hintText: isPaused
                     ? (strings.isArabic
@@ -1471,25 +1471,25 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                 hintStyle: TextStyle(
                   fontSize: 13.5,
                   color:
-                      isPaused ? tokens.safetyWarmth : tokens.textSecondary,
+                      isPaused ? tokens.safety : tokens.ink2,
                 ),
                 filled: true,
-                fillColor: tokens.surfaceSecondary,
+                fillColor: tokens.surface2,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 12,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                  borderSide: BorderSide(color: tokens.border, width: 1),
+                  borderSide: BorderSide(color: tokens.line, width: 1),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                  borderSide: BorderSide(color: tokens.border, width: 1),
+                  borderSide: BorderSide(color: tokens.line, width: 1),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                  borderSide: BorderSide(color: tokens.accent, width: 1.2),
+                  borderSide: BorderSide(color: tokens.ink, width: 1.2),
                 ),
               ),
             ),
@@ -1516,8 +1516,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
               height: 48,
               decoration: BoxDecoration(
                 color: isPaused || _isInvestigatorTyping
-                    ? tokens.border
-                    : tokens.accent,
+                    ? tokens.line
+                    : tokens.ink,
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
               child: Icon(
@@ -1526,7 +1526,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                     : Icons.arrow_upward_rounded,
                 size: 20,
                 color: isPaused || _isInvestigatorTyping
-                    ? tokens.textSecondary
+                    ? tokens.ink2
                     : tokens.bg,
               ),
             ),
@@ -1591,7 +1591,7 @@ class _CalmTypingIndicatorState extends State<_CalmTypingIndicator>
             decoration: BoxDecoration(
               color: widget.tokens.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: widget.tokens.border, width: 1),
+              border: Border.all(color: widget.tokens.line, width: 1),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -1607,7 +1607,7 @@ class _CalmTypingIndicatorState extends State<_CalmTypingIndicator>
                         margin: const EdgeInsetsDirectional.only(end: 4),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: widget.tokens.accent,
+                          color: widget.tokens.ink,
                         ),
                       ),
                     ),
@@ -1628,7 +1628,7 @@ class _CalmTypingIndicatorState extends State<_CalmTypingIndicator>
                             margin: const EdgeInsetsDirectional.only(end: 4),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: widget.tokens.accent.withValues(alpha: alpha),
+                              color: widget.tokens.ink.withValues(alpha: alpha),
                             ),
                           );
                         }),
@@ -1640,7 +1640,7 @@ class _CalmTypingIndicatorState extends State<_CalmTypingIndicator>
                   widget.label,
                   style: TextStyle(
                     fontSize: 12.5,
-                    color: widget.tokens.textSecondary,
+                    color: widget.tokens.ink2,
                   ),
                 ),
               ],

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mind_forensics/app/localization/app_strings.dart';
-import 'package:mind_forensics/app/theme/lab_colors.dart';
 import 'package:mind_forensics/app/theme/mind_tokens.dart';
 import 'package:mind_forensics/core/widgets/mood_emblem.dart';
 import 'package:mind_forensics/core/widgets/organic_mood_orb.dart';
@@ -48,7 +47,7 @@ void main() {
                   onIntensityChanged: (val) => setState(() => intensity = val),
                   onSave: () => saved = true,
                   getMoodLabel: (key, str) => key.toUpperCase(),
-                  getMoodColor: (key) => LabColors.moodCalm,
+                  getMoodColor: (key) => MindTokens.moodCalm,
                 );
               },
             ),
@@ -174,7 +173,7 @@ void main() {
                       onIntensityChanged: (_) {},
                       onSave: () {},
                       getMoodLabel: (key, _) => labelFor(key),
-                      getMoodColor: (_) => LabColors.moodCalm,
+                      getMoodColor: (_) => MindTokens.moodCalm,
                     );
                   },
                 ),
@@ -211,7 +210,7 @@ void main() {
                   MoodEmblem(
                     moodKey: key,
                     size: 20,
-                    color: LabColors.moodColorFor(key),
+                    color: MindTokens.moodColor(AppMood.fromKey(key)),
                   ),
               ],
             ),
@@ -238,8 +237,7 @@ void main() {
                   child: OrganicMoodOrb(
                     moodKey: activeMood,
                     intensity: intensity,
-                    color: LabColors.moodColorFor(activeMood, isDark: true),
-                    isDark: true,
+                    color: MindTokens.moodColor(AppMood.fromKey(activeMood)),
                     size: 96,
                     semanticLabel: activeMood,
                     onTap: () => setState(() {
@@ -296,7 +294,7 @@ void main() {
               onIntensityChanged: (_) {},
               onSave: () {},
               getMoodLabel: (key, s) => key == 'frustrated' ? s.moodFrustrated : key,
-              getMoodColor: (key) => LabColors.moodColorFor(key, isDark: true),
+              getMoodColor: (key) => MindTokens.moodColor(AppMood.fromKey(key)),
               onBreatheTap: () => breatheTapped = true,
               onTalkAboutIt: (trace) => talkedTrace = trace,
             ),
@@ -366,7 +364,7 @@ void main() {
                     tokens: MindTokens.light,
                     strings: arStrings,
                     isDark: false,
-                    getMoodColor: (k) => LabColors.moodColorFor(k),
+                    getMoodColor: (k) => MindTokens.moodColor(AppMood.fromKey(k)),
                     getMoodLabel: (k, _) => k,
                     onDayTap: (_, trace) => tappedTrace = trace,
                   ),

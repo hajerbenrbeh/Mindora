@@ -71,7 +71,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.nightTheme,
+            theme: buildMindTheme(Brightness.dark),
             home: const LockOverlay(
               child: Scaffold(body: Text('PRIVATE_VAULT_CONTENT')),
             ),
@@ -200,7 +200,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.nightTheme,
+            theme: buildMindTheme(Brightness.dark),
             home: const CaseReportScreen(caseId: 'b2_report_case'),
           ),
         ),
@@ -244,7 +244,7 @@ void main() {
         UncontrolledProviderScope(
           container: container,
           child: MaterialApp(
-            theme: LabTheme.nightTheme,
+            theme: buildMindTheme(Brightness.dark),
             home: const Scaffold(body: SymptomLibraryView()),
           ),
         ),

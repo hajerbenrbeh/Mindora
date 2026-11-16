@@ -176,7 +176,7 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                         fontFamily: 'Inter',
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
-                        color: tokens.textPrimary,
+                        color: tokens.ink,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -185,7 +185,7 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12.5,
-                        color: tokens.textSecondary,
+                        color: tokens.ink2,
                         height: 1.4,
                       ),
                     ),
@@ -197,9 +197,9 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: tokens.surfaceSecondary,
+                  color: tokens.surface2,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: tokens.border),
+                  border: Border.all(color: tokens.line),
                 ),
                 child: Text(
                   '${(_drillIndex % drills.length) + 1} / ${drills.length}',
@@ -208,7 +208,7 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     fontFeatures: const [FontFeature.tabularFigures()],
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
               ),
@@ -219,9 +219,9 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: tokens.surfaceSecondary,
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(tokens.chipRadius),
-              border: Border.all(color: tokens.border),
+              border: Border.all(color: tokens.line),
             ),
             child: Text(
               current.statement,
@@ -230,7 +230,7 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                 fontWeight: FontWeight.w600,
                 fontSize: 15,
                 height: 1.45,
-                color: tokens.textPrimary,
+                color: tokens.ink,
               ),
             ),
           ),
@@ -255,13 +255,13 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isCorrectChoice
-                    ? tokens.accentSoft
-                    : tokens.surfaceSecondary,
+                    ? tokens.cardTint
+                    : tokens.surface2,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 border: Border.all(
                   color: isCorrectChoice
-                      ? tokens.accent.withValues(alpha: 0.45)
-                      : tokens.border,
+                      ? tokens.ink.withValues(alpha: 0.45)
+                      : tokens.line,
                 ),
               ),
               child: Row(
@@ -275,8 +275,8 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                           : Icons.info_outline_rounded,
                       size: 18,
                       color: isCorrectChoice
-                          ? tokens.accent
-                          : tokens.textSecondary,
+                          ? tokens.ink
+                          : tokens.ink2,
                     ),
                   ),
                   const SizedBox(width: 10),
@@ -292,7 +292,7 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                             fontFamily: 'Inter',
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: tokens.textPrimary,
+                            color: tokens.ink,
                           ),
                         ),
                         const SizedBox(height: 3),
@@ -302,7 +302,7 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                             fontFamily: 'Inter',
                             fontSize: 12.5,
                             height: 1.4,
-                            color: tokens.textSecondary,
+                            color: tokens.ink2,
                           ),
                         ),
                       ],
@@ -334,14 +334,14 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
                             fontFamily: 'Inter',
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                         const SizedBox(width: 6),
                         Icon(
                           Icons.arrow_forward_rounded,
                           size: 16,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       ],
                     ),
@@ -365,26 +365,26 @@ class _ReframeDrillCardState extends ConsumerState<ReframeDrillCard> {
     final isCorrect = label == correctAnswer;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
-    Color bg = tokens.surfaceSecondary;
-    Color border = tokens.border;
-    Color fg = tokens.textPrimary;
+    Color bg = tokens.surface2;
+    Color border = tokens.line;
+    Color fg = tokens.ink;
 
     if (_answered) {
       if (isCorrect) {
-        bg = tokens.accentSoft;
-        border = tokens.accent;
-        fg = tokens.accent;
+        bg = tokens.cardTint;
+        border = tokens.ink;
+        fg = tokens.ink;
       } else if (isSelected) {
-        bg = tokens.safetyWarmthSoft;
-        border = tokens.safetyWarmth;
-        fg = tokens.safetyWarmth;
+        bg = tokens.safetySoft;
+        border = tokens.safety;
+        fg = tokens.safety;
       } else {
-        fg = tokens.textSecondary;
+        fg = tokens.ink2;
       }
     } else if (isSelected) {
-      bg = tokens.accentSoft;
-      border = tokens.accent;
-      fg = tokens.accent;
+      bg = tokens.cardTint;
+      border = tokens.ink;
+      fg = tokens.ink;
     }
 
     final displayName = strings.localizedLabelName(label);

@@ -326,22 +326,13 @@ TextTheme _buildTextTheme(MindTokens tokens, {required bool isArabic}) {
   );
 }
 
-/// Centralized typography & legacy theme entry point.
+/// Centralized typography helper preserving bundled Inter + Noto Sans Arabic fallback.
 abstract final class LabTheme {
   static const String fontFamily = 'Inter';
   static const List<String> fontFallback = ['Noto Sans Arabic'];
 
-  /// Light ("Dawn") Material ThemeData built strictly from [MindTokens.light].
-  @Deprecated('Removed in Step 5')
-  static ThemeData get daylightTheme => buildMindTheme(Brightness.light);
-
-  /// Dark ("Vercel") Material ThemeData built strictly from [MindTokens.dark].
-  @Deprecated('Removed in Step 5')
-  static ThemeData get nightTheme => buildMindTheme(Brightness.dark);
-
-  /// Display/editorial style helper preserved until Step 5 removes legacy calls.
-  @Deprecated('Removed in Step 5')
-  static TextStyle serifStyle({
+  /// Returns an Inter text style with Noto Sans Arabic fallback for RTL safety.
+  static TextStyle textStyle({
     double? fontSize,
     FontWeight? fontWeight,
     FontStyle? fontStyle,
@@ -352,46 +343,6 @@ abstract final class LabTheme {
     return TextStyle(
       fontFamily: fontFamily,
       fontFamilyFallback: fontFallback,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      height: height,
-      letterSpacing: letterSpacing,
-      color: color,
-    );
-  }
-
-  /// Alias preserved until Step 5 removes legacy calls.
-  @Deprecated('Removed in Step 5')
-  static TextStyle editorialSerif({
-    double? fontSize,
-    FontWeight? fontWeight,
-    FontStyle? fontStyle,
-    double? height,
-    double? letterSpacing,
-    Color? color,
-  }) {
-    return serifStyle(
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      fontStyle: fontStyle,
-      height: height,
-      letterSpacing: letterSpacing,
-      color: color,
-    );
-  }
-
-  /// Numeric/caption style helper preserved until Step 5 removes legacy calls.
-  @Deprecated('Removed in Step 5')
-  static TextStyle monoStyle({
-    double? fontSize,
-    FontWeight? fontWeight,
-    FontStyle? fontStyle,
-    double? height,
-    double? letterSpacing,
-    Color? color,
-  }) {
-    return serifStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle,

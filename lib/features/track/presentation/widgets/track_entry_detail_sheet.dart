@@ -75,11 +75,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
           ),
           content: Text(
             strings.deleteTraceConfirmBody,
-            style: TextStyle(
-              fontSize: 13.5,
-              height: 1.45,
-              color: tokens.ink2,
-            ),
+            style: TextStyle(fontSize: 13.5, height: 1.45, color: tokens.ink2),
           ),
           actions: [
             TextButton(
@@ -106,7 +102,9 @@ class TrackEntryDetailSheet extends ConsumerWidget {
 
     if (confirmed != true || !context.mounted) return;
     HapticFeedback.mediumImpact();
-    await ref.read(mindTraceControllerProvider.notifier).deleteCheckIn(trace.id);
+    await ref
+        .read(mindTraceControllerProvider.notifier)
+        .deleteCheckIn(trace.id);
     if (context.mounted) {
       Navigator.of(context).pop();
       onDeleted?.call();
@@ -125,8 +123,9 @@ class TrackEntryDetailSheet extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius:
-            BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(tokens.cardRadius),
+        ),
         border: Border.all(color: tokens.line),
       ),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
@@ -178,7 +177,9 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                 color: tokens.selectedTintFor(moodStyle.color),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: moodStyle.color.withValues(alpha: 0.65),
+                                  color: moodStyle.color.withValues(
+                                    alpha: 0.65,
+                                  ),
                                 ),
                               ),
                               child: Row(
@@ -284,10 +285,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                           ),
                           child: Text(
                             strings.trackTriggerDisplay(item),
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: tokens.ink,
-                            ),
+                            style: TextStyle(fontSize: 12, color: tokens.ink),
                           ),
                         ),
                       )
@@ -320,8 +318,9 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           color: tokens.surface2,
-                          borderRadius:
-                              BorderRadius.circular(tokens.buttonRadius),
+                          borderRadius: BorderRadius.circular(
+                            tokens.buttonRadius,
+                          ),
                           border: Border.all(color: tokens.line),
                         ),
                         child: Row(
@@ -363,8 +362,9 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           color: tokens.safetySoft,
-                          borderRadius:
-                              BorderRadius.circular(tokens.buttonRadius),
+                          borderRadius: BorderRadius.circular(
+                            tokens.buttonRadius,
+                          ),
                           border: Border.all(
                             color: tokens.safety.withValues(alpha: 0.4),
                           ),
@@ -458,10 +458,7 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
       final existingEmotions = widget.trace.selectedEmotions;
       final mergedEmotions = existingEmotions.isEmpty
           ? [_mood]
-          : <String>[
-              _mood,
-              ...existingEmotions.where((e) => e != _mood),
-            ];
+          : <String>[_mood, ...existingEmotions.where((e) => e != _mood)];
       final updated = widget.trace.copyWith(
         overallMood: _mood,
         selectedEmotions: mergedEmotions,
@@ -503,12 +500,15 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
     final strings = ref.watch(appStringsProvider);
 
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+      ),
       child: Container(
         decoration: BoxDecoration(
           color: tokens.surface,
-          borderRadius:
-              BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(tokens.cardRadius),
+          ),
           border: Border.all(color: tokens.line),
         ),
         padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 20),
@@ -576,4 +576,3 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
     );
   }
 }
-

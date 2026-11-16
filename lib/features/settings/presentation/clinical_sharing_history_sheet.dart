@@ -66,11 +66,11 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
     final strings = ref.watch(appStringsProvider);
     final tokens = context.tokens;
 
-    final bg = tokens.background;
+    final bg = tokens.bg;
     final surface = tokens.surface;
-    final border = tokens.border;
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       constraints: BoxConstraints(
@@ -92,7 +92,7 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: tokens.border,
+                  color: tokens.line,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -195,7 +195,7 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                                         decoration: BoxDecoration(
-                                          color: tokens.surfaceSecondary,
+                                          color: tokens.surface2,
                                           borderRadius: BorderRadius.circular(tokens.chipRadius),
                                         ),
                                         child: Text(
@@ -249,7 +249,7 @@ class _ClinicalSharingHistorySheetState extends ConsumerState<ClinicalSharingHis
                   width: double.infinity,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: tokens.safetyWarmth,
+                      foregroundColor: tokens.safety,
                       side: BorderSide(color: border, width: 1),
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
 import '../../../core/widgets/mind_badge.dart';
@@ -90,7 +89,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       fontFamily: 'Inter',
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                   MindBadge(label: _selectedRange),
@@ -103,7 +102,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     : (strings.isFrench
                         ? '${filteredTraces.length} observations sur la période sélectionnée.'
                         : '${filteredTraces.length} observations recorded in this $_selectedRange window.'),
-                style: TextStyle(fontSize: 13, color: tokens.textSecondary),
+                style: TextStyle(fontSize: 13, color: tokens.ink2),
               ),
               const SizedBox(height: 16),
               MindButton(
@@ -135,9 +134,9 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final analytics = ref.watch(progressAnalyticsProvider);
 
     return Scaffold(
-      backgroundColor: tokens.background,
+      backgroundColor: tokens.bg,
       appBar: AppBar(
-        backgroundColor: tokens.background,
+        backgroundColor: tokens.bg,
         elevation: 0,
         scrolledUnderElevation: 0,
         title: Text(
@@ -146,12 +145,12 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             fontFamily: 'Inter',
             fontSize: 22,
             fontWeight: FontWeight.w700,
-            color: tokens.textPrimary,
+            color: tokens.ink,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.calendar_today_outlined, size: 20, color: tokens.textPrimary),
+            icon: Icon(Icons.calendar_today_outlined, size: 20, color: tokens.ink),
             tooltip: strings.calendarTitle,
             onPressed: () {
               HapticFeedback.lightImpact();
@@ -159,7 +158,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.share_outlined, size: 20, color: tokens.textPrimary),
+            icon: Icon(Icons.share_outlined, size: 20, color: tokens.ink),
             tooltip: strings.exportSummaryButton,
             onPressed: () {
               HapticFeedback.lightImpact();
@@ -206,7 +205,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             Text(
               strings.moodTrendsHeader,
               style: TextStyle(
-                color: tokens.textPrimary,
+                color: tokens.ink,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 letterSpacing: -0.2,
@@ -244,7 +243,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               Text(
                 strings.patternAwarenessTitle.toUpperCase(),
                 style: TextStyle(
-                  color: tokens.textSecondary,
+                  color: tokens.ink2,
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
                   letterSpacing: 1.1,
@@ -268,10 +267,10 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: tokens.accentSoft,
+                      color: tokens.cardTint,
                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                     ),
-                    child: Icon(Icons.analytics_outlined, size: 20, color: tokens.accent),
+                    child: Icon(Icons.analytics_outlined, size: 20, color: tokens.ink),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
@@ -281,7 +280,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         Text(
                           strings.fullProgressTrendsTitle,
                           style: TextStyle(
-                            color: tokens.textPrimary,
+                            color: tokens.ink,
                             fontSize: 13.5,
                             fontWeight: FontWeight.w600,
                           ),
@@ -289,7 +288,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         const SizedBox(height: 2),
                         Text(
                           strings.fullProgressTrendsSub,
-                          style: TextStyle(color: tokens.textSecondary, fontSize: 11.5),
+                          style: TextStyle(color: tokens.ink2, fontSize: 11.5),
                         ),
                       ],
                     ),
@@ -297,7 +296,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   Icon(
                     Icons.chevron_right_rounded,
                     size: 18,
-                    color: tokens.textTertiary,
+                    color: tokens.ink3,
                   ),
                 ],
               ),
@@ -315,7 +314,6 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     required List<MindTraceModel> traces,
     required AppStrings strings,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final now = DateTime.now();
     final loggedDateKeys = traces.map((t) => t.dateKey).toSet();
     final recentSevenDays = List<bool>.generate(7, (idx) {
@@ -329,8 +327,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final sorted = [...traces]..sort((a, b) => b.date.compareTo(a.date));
     final latestTrace = sorted.isNotEmpty ? sorted.first : null;
     final statusColor = latestTrace != null
-        ? LabColors.moodColorFor(latestTrace.overallMood, isDark: isDark)
-        : tokens.accent;
+        ? trackMoodOptionFor(latestTrace.overallMood).color
+        : tokens.m1;
 
     return Row(
       children: [
@@ -341,7 +339,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             decoration: BoxDecoration(
               color: tokens.surface,
               borderRadius: BorderRadius.circular(tokens.buttonRadius),
-              border: Border.all(color: tokens.border),
+              border: Border.all(color: tokens.line),
             ),
             child: Row(
               children: [
@@ -363,7 +361,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       fontFamily: 'Inter',
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
@@ -380,8 +378,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(3),
                           color: recentSevenDays[i]
-                              ? tokens.accent
-                              : tokens.border,
+                              ? tokens.ink
+                              : tokens.line,
                         ),
                       ),
                   ],
@@ -401,10 +399,10 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               constraints: const BoxConstraints(minHeight: 48),
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: tokens.accentSoft,
+                color: tokens.cardTint,
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 border: Border.all(
-                  color: tokens.accent.withValues(alpha: 0.35),
+                  color: tokens.ink.withValues(alpha: 0.35),
                 ),
               ),
               child: Row(
@@ -413,7 +411,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   Icon(
                     Icons.spa_outlined,
                     size: 16,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                   const SizedBox(width: 7),
                   Text(
@@ -421,7 +419,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     style: TextStyle(
                       fontSize: 12.5,
                       fontWeight: FontWeight.w700,
-                      color: tokens.accent,
+                      color: tokens.ink,
                     ),
                   ),
                 ],
@@ -446,8 +444,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         ..sort((a, b) => b.date.compareTo(a.date));
       final latest = sortedSingle.isNotEmpty ? sortedSingle.first : null;
       final pointColor = latest != null
-          ? LabColors.moodColorFor(latest.overallMood, isDark: isDark)
-          : tokens.accent;
+          ? trackMoodOptionFor(latest.overallMood).color
+          : tokens.m1;
       final normalizedY =
           latest != null ? ((latest.moodIntensity - 1) / 9.0).clamp(0.1, 0.9) : 0.5;
 
@@ -484,7 +482,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         style: TextStyle(
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
-                          color: tokens.textPrimary,
+                          color: tokens.ink,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -492,7 +490,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         strings.calibratingChartSub,
                         style: TextStyle(
                           fontSize: 12,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                           height: 1.35,
                         ),
                       ),
@@ -513,16 +511,16 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: tokens.surfaceSecondary,
+                color: tokens.surface2,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
-                border: Border.all(color: tokens.border),
+                border: Border.all(color: tokens.line),
               ),
               child: CustomPaint(
                 painter: _CalibrationPreviewPainter(
                   hasPoint: latest != null,
                   normalizedY: normalizedY,
                   pointColor: pointColor,
-                  gridColor: tokens.border,
+                  gridColor: tokens.line,
                 ),
               ),
             ),
@@ -565,7 +563,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: tokens.textTertiary,
+                      color: tokens.ink3,
                     ),
                   ),
                   Text(
@@ -573,7 +571,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: tokens.textTertiary,
+                      color: tokens.ink3,
                     ),
                   ),
                   Text(
@@ -581,7 +579,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     style: TextStyle(
                       fontSize: 11.5,
                       fontWeight: FontWeight.w600,
-                      color: tokens.textTertiary,
+                      color: tokens.ink3,
                     ),
                   ),
                 ],
@@ -595,7 +593,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               height: 132,
               activePointIndex: activeIdx,
               activePointLabel: activeLabel,
-              lineColor: tokens.accent,
+              lineColor: tokens.ink,
               showDots: true,
               onPointSelected: (idx) {
                 HapticFeedback.selectionClick();
@@ -662,7 +660,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
@@ -686,7 +684,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         Text(
                           strings.viewAllArrowLabel,
                           style: TextStyle(
-                            color: tokens.accent,
+                            color: tokens.ink,
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                           ),
@@ -695,7 +693,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         Icon(
                           Icons.arrow_forward_rounded,
                           size: 15,
-                          color: tokens.accent,
+                          color: tokens.ink,
                         ),
                       ],
                     ),
@@ -728,7 +726,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     baseline.averageMoodIntensity != null) ...[
                   if (avgWeekSleep != null &&
                       baseline.averageSleepHours != null)
-                    Divider(height: 18, thickness: 0.5, color: tokens.border),
+                    Divider(height: 18, thickness: 0.5, color: tokens.line),
                   _buildDeltaComparisonRow(
                     tokens: tokens,
                     icon: Icons.speed_outlined,
@@ -742,7 +740,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   ),
                 ],
                 if (mostCommonMood != null) ...[
-                  Divider(height: 18, thickness: 0.5, color: tokens.border),
+                  Divider(height: 18, thickness: 0.5, color: tokens.line),
                   _buildDeltaComparisonRow(
                     tokens: tokens,
                     icon: Icons.label_outline_rounded,
@@ -765,15 +763,15 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   height: 36,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: tokens.warmSoft,
+                    color: tokens.selectedTint,
                     border: Border.all(
-                      color: tokens.warm.withValues(alpha: 0.35),
+                      color: tokens.m1.withValues(alpha: 0.35),
                     ),
                   ),
                   child: Icon(
                     Icons.auto_awesome_outlined,
                     size: 18,
-                    color: tokens.warm,
+                    color: tokens.m1,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -784,7 +782,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         : (strings.isFrench
                             ? 'Calibration en cours : à mesure que vous notez vos observations, les liens entre sommeil, humeur et stress apparaîtront ici.'
                             : 'Patterns calibrating: As you log observations over time, correlations between sleep, mood, and stress will appear here.'),
-                    style: TextStyle(fontSize: 12, color: tokens.textSecondary, height: 1.4),
+                    style: TextStyle(fontSize: 12, color: tokens.ink2, height: 1.4),
                   ),
                 ),
               ],
@@ -804,12 +802,12 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       height: 36,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: tokens.accentSoft,
+                        color: tokens.cardTint,
                       ),
                       child: Icon(
                         item.icon,
                         size: 19,
-                        color: tokens.accent,
+                        color: tokens.ink,
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -820,7 +818,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                           Text(
                             item.title,
                             style: TextStyle(
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                               fontSize: 13.5,
                               fontWeight: FontWeight.w600,
                             ),
@@ -829,7 +827,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                           Text(
                             item.description,
                             style: TextStyle(
-                              color: tokens.textSecondary,
+                              color: tokens.ink2,
                               fontSize: 11.5,
                             ),
                           ),
@@ -839,7 +837,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     Icon(
                       Icons.chevron_right_rounded,
                       size: 18,
-                      color: tokens.textTertiary,
+                      color: tokens.ink3,
                     ),
                   ],
                 ),
@@ -858,7 +856,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
   }) {
     return Row(
       children: [
-        Icon(icon, size: 17, color: tokens.accent),
+        Icon(icon, size: 17, color: tokens.ink),
         const SizedBox(width: 10),
         Expanded(
           child: Column(
@@ -869,7 +867,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 style: TextStyle(
                   fontSize: 11.5,
                   fontWeight: FontWeight.w600,
-                  color: tokens.textSecondary,
+                  color: tokens.ink2,
                 ),
               ),
               const SizedBox(height: 2),
@@ -878,7 +876,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 style: TextStyle(
                   fontSize: 13.5,
                   fontWeight: FontWeight.w700,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
               ),
             ],
@@ -926,13 +924,13 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
         children: [
           Row(
             children: [
-              Icon(Icons.hub_outlined, size: 17, color: tokens.accent),
+              Icon(Icons.hub_outlined, size: 17, color: tokens.ink),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   strings.triggerMoodCorrelationsTitle,
                   style: TextStyle(
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                   ),
@@ -944,7 +942,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
           const SizedBox(height: 6),
           Text(
             strings.triggerMoodCorrelationsSub,
-            style: TextStyle(fontSize: 11.5, color: tokens.textSecondary, height: 1.35),
+            style: TextStyle(fontSize: 11.5, color: tokens.ink2, height: 1.35),
           ),
           if (topTriggers.isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -955,7 +953,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 final avg = (e.value.reduce((a, b) => a + b) / e.value.length).toStringAsFixed(1);
                 return MindBadge(
                   label: '${e.key} • $avg/10 (${e.value.length}x)',
-                  backgroundColor: tokens.surfaceSecondary,
+                  backgroundColor: tokens.surface2,
                 );
               }).toList(),
             ),
@@ -969,8 +967,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 return MindBadge(
                   icon: Icons.spa_outlined,
                   label: '${e.key} (${e.value}x)',
-                  backgroundColor: tokens.accentSoft,
-                  textColor: tokens.accent,
+                  backgroundColor: tokens.cardTint,
+                  textColor: tokens.ink,
                 );
               }).toList(),
             ),
@@ -997,13 +995,13 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               Expanded(
                 child: Row(
                   children: [
-                    Icon(Icons.straighten_outlined, size: 16, color: tokens.accent),
+                    Icon(Icons.straighten_outlined, size: 16, color: tokens.ink),
                     const SizedBox(width: 8),
                     Flexible(
                       child: Text(
                         strings.personalBaselineTitle.toUpperCase(),
                         style: TextStyle(
-                          color: tokens.textPrimary,
+                          color: tokens.ink,
                           fontSize: 11.5,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.8,
@@ -1018,11 +1016,11 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 child: MindBadge(
                   label: baseline.localizedStatusLabel(strings),
                   backgroundColor: baseline.hasEstablishedBaseline
-                      ? tokens.accentSoft
-                      : tokens.surfaceSecondary,
+                      ? tokens.cardTint
+                      : tokens.surface2,
                   textColor: baseline.hasEstablishedBaseline
-                      ? tokens.accent
-                      : (baseline.hasSufficientData ? tokens.textPrimary : tokens.textSecondary),
+                      ? tokens.ink
+                      : (baseline.hasSufficientData ? tokens.ink : tokens.ink2),
                 ),
               ),
             ],
@@ -1039,8 +1037,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(3),
                         color: step < baseline.totalRecordedDays
-                            ? tokens.accent
-                            : tokens.border,
+                            ? tokens.ink
+                            : tokens.line,
                       ),
                     ),
                   ),
@@ -1050,12 +1048,12 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             const SizedBox(height: 10),
             Text(
               strings.baselineNeedsMoreData,
-              style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+              style: TextStyle(color: tokens.ink2, fontSize: 12.5),
             ),
           ] else ...[
             Text(
               strings.rollingNormalSubtitle,
-              style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+              style: TextStyle(color: tokens.ink2, fontSize: 12.5),
             ),
             const SizedBox(height: 14),
             Row(
@@ -1080,10 +1078,10 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               ],
             ),
             if (baseline.commonEmotions.isNotEmpty) ...[
-              Divider(height: 24, thickness: 0.5, color: tokens.border),
+              Divider(height: 24, thickness: 0.5, color: tokens.line),
               Text(
                 '${strings.frequentEmotionsLabel}: ${baseline.commonEmotions.map((e) => trackMoodLabel(e, strings)).join(', ')}',
-                style: TextStyle(color: tokens.textTertiary, fontSize: 11.5, fontWeight: FontWeight.w600),
+                style: TextStyle(color: tokens.ink3, fontSize: 11.5, fontWeight: FontWeight.w600),
               ),
             ],
           ],
@@ -1097,9 +1095,9 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: tokens.surfaceSecondary,
+          color: tokens.surface2,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: tokens.border),
+          border: Border.all(color: tokens.line),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1109,7 +1107,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
-                color: tokens.textTertiary,
+                color: tokens.ink3,
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
               ),
@@ -1118,7 +1116,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             Text(
               value,
               style: TextStyle(
-                color: tokens.textPrimary,
+                color: tokens.ink,
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 fontFeatures: const [FontFeature.tabularFigures()],
@@ -1139,21 +1137,21 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: MindCard(
-        borderColor: tokens.accent,
-        backgroundColor: tokens.accentSoft.withValues(alpha: 0.35),
+        borderColor: tokens.ink,
+        backgroundColor: tokens.cardTint.withValues(alpha: 0.35),
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(Icons.tune_outlined, size: 16, color: tokens.accent),
+                Icon(Icons.tune_outlined, size: 16, color: tokens.ink),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     d.title,
                     style: TextStyle(
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                       fontWeight: FontWeight.w700,
                       fontSize: 14,
                     ),
@@ -1168,11 +1166,11 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('• ', style: TextStyle(color: tokens.accent, fontSize: 13)),
+                      Text('• ', style: TextStyle(color: tokens.ink, fontSize: 13)),
                       Expanded(
                         child: Text(
                           obs,
-                          style: TextStyle(color: tokens.textPrimary, fontSize: 12.5),
+                          style: TextStyle(color: tokens.ink, fontSize: 12.5),
                         ),
                       ),
                     ],
@@ -1184,19 +1182,19 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               decoration: BoxDecoration(
                 color: tokens.surface,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
-                border: Border.all(color: tokens.border, width: 0.5),
+                border: Border.all(color: tokens.line, width: 0.5),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     d.userCheckInQuestion,
-                    style: TextStyle(color: tokens.textPrimary, fontSize: 12, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: tokens.ink, fontSize: 12, fontWeight: FontWeight.w600),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     d.supportPlanPrompt,
-                    style: TextStyle(color: tokens.textSecondary, fontSize: 11.5),
+                    style: TextStyle(color: tokens.ink2, fontSize: 11.5),
                   ),
                 ],
               ),
@@ -1205,7 +1203,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
             Text(
               d.uncertaintyStatement,
               style: TextStyle(
-                color: tokens.textTertiary,
+                color: tokens.ink3,
                 fontSize: 11.5,
                 fontStyle: FontStyle.italic,
               ),
@@ -1234,7 +1232,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 child: Text(
                   strings.weeklySummaryTitle.toUpperCase(),
                   style: TextStyle(
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 1.1,
@@ -1248,25 +1246,25 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
           const SizedBox(height: 12),
           Text(
             report.whatChangedSummary,
-            style: TextStyle(color: tokens.textPrimary, fontSize: 13, height: 1.4),
+            style: TextStyle(color: tokens.ink, fontSize: 13, height: 1.4),
           ),
           const SizedBox(height: 8),
           Text(
             report.sleepTrend,
-            style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+            style: TextStyle(color: tokens.ink2, fontSize: 12.5),
           ),
           if (report.topSymptoms.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
               '${strings.recordedSymptomsPrefix}: ${report.topSymptoms.join(', ')}',
-              style: TextStyle(color: tokens.textTertiary, fontSize: 11.5),
+              style: TextStyle(color: tokens.ink3, fontSize: 11.5),
             ),
           ],
           const SizedBox(height: 14),
           Text(
             strings.suggestedTherapyLabel,
             style: TextStyle(
-              color: tokens.accent,
+              color: tokens.ink,
               fontSize: 11.5,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.8,
@@ -1278,11 +1276,11 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('— ', style: TextStyle(color: tokens.accent, fontSize: 12)),
+                    Text('— ', style: TextStyle(color: tokens.ink, fontSize: 12)),
                     Expanded(
                       child: Text(
                         topic,
-                        style: TextStyle(color: tokens.textPrimary, fontSize: 12),
+                        style: TextStyle(color: tokens.ink, fontSize: 12),
                       ),
                     ),
                   ],

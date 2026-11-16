@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/lab_theme.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/widgets/bouncing_widget.dart';
@@ -44,15 +43,12 @@ class PsychologicalProfileView extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
 
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return profileAsync.when(
       loading: () => const Center(
@@ -195,10 +191,10 @@ class PsychologicalProfileView extends ConsumerWidget {
                   HapticFeedback.mediumImpact();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      backgroundColor: isDark ? LabColors.nightSurface : LabColors.daylightSurface,
+                      backgroundColor: tokens.surface,
                       content: Text(
                         strings.profileSavedSnackbar,
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: textPrimary),
+                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: tokens.ink),
                       ),
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -209,8 +205,8 @@ class PsychologicalProfileView extends ConsumerWidget {
                   width: double.infinity,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: context.tokens.accent,
-                    borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
+                    color: tokens.ink,
+                    borderRadius: BorderRadius.circular(tokens.buttonRadius),
                   ),
                   alignment: Alignment.center,
                   child: Text(
@@ -219,7 +215,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: isDark ? context.tokens.background : Colors.white,
+                      color: tokens.bg,
                     ),
                   ),
                 ),
@@ -250,7 +246,7 @@ class PsychologicalProfileView extends ConsumerWidget {
       decoration: BoxDecoration(
         color: context.tokens.surface,
         borderRadius: BorderRadius.circular(context.tokens.cardRadius),
-        border: Border.all(color: context.tokens.border, width: 1),
+        border: Border.all(color: context.tokens.line, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,16 +265,16 @@ class PsychologicalProfileView extends ConsumerWidget {
                   fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                 decoration: BoxDecoration(
-                  color: context.tokens.accentSoft,
+                  color: context.tokens.cardTint,
                   borderRadius: BorderRadius.circular(context.tokens.chipRadius),
-                  border: Border.all(color: context.tokens.border),
+                  border: Border.all(color: context.tokens.line),
                 ),
                 child: Text(
                   strings.isArabic
@@ -288,7 +284,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                     fontSize: 8.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
-                    color: context.tokens.accent,
+                    color: context.tokens.ink,
                   ),
                 ),
               ),
@@ -297,7 +293,7 @@ class PsychologicalProfileView extends ConsumerWidget {
           const SizedBox(height: 10),
           Text(
             strings.profileIntroQuote,
-            style: LabTheme.editorialSerif(
+            style: LabTheme.textStyle(
               fontSize: 13.5,
               height: 1.4,
               color: textPrimary,
@@ -354,7 +350,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                 // Top Header Row
                 Row(
                   children: [
-                    Icon(icon, size: 16, color: context.tokens.accent),
+                    Icon(icon, size: 16, color: context.tokens.ink),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -371,11 +367,11 @@ class PsychologicalProfileView extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                       decoration: BoxDecoration(
                         color: isCompleted
-                            ? context.tokens.accentSoft
-                            : context.tokens.surfaceSecondary,
+                            ? context.tokens.cardTint
+                            : context.tokens.surface2,
                         borderRadius: BorderRadius.circular(context.tokens.chipRadius),
                         border: Border.all(
-                          color: isCompleted ? context.tokens.accent.withValues(alpha: 0.35) : borderColor,
+                          color: isCompleted ? context.tokens.ink.withValues(alpha: 0.35) : borderColor,
                           width: 0.8,
                         ),
                       ),
@@ -383,7 +379,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (isCompleted) ...[
-                            Icon(Icons.check, size: 10, color: context.tokens.accent),
+                            Icon(Icons.check, size: 10, color: context.tokens.ink),
                             const SizedBox(width: 4),
                           ],
                           Text(
@@ -391,14 +387,14 @@ class PsychologicalProfileView extends ConsumerWidget {
                             style: TextStyle(
                               fontSize: 11.5,
                               fontWeight: FontWeight.w700,
-                              color: isCompleted ? context.tokens.accent : textSecondary,
+                              color: isCompleted ? context.tokens.ink : textSecondary,
                             ),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Icon(Icons.edit_outlined, size: 14, color: context.tokens.accent),
+                    Icon(Icons.edit_outlined, size: 14, color: context.tokens.ink),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -458,7 +454,7 @@ class PsychologicalProfileView extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: context.tokens.surfaceSecondary,
+                  color: context.tokens.surface2,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
@@ -474,7 +470,7 @@ class PsychologicalProfileView extends ConsumerWidget {
             '“${profile.personalIntroduction}”',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: LabTheme.editorialSerif(fontSize: 11.5, fontStyle: FontStyle.italic, color: textSecondary),
+            style: LabTheme.textStyle(fontSize: 11.5, fontStyle: FontStyle.italic, color: textSecondary),
           ),
         ],
       ],
@@ -510,7 +506,7 @@ class PsychologicalProfileView extends ConsumerWidget {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: context.tokens.surfaceSecondary,
+                  color: context.tokens.surface2,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: borderColor),
                 ),
@@ -541,9 +537,9 @@ class PsychologicalProfileView extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: isDark ? LabColors.nightSurfaceSubtle : LabColors.daylightSurfaceSubtle,
+            color: context.tokens.surface2,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: isDark ? LabColors.nightBorder : LabColors.daylightBorder),
+            border: Border.all(color: context.tokens.line),
           ),
           child: Text.rich(
             TextSpan(
@@ -553,7 +549,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
-                    color: isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary,
+                    color: context.tokens.ink,
                   ),
                 ),
                 if (entry.status != DiagnosticStatus.preferNotToSay) ...[
@@ -562,7 +558,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                     style: TextStyle(
                       fontSize: 9.5,
                       fontWeight: FontWeight.w500,
-                      color: isDark ? LabColors.nightAccent : LabColors.daylightAccent,
+                      color: context.tokens.ink2,
                     ),
                   ),
                 ],
@@ -614,7 +610,7 @@ class PsychologicalProfileView extends ConsumerWidget {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                 decoration: BoxDecoration(
-                  color: context.tokens.surfaceSecondary,
+                  color: context.tokens.surface2,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: borderColor),
                 ),
@@ -631,7 +627,7 @@ class PsychologicalProfileView extends ConsumerWidget {
             '“${profile.symptomNotes.isNotEmpty ? profile.symptomNotes : profile.currentDifficulties}”',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: LabTheme.editorialSerif(fontSize: 11.5, fontStyle: FontStyle.italic, color: textSecondary),
+            style: LabTheme.textStyle(fontSize: 11.5, fontStyle: FontStyle.italic, color: textSecondary),
           ),
         ],
       ],
@@ -674,7 +670,7 @@ class PsychologicalProfileView extends ConsumerWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
           decoration: BoxDecoration(
-            color: context.tokens.surfaceSecondary,
+            color: context.tokens.surface2,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: borderColor),
           ),
@@ -716,7 +712,7 @@ class PsychologicalProfileView extends ConsumerWidget {
       '“$contextText”',
       maxLines: 3,
       overflow: TextOverflow.ellipsis,
-      style: LabTheme.editorialSerif(fontSize: 12, fontStyle: FontStyle.italic, height: 1.35, color: textPrimary),
+      style: LabTheme.textStyle(fontSize: 12, fontStyle: FontStyle.italic, height: 1.35, color: textPrimary),
     );
   }
 
@@ -750,7 +746,7 @@ class PsychologicalProfileView extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: context.tokens.surfaceSecondary,
+            color: context.tokens.surface2,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: borderColor),
           ),
@@ -762,7 +758,7 @@ class PsychologicalProfileView extends ConsumerWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
-            color: context.tokens.surfaceSecondary,
+            color: context.tokens.surface2,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: borderColor),
           ),
@@ -812,7 +808,7 @@ class PsychologicalProfileView extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.shield_outlined, size: 16, color: context.tokens.accent),
+              Icon(Icons.shield_outlined, size: 16, color: context.tokens.ink),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
@@ -826,7 +822,7 @@ class PsychologicalProfileView extends ConsumerWidget {
                 ),
               ),
               IconButton(
-                icon: Icon(Icons.tune_rounded, size: 16, color: context.tokens.accent),
+                icon: Icon(Icons.tune_rounded, size: 16, color: context.tokens.ink),
                 tooltip: 'Privacy settings',
                 onPressed: () => PrivacyManagementSheet.show(context, profile),
               ),
@@ -852,7 +848,7 @@ class PsychologicalProfileView extends ConsumerWidget {
               ),
               Switch.adaptive(
                 value: profile.shareWithAiCompanion,
-                activeTrackColor: context.tokens.accent,
+                activeTrackColor: context.tokens.ink,
                 onChanged: (val) {
                   HapticFeedback.lightImpact();
                   ref.read(profileControllerProvider.notifier).setAiPersonalization(val);

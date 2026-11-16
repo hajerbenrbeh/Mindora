@@ -25,7 +25,6 @@ class OrganicMoodOrb extends StatefulWidget {
     required this.intensity,
     required this.color,
     this.size = 104.0,
-    @Deprecated('Removed in Step 5') this.isDark = false,
     this.onTap,
     this.onIntensityChanged,
     this.semanticLabel,
@@ -36,7 +35,6 @@ class OrganicMoodOrb extends StatefulWidget {
   final int intensity;
   final Color color;
   final double size;
-  final bool isDark;
   final VoidCallback? onTap;
   final ValueChanged<int>? onIntensityChanged;
   final String? semanticLabel;

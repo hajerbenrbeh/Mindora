@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../insights/data/pattern_awareness_service.dart';
 import '../../insights/domain/personal_baseline_model.dart';
@@ -115,13 +114,12 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     final shareableCases = widget.cases.where((c) => !c.isPrivate).toList();
     final hasTrackingData =
@@ -150,7 +148,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: context.tokens.border,
+                  color: context.tokens.line,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -205,7 +203,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: context.tokens.surfaceSecondary,
+                      color: context.tokens.surface2,
                       borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
                       border: Border.all(color: border, width: 1),
                     ),
@@ -215,7 +213,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                         Icon(
                           Icons.info_outline,
                           size: 16,
-                          color: context.tokens.safetyWarmth,
+                          color: context.tokens.safety,
                         ),
                         const SizedBox(width: 10),
                         Expanded(
@@ -234,16 +232,16 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
-                        color: LabColors.cherryBackground(isDark: isDark),
+                        color: tokens.safetySoft,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: LabColors.cherryBorder(isDark: isDark)),
+                        border: Border.all(color: tokens.safety.withValues(alpha: 0.35)),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.lock_rounded,
                             size: 14,
-                            color: isDark ? LabColors.cherryRedGlow : LabColors.cherryRedDeep,
+                            color: tokens.safety,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -252,7 +250,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w700,
-                                color: isDark ? LabColors.cherryRedGlow : LabColors.cherryRedDeep,
+                                color: tokens.safety,
                               ),
                             ),
                           ),
@@ -278,10 +276,10 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                       hintText: strings.recipientOrNoteHint,
                       hintStyle: TextStyle(
                         fontSize: 11.5,
-                        color: context.tokens.textTertiary,
+                        color: context.tokens.ink3,
                       ),
                       filled: true,
-                      fillColor: context.tokens.surfaceSecondary,
+                      fillColor: context.tokens.surface2,
                       contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
@@ -293,7 +291,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
-                        borderSide: BorderSide(color: context.tokens.accent, width: 1.2),
+                        borderSide: BorderSide(color: context.tokens.ink, width: 1.2),
                       ),
                     ),
                   ),
@@ -310,7 +308,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                     width: double.infinity,
                     padding: const EdgeInsets.all(14),
                     decoration: BoxDecoration(
-                      color: context.tokens.surfaceSecondary,
+                      color: context.tokens.surface2,
                       borderRadius: BorderRadius.circular(context.tokens.cardRadius),
                       border: Border.all(color: border, width: 1),
                     ),
@@ -336,9 +334,9 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
                 width: double.infinity,
                 child: FilledButton.icon(
                   style: FilledButton.styleFrom(
-                    backgroundColor: context.tokens.accent,
-                    foregroundColor: isDark ? context.tokens.background : Colors.white,
-                    disabledBackgroundColor: context.tokens.border,
+                    backgroundColor: context.tokens.ink,
+                    foregroundColor: context.tokens.bg,
+                    disabledBackgroundColor: context.tokens.line,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(context.tokens.buttonRadius),

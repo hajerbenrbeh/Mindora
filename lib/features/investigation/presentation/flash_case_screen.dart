@@ -84,9 +84,9 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
     final engineLabel = _engineLabel(aiConfig, strings);
 
     return Scaffold(
-      backgroundColor: tokens.background,
+      backgroundColor: tokens.bg,
       appBar: AppBar(
-        backgroundColor: tokens.background,
+        backgroundColor: tokens.bg,
         elevation: 0,
         scrolledUnderElevation: 0,
         titleSpacing: 0,
@@ -96,7 +96,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                     icon: Icon(
                       Icons.arrow_back_rounded,
                       size: 20,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                     tooltip: strings.resumeConversationBtn,
                     constraints:
@@ -108,7 +108,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                 icon: Icon(
                   Icons.grid_view_rounded,
                   size: 20,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
                 tooltip: strings.modesAndHistoryTooltip,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
@@ -125,7 +125,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w700,
                   fontSize: 16.5,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                   letterSpacing: -0.2,
                 ),
               ),
@@ -136,10 +136,10 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
+                  color: tokens.cardTint,
                   borderRadius: BorderRadius.circular(tokens.chipRadius),
                   border: Border.all(
-                    color: tokens.accent.withValues(alpha: 0.35),
+                    color: tokens.ink.withValues(alpha: 0.35),
                   ),
                 ),
                 child: Text(
@@ -149,7 +149,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.4,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -169,12 +169,12 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
                 decoration: BoxDecoration(
-                  color: isLive ? tokens.accentSoft : tokens.surfaceSecondary,
+                  color: isLive ? tokens.cardTint : tokens.surface2,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isLive
-                        ? tokens.accent.withValues(alpha: 0.45)
-                        : tokens.border,
+                        ? tokens.ink.withValues(alpha: 0.45)
+                        : tokens.line,
                   ),
                 ),
                 child: Row(
@@ -185,7 +185,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                       height: 6.5,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: isLive ? tokens.accent : tokens.textSecondary,
+                        color: isLive ? tokens.ink : tokens.ink2,
                       ),
                     ),
                     const SizedBox(width: 5),
@@ -195,7 +195,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                       style: TextStyle(
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
-                        color: isLive ? tokens.accent : tokens.textPrimary,
+                        color: isLive ? tokens.ink : tokens.ink,
                       ),
                     ),
                   ],
@@ -208,7 +208,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
               icon: Icon(
                 Icons.add_rounded,
                 size: 22,
-                color: tokens.textPrimary,
+                color: tokens.ink,
               ),
               tooltip: strings.newConversationBtn,
               constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
@@ -244,7 +244,7 @@ class _FlashCaseScreenState extends ConsumerState<FlashCaseScreen> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
                         valueColor:
-                            AlwaysStoppedAnimation<Color>(tokens.accent),
+                            AlwaysStoppedAnimation<Color>(tokens.ink),
                       ),
                     ),
                   ),

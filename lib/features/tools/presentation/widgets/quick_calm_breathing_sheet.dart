@@ -18,7 +18,7 @@ Future<void> showQuickCalmBreathingSheet(
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
-    backgroundColor: context.tokens.background.withValues(alpha: 0.0),
+    backgroundColor: context.tokens.bg.withValues(alpha: 0.0),
     builder: (_) => _QuickCalmBreathingSheet(strings: strings),
   );
 }
@@ -110,7 +110,7 @@ class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
         color: tokens.surface,
         borderRadius:
             BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
-        border: Border(top: BorderSide(color: tokens.border)),
+        border: Border(top: BorderSide(color: tokens.line)),
       ),
       child: SafeArea(
         top: false,
@@ -123,7 +123,7 @@ class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
                 width: 36,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: tokens.border,
+                  color: tokens.line,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -135,7 +135,7 @@ class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
                 fontFamily: 'Inter',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: tokens.textPrimary,
+                color: tokens.ink,
               ),
             ),
             const SizedBox(height: 4),
@@ -144,7 +144,7 @@ class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
               style: TextStyle(
                 fontFamily: 'Inter',
                 fontSize: 13,
-                color: tokens.textSecondary,
+                color: tokens.ink2,
               ),
             ),
             const SizedBox(height: 20),
@@ -162,7 +162,7 @@ class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
                 fontFamily: 'Inter',
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: tokens.textSecondary,
+                color: tokens.ink2,
               ),
             ),
             const SizedBox(height: 18),

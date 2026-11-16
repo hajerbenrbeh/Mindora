@@ -24,8 +24,8 @@ Widget createTestHarness(Widget child) {
       builder: (context, ref, _) {
         final locale = ref.watch(localeControllerProvider);
         return MaterialApp(
-          theme: LabTheme.daylightTheme,
-          darkTheme: LabTheme.nightTheme,
+          theme: buildMindTheme(Brightness.light),
+          darkTheme: buildMindTheme(Brightness.dark),
           locale: locale,
           home: Scaffold(body: child),
         );
@@ -148,8 +148,8 @@ void main() {
                 container = ProviderScope.containerOf(context);
                 final locale = ref.watch(localeControllerProvider);
                 return MaterialApp(
-                  theme: LabTheme.daylightTheme,
-                  darkTheme: LabTheme.nightTheme,
+                  theme: buildMindTheme(Brightness.light),
+                  darkTheme: buildMindTheme(Brightness.dark),
                   locale: locale,
                   home: const Scaffold(body: TrackScreen(initialTab: 1)),
                 );

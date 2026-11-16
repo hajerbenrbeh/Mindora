@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../insights/data/pattern_awareness_service.dart';
 import '../../../profile/controllers/profile_controller.dart';
 import '../../../support/presentation/contextual_support_sheet.dart';
@@ -109,17 +109,16 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
     ref.read(selectedSymptomIdsProvider.notifier).clear();
 
     if (mounted) {
+      final tokens = context.tokens;
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Theme.of(context).brightness == Brightness.dark
-              ? LabColors.nightSurface
-              : LabColors.daylightTextPrimary,
+          backgroundColor: tokens.surface,
           content: Text(
             ref.read(appStringsProvider).isArabic
                 ? 'تم تسجيل تقرير الأعراض في أرشيف المرصد'
                 : 'Symptom report recorded in Observatory archive',
-            style: const TextStyle(color: Colors.white, fontSize: 12.5),
+            style: TextStyle(color: tokens.ink, fontSize: 12.5),
           ),
           duration: const Duration(seconds: 2),
         ),
@@ -129,16 +128,15 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surfaceColor = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final surfaceColor = tokens.surface2;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       constraints: BoxConstraints(
@@ -146,7 +144,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
       ),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: SafeArea(
@@ -161,7 +159,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 height: 4,
                 margin: const EdgeInsets.only(top: 10, bottom: 8),
                 decoration: BoxDecoration(
-                  color: isDark ? LabColors.nightBorder : LabColors.daylightBorder,
+                  color: tokens.lineStrong,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -175,7 +173,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.assessment_outlined, size: 16, color: LabColors.sageGreen),
+                      Icon(Icons.assessment_outlined, size: 16, color: tokens.m1),
                       const SizedBox(width: 8),
                       Text(
                         isAr
@@ -206,7 +204,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 padding: const EdgeInsets.all(18),
                 child: _buildCurrentStep(
                   strings,
-                  isDark,
+                  tokens,
                   textPrimary,
                   textSecondary,
                   surfaceColor,
@@ -222,7 +220,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
 
   Widget _buildCurrentStep(
     AppStrings strings,
-    bool isDark,
+    MindTokens tokens,
     Color textPrimary,
     Color textSecondary,
     Color surfaceColor,
@@ -233,7 +231,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Column(
           children: [
-            const CircularProgressIndicator(strokeWidth: 2, color: LabColors.sageGreen),
+            CircularProgressIndicator(strokeWidth: 2, color: tokens.m1),
             const SizedBox(height: 16),
             Text(
               strings.isArabic
@@ -251,7 +249,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
     if (_step == 0) {
       return _buildIntensityAndContextStep(
         strings,
-        isDark,
+        tokens,
         textPrimary,
         textSecondary,
         surfaceColor,
@@ -260,7 +258,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
     } else if (_step == 1) {
       return _buildAdaptiveFollowUpStep(
         strings,
-        isDark,
+        tokens,
         textPrimary,
         textSecondary,
         surfaceColor,
@@ -269,7 +267,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
     } else {
       return _buildAnalysisResultStep(
         strings,
-        isDark,
+        tokens,
         textPrimary,
         textSecondary,
         surfaceColor,
@@ -283,7 +281,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
   // ---------------------------------------------------------------------------
   Widget _buildIntensityAndContextStep(
     AppStrings strings,
-    bool isDark,
+    MindTokens tokens,
     Color textPrimary,
     Color textSecondary,
     Color surfaceColor,
@@ -315,16 +313,16 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
             ),
             Text(
               '${_intensity.round()}/10',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: LabColors.sageGreen),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: textPrimary),
             ),
           ],
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: LabColors.sageGreen,
-            inactiveTrackColor: isDark ? LabColors.nightBorder : LabColors.daylightBorder,
-            thumbColor: LabColors.sageGreen,
-            overlayColor: LabColors.sageGreen.withValues(alpha: 0.15),
+            activeTrackColor: tokens.m1,
+            inactiveTrackColor: tokens.line,
+            thumbColor: tokens.ink,
+            overlayColor: tokens.m1.withValues(alpha: 0.15),
           ),
           child: Slider(
             value: _intensity,
@@ -398,10 +396,10 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 color: isSelected ? textPrimary : textSecondary,
               ),
               backgroundColor: surfaceColor,
-              selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+              selectedColor: tokens.selectedTintFor(tokens.m1),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-                side: BorderSide(color: isSelected ? LabColors.sageGreen : borderColor),
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                side: BorderSide(color: isSelected ? tokens.m1 : borderColor),
               ),
               showCheckmark: false,
             );
@@ -471,10 +469,10 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 color: isSelected ? textPrimary : textSecondary,
               ),
               backgroundColor: surfaceColor,
-              selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+              selectedColor: tokens.selectedTintFor(tokens.m1),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(6),
-                side: BorderSide(color: isSelected ? LabColors.sageGreen : borderColor),
+                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                side: BorderSide(color: isSelected ? tokens.m1 : borderColor),
               ),
               showCheckmark: false,
             );
@@ -484,13 +482,13 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
 
         SizedBox(
           width: double.infinity,
-          height: 42,
+          height: 48,
           child: FilledButton(
             onPressed: () => setState(() => _step = 1),
             style: FilledButton.styleFrom(
-              backgroundColor: textPrimary,
-              foregroundColor: isDark ? Colors.black : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              backgroundColor: tokens.ink,
+              foregroundColor: tokens.bg,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
             ),
             child: Text(
               isAr
@@ -511,7 +509,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
   // ---------------------------------------------------------------------------
   Widget _buildAdaptiveFollowUpStep(
     AppStrings strings,
-    bool isDark,
+    MindTokens tokens,
     Color textPrimary,
     Color textSecondary,
     Color surfaceColor,
@@ -546,14 +544,14 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
           width: double.infinity,
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
-            borderRadius: BorderRadius.circular(8),
+            color: surfaceColor,
+            borderRadius: BorderRadius.circular(tokens.rowRadius),
             border: Border.all(color: borderColor),
           ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.psychology_outlined, size: 20, color: LabColors.sageGreen),
+              Icon(Icons.psychology_outlined, size: 20, color: tokens.m1),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(
@@ -585,18 +583,18 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: InkWell(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(tokens.rowRadius),
               onTap: () => setState(() => _userAdaptiveAnswer = opt),
               child: Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? LabColors.sageGreen.withValues(alpha: 0.15)
+                      ? tokens.selectedTintFor(tokens.m1)
                       : surfaceColor,
-                  borderRadius: BorderRadius.circular(6),
+                  borderRadius: BorderRadius.circular(tokens.rowRadius),
                   border: Border.all(
-                    color: isSelected ? LabColors.sageGreen : borderColor,
+                    color: isSelected ? tokens.m1 : borderColor,
                   ),
                 ),
                 child: Text(
@@ -623,17 +621,21 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 : (strings.isFrench
                     ? 'Ou ajoutez une courte note (optionnel)...'
                     : 'Or add a brief note (optional)...'),
-            hintStyle: TextStyle(color: textSecondary.withValues(alpha: 0.6), fontSize: 11.5),
+            hintStyle: TextStyle(color: tokens.ink3, fontSize: 11.5),
             filled: true,
-            fillColor: isDark ? LabColors.nightBackground : LabColors.daylightBackground,
+            fillColor: tokens.surface2,
             contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(tokens.inputRadius),
               borderSide: BorderSide(color: borderColor),
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(6),
+              borderRadius: BorderRadius.circular(tokens.inputRadius),
               borderSide: BorderSide(color: borderColor),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(tokens.inputRadius),
+              borderSide: BorderSide(color: tokens.focusRing, width: 1.5),
             ),
           ),
         ),
@@ -647,7 +649,8 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                 style: OutlinedButton.styleFrom(
                   foregroundColor: textSecondary,
                   side: BorderSide(color: borderColor),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  minimumSize: const Size(48, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
                 ),
                 child: Text(isAr ? 'رجوع' : (strings.isFrench ? 'Retour' : 'Back')),
               ),
@@ -658,9 +661,10 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
               child: FilledButton(
                 onPressed: _runAnalysis,
                 style: FilledButton.styleFrom(
-                  backgroundColor: textPrimary,
-                  foregroundColor: isDark ? Colors.black : Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  backgroundColor: tokens.ink,
+                  foregroundColor: tokens.bg,
+                  minimumSize: const Size(48, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
                 ),
                 child: Text(
                   isAr
@@ -683,7 +687,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
   // ---------------------------------------------------------------------------
   Widget _buildAnalysisResultStep(
     AppStrings strings,
-    bool isDark,
+    MindTokens tokens,
     Color textPrimary,
     Color textSecondary,
     Color surfaceColor,
@@ -701,7 +705,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: surfaceColor,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(tokens.cardRadius),
             border: Border.all(color: borderColor),
           ),
           child: Column(
@@ -709,7 +713,7 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
             children: [
               Row(
                 children: [
-                  Icon(Icons.insights_outlined, size: 16, color: LabColors.sageGreen),
+                  Icon(Icons.insights_outlined, size: 16, color: tokens.m1),
                   const SizedBox(width: 8),
                   Text(
                     isAr
@@ -742,9 +746,9 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: LabColors.sageGreen.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: LabColors.sageGreen.withValues(alpha: 0.3)),
+              color: tokens.cardTintFor(tokens.m1),
+              borderRadius: BorderRadius.circular(tokens.cardRadius),
+              border: Border.all(color: tokens.m1.withValues(alpha: 0.3)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -758,11 +762,11 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                           : (strings.isFrench
                               ? 'STRATÉGIE D’APAISEMENT RECOMMANDÉE :'
                               : 'RECOMMENDED STABILIZING STRATEGY:'),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
-                        color: LabColors.sageGreen,
+                        color: tokens.ink,
                       ),
                     ),
                     InkWell(
@@ -779,10 +783,11 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
                             : (strings.isFrench
                                 ? 'Ouvrir l’aide →'
                                 : 'Open Support →'),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 10.5,
                           fontWeight: FontWeight.w700,
-                          color: LabColors.sageGreen,
+                          color: tokens.ink,
+                          decoration: TextDecoration.underline,
                         ),
                       ),
                     ),
@@ -806,12 +811,12 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: surfaceColor,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(tokens.rowRadius),
               border: Border.all(color: borderColor),
             ),
             child: Row(
               children: [
-                Icon(Icons.tune_outlined, size: 16, color: LabColors.sageGreen),
+                Icon(Icons.tune_outlined, size: 16, color: tokens.m1),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -831,13 +836,13 @@ class _SymptomAssessmentSheetState extends ConsumerState<SymptomAssessmentSheet>
         // Action buttons
         SizedBox(
           width: double.infinity,
-          height: 44,
+          height: 48,
           child: FilledButton(
             onPressed: _saveReportAndClose,
             style: FilledButton.styleFrom(
-              backgroundColor: textPrimary,
-              foregroundColor: isDark ? Colors.black : Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              backgroundColor: tokens.ink,
+              foregroundColor: tokens.bg,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(tokens.buttonRadius)),
             ),
             child: Text(
               isAr

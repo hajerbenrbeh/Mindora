@@ -37,8 +37,6 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
   void _showRenameDialog(BuildContext context, CaseModel caseModel) {
     final controller = TextEditingController(text: caseModel.title);
     final strings = ref.read(appStringsProvider);
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     showDialog<void>(
       context: context,
@@ -48,14 +46,14 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
           backgroundColor: dialogTokens.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(dialogTokens.cardRadius),
-            side: BorderSide(color: dialogTokens.border),
+            side: BorderSide(color: dialogTokens.line),
           ),
           title: Text(
             strings.renameConversationTitle,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: dialogTokens.textPrimary,
+              color: dialogTokens.ink,
             ),
           ),
           content: TextField(
@@ -64,15 +62,15 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             decoration: InputDecoration(
               hintText: 'Enter title...',
               filled: true,
-              fillColor: dialogTokens.surfaceSecondary,
+              fillColor: dialogTokens.surface2,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(dialogTokens.buttonRadius),
-                borderSide: BorderSide(color: dialogTokens.border),
+                borderSide: BorderSide(color: dialogTokens.line),
               ),
             ),
             style: TextStyle(
               fontSize: 13,
-              color: dialogTokens.textPrimary,
+              color: dialogTokens.ink,
             ),
           ),
           actions: [
@@ -80,7 +78,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               onPressed: () => Navigator.of(dialogCtx).pop(),
               child: Text(
                 strings.cancelBtn,
-                style: TextStyle(color: dialogTokens.textSecondary),
+                style: TextStyle(color: dialogTokens.ink2),
               ),
             ),
             ElevatedButton(
@@ -119,14 +117,14 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
           backgroundColor: dialogTokens.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(dialogTokens.cardRadius),
-            side: BorderSide(color: dialogTokens.border),
+            side: BorderSide(color: dialogTokens.line),
           ),
           title: Text(
             strings.deleteConversationTitle,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: dialogTokens.textPrimary,
+              color: dialogTokens.ink,
             ),
           ),
           content: Text(
@@ -134,7 +132,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             style: TextStyle(
               fontSize: 13,
               height: 1.45,
-              color: dialogTokens.textSecondary,
+              color: dialogTokens.ink2,
             ),
           ),
           actions: [
@@ -142,7 +140,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               onPressed: () => Navigator.of(dialogCtx).pop(),
               child: Text(
                 strings.cancelBtn,
-                style: TextStyle(color: dialogTokens.textSecondary),
+                style: TextStyle(color: dialogTokens.ink2),
               ),
             ),
             ElevatedButton(
@@ -178,14 +176,14 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
           backgroundColor: dialogTokens.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(dialogTokens.cardRadius),
-            side: BorderSide(color: dialogTokens.border),
+            side: BorderSide(color: dialogTokens.line),
           ),
           title: Text(
             strings.clearAllConversationsBtn,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w800,
-              color: dialogTokens.textPrimary,
+              color: dialogTokens.ink,
             ),
           ),
           content: Text(
@@ -193,7 +191,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             style: TextStyle(
               fontSize: 13,
               height: 1.45,
-              color: dialogTokens.textSecondary,
+              color: dialogTokens.ink2,
             ),
           ),
           actions: [
@@ -201,7 +199,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               onPressed: () => Navigator.of(dialogCtx).pop(),
               child: Text(
                 strings.cancelBtn,
-                style: TextStyle(color: dialogTokens.textSecondary),
+                style: TextStyle(color: dialogTokens.ink2),
               ),
             ),
             ElevatedButton(
@@ -263,9 +261,9 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
     final savedCasesAsync = ref.watch(savedCasesProvider);
 
     final surfaceColor = tokens.surface;
-    final borderColor = tokens.border;
-    final textPrimary = tokens.textPrimary;
-    final textSecondary = tokens.textSecondary;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
@@ -286,14 +284,14 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                   fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: context.tokens.accent,
+                  color: context.tokens.ink,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: context.tokens.surfaceSecondary,
+                  color: context.tokens.surface2,
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: borderColor),
                 ),
@@ -466,10 +464,10 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                   constraints: const BoxConstraints(minHeight: 48),
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(tokens.chipRadius),
                     border: Border.all(
-                      color: isDark ? borderColor : tokens.border,
+                      color: isDark ? borderColor : tokens.line,
                     ),
                   ),
                   child: Row(
@@ -509,7 +507,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               width: double.infinity,
               height: 50,
               decoration: BoxDecoration(
-                color: tokens.accent,
+                color: tokens.ink,
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
               alignment: Alignment.center,
@@ -547,7 +545,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                   fontSize: 11.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: tokens.accent,
+                  color: tokens.ink,
                 ),
               ),
               const Spacer(),
@@ -565,7 +563,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
-                            color: tokens.safetyWarmth,
+                            color: tokens.safety,
                           ),
                         ),
                       )
@@ -641,16 +639,16 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                         leading: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: context.tokens.accentSoft,
+                            color: context.tokens.cardTint,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: context.tokens.accent.withValues(alpha: 0.25),
+                              color: context.tokens.ink.withValues(alpha: 0.25),
                             ),
                           ),
                           child: Icon(
                             iconForConversationMode(c.conversationMode),
                             size: 16,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                         title: Row(
@@ -658,7 +656,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: tokens.surfaceSecondary,
+                                color: tokens.surface2,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -697,7 +695,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                                   style: TextStyle(
                                     fontSize: 11.5,
                                     fontWeight: FontWeight.w600,
-                                    color: tokens.accent,
+                                    color: tokens.ink,
                                   ),
                                 ),
                               ),
@@ -716,7 +714,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                           color: tokens.surface,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
-                            side: BorderSide(color: tokens.border),
+                            side: BorderSide(color: tokens.line),
                           ),
                           onSelected: (val) {
                             if (val == 'resume') {
@@ -742,7 +740,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                               value: 'delete',
                               child: Text(
                                 strings.deleteConversationTitle,
-                                style: TextStyle(fontSize: 13, color: tokens.safetyWarmth),
+                                style: TextStyle(fontSize: 13, color: tokens.safety),
                               ),
                             ),
                           ],
@@ -773,7 +771,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
       decoration: BoxDecoration(
         color: tokens.surface,
         borderRadius: BorderRadius.circular(tokens.cardRadius),
-        border: Border.all(color: tokens.border, width: 1),
+        border: Border.all(color: tokens.line, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -788,16 +786,16 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                   fontSize: 10.5,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 0.8,
-                  color: tokens.accent,
+                  color: tokens.ink,
                 ),
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: tokens.accentSoft,
+                  color: tokens.cardTint,
                   borderRadius: BorderRadius.circular(tokens.chipRadius),
-                  border: Border.all(color: tokens.accent.withValues(alpha: 0.35)),
+                  border: Border.all(color: tokens.ink.withValues(alpha: 0.35)),
                 ),
                 child: Text(
                   'CONFIDENTIAL & OFFLINE-FIRST',
@@ -805,7 +803,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                     fontSize: 8.5,
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
-                    color: tokens.accent,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -814,7 +812,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
           const SizedBox(height: 12),
           Text(
             '“${strings.aiCompanionIntro}”',
-            style: LabTheme.editorialSerif(
+            style: LabTheme.textStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
               height: 1.38,

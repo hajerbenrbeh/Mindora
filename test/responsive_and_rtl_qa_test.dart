@@ -59,8 +59,8 @@ void main() {
               disableAnimations: true,
             ),
             child: MaterialApp(
-              theme: LabTheme.daylightTheme,
-              darkTheme: LabTheme.nightTheme,
+              theme: buildMindTheme(Brightness.light),
+              darkTheme: buildMindTheme(Brightness.dark),
               themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
               locale: locale,
               supportedLocales: const [

@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../app/localization/app_strings.dart';
 import '../../../app/localization/locale_controller.dart';
 import '../../../app/router/app_router.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../app/theme/theme_controller.dart';
 import '../../../core/notifications/gentle_reminder_service.dart';
@@ -150,7 +149,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ? 'Exporter un coffre chiffré'
                     : 'Export Encrypted Vault'),
             style: TextStyle(
-              color: tokens.textPrimary,
+              color: tokens.ink,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -166,13 +165,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       : (strings.isFrench
                           ? 'Choisissez un mot de passe pour chiffrer votre sauvegarde (6 caractères minimum).'
                           : 'Enter a passphrase to encrypt your backup (min 6 characters). Required later to restore.'),
-                  style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+                  style: TextStyle(color: tokens.ink2, fontSize: 12.5),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: passCtrl,
                   obscureText: true,
-                  style: TextStyle(color: tokens.textPrimary, fontSize: 13.5),
+                  style: TextStyle(color: tokens.ink, fontSize: 13.5),
                   decoration: InputDecoration(
                     labelText: strings.isArabic
                         ? 'كلمة السر'
@@ -186,7 +185,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 TextField(
                   controller: confirmCtrl,
                   obscureText: true,
-                  style: TextStyle(color: tokens.textPrimary, fontSize: 13.5),
+                  style: TextStyle(color: tokens.ink, fontSize: 13.5),
                   decoration: InputDecoration(
                     labelText: strings.isArabic
                         ? 'تأكيد كلمة السر'
@@ -201,7 +200,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   Text(
                     errorMsg!,
                     style: TextStyle(
-                      color: tokens.safetyWarmth,
+                      color: tokens.safety,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -305,7 +304,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ? 'Restaurer un coffre chiffré'
                     : 'Restore Encrypted Vault'),
             style: TextStyle(
-              color: tokens.textPrimary,
+              color: tokens.ink,
               fontSize: 16,
               fontWeight: FontWeight.w700,
             ),
@@ -321,14 +320,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       : (strings.isFrench
                           ? 'Collez la sauvegarde chiffrée et saisissez le mot de passe associé.'
                           : 'Paste your exported vault backup JSON and enter the passphrase used to lock it.'),
-                  style: TextStyle(color: tokens.textSecondary, fontSize: 12.5),
+                  style: TextStyle(color: tokens.ink2, fontSize: 12.5),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: jsonCtrl,
                   minLines: 3,
                   maxLines: 5,
-                  style: TextStyle(color: tokens.textPrimary, fontSize: 12),
+                  style: TextStyle(color: tokens.ink, fontSize: 12),
                   decoration: InputDecoration(
                     labelText: strings.isArabic
                         ? 'محتوى النسخة الاحتياطية (JSON)'
@@ -344,7 +343,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 TextField(
                   controller: passCtrl,
                   obscureText: true,
-                  style: TextStyle(color: tokens.textPrimary, fontSize: 13.5),
+                  style: TextStyle(color: tokens.ink, fontSize: 13.5),
                   decoration: InputDecoration(
                     labelText: strings.isArabic
                         ? 'كلمة السر'
@@ -359,7 +358,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   Text(
                     errorMsg!,
                     style: TextStyle(
-                      color: tokens.safetyWarmth,
+                      color: tokens.safety,
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
                     ),
@@ -478,7 +477,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           children: [
             Row(
               children: [
-                Icon(Icons.cloud_upload_outlined, size: 20, color: tokens.accent),
+                Icon(Icons.cloud_upload_outlined, size: 20, color: tokens.ink),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -486,7 +485,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                 ),
@@ -495,7 +494,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   icon: Icon(
                     Icons.close_rounded,
                     size: 20,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                   onPressed: () => Navigator.of(ctx).pop(),
                 ),
@@ -506,19 +505,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               strings.linkEmailSubtitle,
               style: TextStyle(
                 fontSize: 12,
-                color: tokens.textSecondary,
+                color: tokens.ink2,
                 height: 1.35,
               ),
             ),
             const SizedBox(height: 18),
             TextFormField(
               controller: codenameController,
-              style: TextStyle(color: tokens.textPrimary, fontSize: 13),
+              style: TextStyle(color: tokens.ink, fontSize: 13),
               decoration: InputDecoration(
                 hintText: strings.codenameFieldHint,
                 labelText: strings.codenameFieldLabel,
                 filled: true,
-                fillColor: tokens.surfaceSecondary,
+                fillColor: tokens.surface2,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -528,12 +527,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: emailController,
               keyboardType: TextInputType.emailAddress,
-              style: TextStyle(color: tokens.textPrimary, fontSize: 13),
+              style: TextStyle(color: tokens.ink, fontSize: 13),
               decoration: InputDecoration(
                 hintText: strings.emailFieldHint,
                 labelText: strings.emailFieldLabel,
                 filled: true,
-                fillColor: tokens.surfaceSecondary,
+                fillColor: tokens.surface2,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -543,12 +542,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             TextFormField(
               controller: passwordController,
               obscureText: true,
-              style: TextStyle(color: tokens.textPrimary, fontSize: 13),
+              style: TextStyle(color: tokens.ink, fontSize: 13),
               decoration: InputDecoration(
                 hintText: strings.passwordFieldHint,
                 labelText: strings.passwordFieldLabel,
                 filled: true,
-                fillColor: tokens.surfaceSecondary,
+                fillColor: tokens.surface2,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -602,19 +601,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         backgroundColor: tokens.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: tokens.border, width: 1),
+          side: BorderSide(color: tokens.line, width: 1),
         ),
         title: Text(
           strings.resetConfirmStep1Title,
           style: TextStyle(
-            color: tokens.textPrimary,
+            color: tokens.ink,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
         content: Text(
           strings.resetConfirmStep1Body,
-          style: TextStyle(color: tokens.textSecondary, fontSize: 13, height: 1.4),
+          style: TextStyle(color: tokens.ink2, fontSize: 13, height: 1.4),
         ),
         actions: [
           TextButton(
@@ -622,14 +621,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
             child: Text(
               strings.cancelBtn,
-              style: TextStyle(color: tokens.textSecondary, fontSize: 13),
+              style: TextStyle(color: tokens.ink2, fontSize: 13),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               minimumSize: const Size(48, 48),
-              backgroundColor: tokens.safetyWarmth,
-              foregroundColor: tokens.background,
+              backgroundColor: tokens.safety,
+              foregroundColor: tokens.bg,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
@@ -656,21 +655,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: tokens.safetyWarmth.withValues(alpha: 0.45),
+            color: tokens.safety.withValues(alpha: 0.45),
             width: 1,
           ),
         ),
         title: Text(
           strings.resetConfirmStep2Title,
           style: TextStyle(
-            color: tokens.safetyWarmth,
+            color: tokens.safety,
             fontSize: 16,
             fontWeight: FontWeight.w700,
           ),
         ),
         content: Text(
           strings.resetConfirmStep2Body,
-          style: TextStyle(color: tokens.textSecondary, fontSize: 13, height: 1.4),
+          style: TextStyle(color: tokens.ink2, fontSize: 13, height: 1.4),
         ),
         actions: [
           TextButton(
@@ -678,14 +677,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
             child: Text(
               strings.cancelBtn,
-              style: TextStyle(color: tokens.textSecondary, fontSize: 13),
+              style: TextStyle(color: tokens.ink2, fontSize: 13),
             ),
           ),
           FilledButton(
             style: FilledButton.styleFrom(
               minimumSize: const Size(48, 48),
-              backgroundColor: tokens.safetyWarmth,
-              foregroundColor: tokens.background,
+              backgroundColor: tokens.safety,
+              foregroundColor: tokens.bg,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(tokens.buttonRadius),
               ),
@@ -766,7 +765,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      backgroundColor: tokens.background.withValues(alpha: 0.0),
+      backgroundColor: tokens.bg.withValues(alpha: 0.0),
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setSheetState) {
           final selectedCases =
@@ -781,7 +780,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(tokens.cardRadius),
               ),
-              border: Border(top: BorderSide(color: tokens.border)),
+              border: Border(top: BorderSide(color: tokens.line)),
             ),
             child: SafeArea(
               top: false,
@@ -794,7 +793,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       width: 36,
                       height: 4,
                       decoration: BoxDecoration(
-                        color: tokens.border,
+                        color: tokens.line,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -806,13 +805,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       fontFamily: 'Inter',
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     strings.sharePacketSub,
-                    style: TextStyle(fontSize: 12.5, color: tokens.textSecondary),
+                    style: TextStyle(fontSize: 12.5, color: tokens.ink2),
                   ),
                   if (privateCount > 0) ...[
                     const SizedBox(height: 10),
@@ -822,16 +821,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         vertical: 8,
                       ),
                       decoration: BoxDecoration(
-                        color: tokens.surfaceSecondary,
+                        color: tokens.surface2,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: tokens.border),
+                        border: Border.all(color: tokens.line),
                       ),
                       child: Row(
                         children: [
                           Icon(
                             Icons.lock_outline_rounded,
                             size: 15,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
@@ -843,7 +842,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       : '$privateCount private sessions automatically excluded.'),
                               style: TextStyle(
                                 fontSize: 11.5,
-                                color: tokens.textSecondary,
+                                color: tokens.ink2,
                               ),
                             ),
                           ),
@@ -864,7 +863,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 13,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                         ),
                       ),
                     )
@@ -899,18 +898,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                               ),
                               decoration: BoxDecoration(
                                 color: checked
-                                    ? tokens.accentSoft
-                                    : tokens.surfaceSecondary,
+                                    ? tokens.cardTint
+                                    : tokens.surface2,
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
-                                  color: checked ? tokens.accent : tokens.border,
+                                  color: checked ? tokens.ink : tokens.line,
                                 ),
                               ),
                               child: Row(
                                 children: [
                                   Checkbox(
                                     value: checked,
-                                    activeColor: tokens.accent,
+                                    activeColor: tokens.ink,
                                     onChanged: (_) => setSheetState(() {
                                       if (checked) {
                                         selectedIds.remove(item.id);
@@ -929,7 +928,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                         fontWeight: checked
                                             ? FontWeight.w600
                                             : FontWeight.w500,
-                                        color: tokens.textPrimary,
+                                        color: tokens.ink,
                                       ),
                                     ),
                                   ),
@@ -946,8 +945,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       height: 48,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: tokens.accent,
-                          foregroundColor: tokens.background,
+                          backgroundColor: tokens.ink,
+                          foregroundColor: tokens.bg,
                           elevation: 0,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(
@@ -999,14 +998,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         backgroundColor: tokens.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
-          side: BorderSide(color: tokens.border),
+          side: BorderSide(color: tokens.line),
         ),
         title: Text(
           strings.privacyPrinciplesTitle,
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: tokens.textPrimary,
+            color: tokens.ink,
           ),
         ),
         content: SingleChildScrollView(
@@ -1014,7 +1013,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             strings.privacyPrinciplesBody,
             style: TextStyle(
               fontSize: 13,
-              color: tokens.textSecondary,
+              color: tokens.ink2,
               height: 1.5,
             ),
           ),
@@ -1025,7 +1024,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
             child: Text(
               strings.closeBtn,
-              style: TextStyle(color: tokens.accent, fontWeight: FontWeight.w700),
+              style: TextStyle(color: tokens.ink, fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -1062,9 +1061,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         : (currentLocale.languageCode == 'fr' ? 1 : 0);
 
     return Scaffold(
-      backgroundColor: tokens.background,
+      backgroundColor: tokens.bg,
       appBar: AppBar(
-        backgroundColor: tokens.background,
+        backgroundColor: tokens.bg,
         elevation: 0,
         scrolledUnderElevation: 0,
         title: Text(
@@ -1073,7 +1072,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             fontWeight: FontWeight.w800,
             fontSize: 13.5,
             letterSpacing: 1.0,
-            color: tokens.textPrimary,
+            color: tokens.ink,
           ),
         ),
         actions: const [
@@ -1096,9 +1095,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   height: 60,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: tokens.accentSoft,
+                    color: tokens.cardTint,
                     border: Border.all(
-                      color: tokens.accent.withValues(alpha: 0.32),
+                      color: tokens.ink.withValues(alpha: 0.32),
                     ),
                   ),
                   alignment: Alignment.center,
@@ -1116,7 +1115,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
-                          color: tokens.textPrimary,
+                          color: tokens.ink,
                         ),
                       ),
                       const SizedBox(height: 3),
@@ -1124,7 +1123,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         strings.profileSubtitle,
                         style: TextStyle(
                           fontSize: 12.5,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -1136,8 +1135,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             ? Icons.cloud_done_outlined
                             : Icons.phonelink_lock_outlined,
                         backgroundColor:
-                            isCloudLinked ? tokens.accentSoft : tokens.warmSoft,
-                        textColor: isCloudLinked ? tokens.accent : tokens.warm,
+                            isCloudLinked ? tokens.cardTint : tokens.selectedTint,
+                        textColor: isCloudLinked ? tokens.ink : tokens.m1,
                       ),
                     ],
                   ),
@@ -1168,7 +1167,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     preferredName,
                   ),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.psychology_outlined,
@@ -1180,7 +1179,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ),
                   ),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: isCloudLinked
@@ -1222,7 +1221,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w700,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                           letterSpacing: 0.8,
                         ),
                       ),
@@ -1253,7 +1252,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -1264,7 +1263,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w700,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                           letterSpacing: 0.8,
                         ),
                       ),
@@ -1287,7 +1286,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildSwitchRow(
                   tokens: tokens,
                   icon: Icons.notifications_none_rounded,
@@ -1318,7 +1317,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             fontSize: 11.5,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.6,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -1357,16 +1356,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: tokens.surfaceSecondary,
+                            color: tokens.surface2,
                             borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: tokens.border),
+                            border: Border.all(color: tokens.line),
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.notifications_active_outlined,
                                 size: 16,
-                                color: tokens.accent,
+                                color: tokens.ink,
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -1379,7 +1378,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   style: TextStyle(
                                     fontSize: 11.5,
                                     fontStyle: FontStyle.italic,
-                                    color: tokens.textPrimary,
+                                    color: tokens.ink,
                                   ),
                                 ),
                               ),
@@ -1408,7 +1407,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle: strings.mindAssistantEngineSub,
                   onTap: () => AiEngineConfigSheet.show(context),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildSwitchRow(
                   tokens: tokens,
                   icon: Icons.memory_rounded,
@@ -1417,14 +1416,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   value: aiHistoryEnabled,
                   onChanged: _setAiHistory,
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.auto_stories_outlined,
                   title: strings.memoryVaultTitle,
                   onTap: () => JournalMemorySheet.show(context),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildSwitchRow(
                   tokens: tokens,
                   icon: Icons.fingerprint_rounded,
@@ -1463,7 +1462,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: strings.exportSummaryButton,
                   onTap: () => ClinicalExportPreviewSheet.show(context, cases),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.inventory_2_outlined,
@@ -1471,7 +1470,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle: strings.sharePacketSub,
                   onTap: () => _openSharePacketBuilder(context, strings),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.history_edu_outlined,
@@ -1479,7 +1478,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle: strings.clinicalSharingHistoryDesc,
                   onTap: () => ClinicalSharingHistorySheet.show(context),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 const SizedBox(height: 12),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
@@ -1551,28 +1550,28 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.health_and_safety_outlined,
-                  iconColor: tokens.safetyWarmth,
+                  iconColor: tokens.safety,
                   title: strings.supportCrisisRowTitle,
                   onTap: () => SupportModalSheet.show(context),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.verified_user_outlined,
                   title: strings.privacyPrinciplesTitle,
                   onTap: () => _showPrivacyDialog(context, strings, tokens),
                 ),
-                Divider(height: 1, thickness: 1, color: tokens.border),
+                Divider(height: 1, thickness: 1, color: tokens.line),
                 _buildNavRow(
                   tokens: tokens,
                   icon: Icons.delete_forever_outlined,
-                  iconColor: tokens.safetyWarmth,
+                  iconColor: tokens.safety,
                   title: strings.wipeDataTitle,
-                  titleColor: tokens.safetyWarmth,
+                  titleColor: tokens.safety,
                   subtitle: strings.wipeDataDesc,
                   onTap: () => _startDoubleConfirmReset(strings, tokens),
                 ),
@@ -1614,7 +1613,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
-              Icon(icon, size: 20, color: iconColor ?? tokens.accent),
+              Icon(icon, size: 20, color: iconColor ?? tokens.ink),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -1626,7 +1625,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: titleColor ?? tokens.textPrimary,
+                        color: titleColor ?? tokens.ink,
                       ),
                     ),
                     if (subtitle != null && subtitle.isNotEmpty) ...[
@@ -1635,7 +1634,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         subtitle,
                         style: TextStyle(
                           fontSize: 12,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                           height: 1.3,
                         ),
                       ),
@@ -1648,10 +1647,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: tokens.accentSoft,
+                          color: tokens.cardTint,
                           borderRadius: BorderRadius.circular(tokens.chipRadius),
                           border: Border.all(
-                            color: tokens.accent.withValues(alpha: 0.32),
+                            color: tokens.ink.withValues(alpha: 0.32),
                           ),
                         ),
                         child: Text(
@@ -1662,7 +1661,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.3,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                       ),
@@ -1682,9 +1681,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       vertical: 5,
                     ),
                     decoration: BoxDecoration(
-                      color: tokens.surfaceSecondary,
+                      color: tokens.surface2,
                       borderRadius: BorderRadius.circular(tokens.chipRadius),
-                      border: Border.all(color: tokens.border),
+                      border: Border.all(color: tokens.line),
                     ),
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
@@ -1694,7 +1693,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         style: TextStyle(
                           fontSize: 11.5,
                           fontWeight: FontWeight.w700,
-                          color: tokens.textPrimary,
+                          color: tokens.ink,
                         ),
                       ),
                     ),
@@ -1705,7 +1704,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Icon(
                 Icons.chevron_right_rounded,
                 size: 18,
-                color: tokens.textTertiary,
+                color: tokens.ink3,
               ),
             ],
           ),
@@ -1742,7 +1741,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               foregroundDecoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 border: Border.all(
-                  color: selected ? tokens.accent : tokens.border,
+                  color: selected ? tokens.ink : tokens.line,
                   width: selected ? 1.8 : 1.0,
                 ),
               ),
@@ -1761,7 +1760,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           height: 8,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: tokens.accent,
+                            color: tokens.ink,
                           ),
                         ),
                       ),
@@ -1827,11 +1826,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           semanticLabel: strings.themeDaylight,
           targetMode: ThemeMode.light,
           preview: buildMiniFrame(
-            bg: LabColors.daylightBackground,
-            card: LabColors.daylightSurface,
-            border: LabColors.daylightBorder,
-            bar: LabColors.daylightAccent,
-            subBar: LabColors.daylightTextSecondary.withValues(alpha: 0.35),
+            bg: MindTokens.light.bg,
+            card: MindTokens.light.surface,
+            border: MindTokens.light.line,
+            bar: MindTokens.light.ink,
+            subBar: MindTokens.light.ink2.withValues(alpha: 0.35),
           ),
         ),
         const SizedBox(width: 8),
@@ -1840,11 +1839,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           semanticLabel: strings.themeNight,
           targetMode: ThemeMode.dark,
           preview: buildMiniFrame(
-            bg: LabColors.nightBackground,
-            card: LabColors.nightSurface,
-            border: LabColors.nightBorder,
-            bar: LabColors.nightAccent,
-            subBar: LabColors.nightTextSecondary.withValues(alpha: 0.4),
+            bg: MindTokens.dark.bg,
+            card: MindTokens.dark.surface,
+            border: MindTokens.dark.line,
+            bar: MindTokens.dark.ink,
+            subBar: MindTokens.dark.ink2.withValues(alpha: 0.4),
           ),
         ),
         const SizedBox(width: 8),
@@ -1857,19 +1856,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             children: [
               Expanded(
                 child: ColoredBox(
-                  color: LabColors.daylightBackground,
+                  color: MindTokens.light.bg,
                   child: Align(
                     alignment: AlignmentDirectional.centerEnd,
                     child: Container(
                       width: 14,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: LabColors.daylightSurface,
+                        color: MindTokens.light.surface,
                         borderRadius: const BorderRadiusDirectional.horizontal(
                           start: Radius.circular(6),
                         ),
                         border: Border.all(
-                          color: LabColors.daylightBorder,
+                          color: MindTokens.light.line,
                           width: 0.8,
                         ),
                       ),
@@ -1877,9 +1876,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       child: Container(
                         width: 6,
                         height: 6,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: LabColors.daylightAccent,
+                          color: MindTokens.light.ink,
                         ),
                       ),
                     ),
@@ -1888,19 +1887,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               Expanded(
                 child: ColoredBox(
-                  color: LabColors.nightBackground,
+                  color: MindTokens.dark.bg,
                   child: Align(
                     alignment: AlignmentDirectional.centerStart,
                     child: Container(
                       width: 14,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: LabColors.nightSurface,
+                        color: MindTokens.dark.surface,
                         borderRadius: const BorderRadiusDirectional.horizontal(
                           end: Radius.circular(6),
                         ),
                         border: Border.all(
-                          color: LabColors.nightBorder,
+                          color: MindTokens.dark.line,
                           width: 0.8,
                         ),
                       ),
@@ -1908,9 +1907,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       child: Container(
                         width: 6,
                         height: 6,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: LabColors.nightAccent,
+                          color: MindTokens.dark.ink,
                         ),
                       ),
                     ),
@@ -1937,7 +1936,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: tokens.accent),
+          Icon(icon, size: 20, color: tokens.ink),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -1949,7 +1948,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -1957,7 +1956,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                     height: 1.3,
                   ),
                 ),
@@ -1969,7 +1968,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             label: title,
             child: Switch.adaptive(
               value: value,
-              activeTrackColor: tokens.accent,
+              activeTrackColor: tokens.ink,
               onChanged: onChanged,
             ),
           ),
@@ -1995,10 +1994,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? tokens.accentSoft : tokens.surfaceSecondary,
+            color: isSelected ? tokens.cardTint : tokens.surface2,
             borderRadius: BorderRadius.circular(tokens.chipRadius),
             border: Border.all(
-              color: isSelected ? tokens.accent : tokens.border,
+              color: isSelected ? tokens.ink : tokens.line,
               width: isSelected ? 1.5 : 1.0,
             ),
           ),
@@ -2006,7 +2005,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (isSelected) ...[
-                Icon(Icons.check_rounded, size: 15, color: tokens.accent),
+                Icon(Icons.check_rounded, size: 15, color: tokens.ink),
                 const SizedBox(width: 6),
               ],
               Flexible(
@@ -2017,7 +2016,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? tokens.accent : tokens.textSecondary,
+                    color: isSelected ? tokens.ink : tokens.ink2,
                   ),
                 ),
               ),
@@ -2036,7 +2035,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         style: TextStyle(
           fontSize: 11.5,
           fontWeight: FontWeight.w800,
-          color: tokens.textSecondary,
+          color: tokens.ink2,
           letterSpacing: 1.0,
         ),
       ),
@@ -2083,28 +2082,28 @@ class _EditPreferredNameDialogState extends State<_EditPreferredNameDialog> {
       backgroundColor: tokens.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(tokens.cardRadius),
-        side: BorderSide(color: tokens.border),
+        side: BorderSide(color: tokens.line),
       ),
       title: Text(
         strings.preferredNameLabel,
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w700,
-          color: tokens.textPrimary,
+          color: tokens.ink,
         ),
       ),
       content: TextField(
         controller: _controller,
         autofocus: true,
-        style: TextStyle(color: tokens.textPrimary, fontSize: 14),
+        style: TextStyle(color: tokens.ink, fontSize: 14),
         decoration: InputDecoration(
           hintText: strings.editPreferredNameHint,
-          hintStyle: TextStyle(color: tokens.textSecondary, fontSize: 13),
+          hintStyle: TextStyle(color: tokens.ink2, fontSize: 13),
           filled: true,
-          fillColor: tokens.surfaceSecondary,
+          fillColor: tokens.surface2,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(tokens.chipRadius),
-            borderSide: BorderSide(color: tokens.border),
+            borderSide: BorderSide(color: tokens.line),
           ),
         ),
       ),
@@ -2114,14 +2113,14 @@ class _EditPreferredNameDialogState extends State<_EditPreferredNameDialog> {
           style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
           child: Text(
             strings.cancelBtn,
-            style: TextStyle(color: tokens.textSecondary, fontSize: 13),
+            style: TextStyle(color: tokens.ink2, fontSize: 13),
           ),
         ),
         FilledButton(
           style: FilledButton.styleFrom(
             minimumSize: const Size(48, 48),
-            backgroundColor: tokens.accent,
-            foregroundColor: tokens.background,
+            backgroundColor: tokens.ink,
+            foregroundColor: tokens.bg,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(tokens.buttonRadius),
             ),
