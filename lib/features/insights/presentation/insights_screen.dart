@@ -70,8 +70,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: tokens.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
       ),
       builder: (ctx) => SafeArea(
         child: Padding(
@@ -536,6 +536,9 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
     final chartValues = recentTraces
         .map((t) => ((t.moodIntensity - 1) / 9.0).clamp(0.05, 0.95))
         .toList();
+    final chartPointColors = recentTraces
+        .map((t) => MindTokens.moodColor(AppMood.fromKey(t.overallMood)))
+        .toList();
     final activeIdx = (_selectedPointIndex != null &&
             _selectedPointIndex! >= 0 &&
             _selectedPointIndex! < recentTraces.length)
@@ -593,7 +596,8 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
               height: 132,
               activePointIndex: activeIdx,
               activePointLabel: activeLabel,
-              lineColor: tokens.ink,
+              lineColor: tokens.m1,
+              pointColors: chartPointColors,
               showDots: true,
               onPointSelected: (idx) {
                 HapticFeedback.selectionClick();

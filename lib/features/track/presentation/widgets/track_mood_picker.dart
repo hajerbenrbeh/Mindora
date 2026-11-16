@@ -32,10 +32,11 @@ class TrackMoodPicker extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         const spacing = 10.0;
-        final colWidth = ((constraints.maxWidth - spacing) / 2).clamp(
-          112.0,
-          360.0,
-        );
+        final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+        final singleCol = constraints.maxWidth < 300 && textScale > 1.15;
+        final colWidth = singleCol
+            ? constraints.maxWidth
+            : ((constraints.maxWidth - spacing) / 2).clamp(112.0, 360.0);
 
         return Wrap(
           spacing: spacing,
@@ -100,18 +101,25 @@ class TrackMoodPicker extends StatelessWidget {
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(
-                            label,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 13.5,
-                              height: 1.2,
-                              fontWeight: isSelected
-                                  ? FontWeight.w700
-                                  : FontWeight.w500,
-                              color: tokens.ink,
+                          child: Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: AlignmentDirectional.centerStart,
+                              child: Text(
+                                label,
+                                maxLines: 1,
+                                softWrap: false,
+                                style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 13.5,
+                                  height: 1.2,
+                                  fontWeight: isSelected
+                                      ? FontWeight.w700
+                                      : FontWeight.w500,
+                                  color: tokens.ink,
+                                ),
+                              ),
                             ),
                           ),
                         ),

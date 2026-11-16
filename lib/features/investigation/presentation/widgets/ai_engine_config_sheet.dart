@@ -177,7 +177,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
     return Container(
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border(top: BorderSide(color: border, width: 1)),
       ),
       padding: EdgeInsets.only(

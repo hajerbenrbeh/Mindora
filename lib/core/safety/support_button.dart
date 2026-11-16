@@ -160,7 +160,7 @@ class SupportModalSheet extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           color: sheetBg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
           border: Border.all(color: borderColor, width: 1),
         ),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),

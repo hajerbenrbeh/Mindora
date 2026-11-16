@@ -308,7 +308,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
         borderRadius:
-            BorderRadius.vertical(top: Radius.circular(context.tokens.cardRadius)),
+            BorderRadius.vertical(top: Radius.circular(context.tokens.sheetRadius)),
       ),
       builder: (ctx) {
         final sheetTokens = ctx.tokens;

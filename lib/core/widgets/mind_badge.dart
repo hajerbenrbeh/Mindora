@@ -51,17 +51,21 @@ class MindBadge extends StatelessWidget {
             const SizedBox(width: 5),
           ],
           Flexible(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontFamily: LabTheme.fontFamily,
-                fontFamilyFallback: LabTheme.fontFallback,
-                color: defaultFg,
-                fontSize: 11.5,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
-                letterSpacing: -0.1,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                label,
+                maxLines: 1,
+                softWrap: false,
+                style: TextStyle(
+                  fontFamily: LabTheme.fontFamily,
+                  fontFamilyFallback: LabTheme.fontFallback,
+                  color: defaultFg,
+                  fontSize: 11.5,
+                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
+                  letterSpacing: -0.1,
+                ),
               ),
             ),
           ),

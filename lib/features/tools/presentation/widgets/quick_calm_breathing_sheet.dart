@@ -19,21 +19,21 @@ Future<void> showQuickCalmBreathingSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: context.tokens.bg.withValues(alpha: 0.0),
-    builder: (_) => _QuickCalmBreathingSheet(strings: strings),
+    builder: (_) => QuickCalmBreathingSheet(strings: strings),
   );
 }
 
-class _QuickCalmBreathingSheet extends StatefulWidget {
-  const _QuickCalmBreathingSheet({required this.strings});
+class QuickCalmBreathingSheet extends StatefulWidget {
+  const QuickCalmBreathingSheet({super.key, required this.strings});
 
   final AppStrings strings;
 
   @override
-  State<_QuickCalmBreathingSheet> createState() =>
+  State<QuickCalmBreathingSheet> createState() =>
       _QuickCalmBreathingSheetState();
 }
 
-class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
+class _QuickCalmBreathingSheetState extends State<QuickCalmBreathingSheet> {
   bool _isActive = false;
   int _phase = 0; // 0: Inhale, 1: Hold, 2: Exhale, 3: Rest
   int _secondsLeft = 4;
@@ -101,82 +101,86 @@ class _QuickCalmBreathingSheetState extends State<_QuickCalmBreathingSheet> {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final s = widget.strings;
 
     return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.90,
+      ),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       decoration: BoxDecoration(
         color: tokens.surface,
         borderRadius:
-            BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
+            BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border(top: BorderSide(color: tokens.line)),
       ),
       child: SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: tokens.line,
-                  borderRadius: BorderRadius.circular(2),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: tokens.line,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              s.quickCalmTitle,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 18,
-                fontWeight: FontWeight.w700,
-                color: tokens.ink,
+              const SizedBox(height: 16),
+              Text(
+                s.quickCalmTitle,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: tokens.ink,
+                ),
               ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              s.quickCalmSub,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 13,
-                color: tokens.ink2,
+              const SizedBox(height: 4),
+              Text(
+                s.quickCalmSub,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 13,
+                  color: tokens.ink2,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            VagalBreathingVisualizer(
-              phase: _phase,
-              secondsLeft: _secondsLeft,
-              phaseText: _phaseLabel(),
-              isDark: isDark,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              s.pacerSub,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: tokens.ink2,
+              const SizedBox(height: 20),
+              VagalBreathingVisualizer(
+                phase: _phase,
+                secondsLeft: _secondsLeft,
+                phaseText: _phaseLabel(),
+                isDark: tokens.isDark,
               ),
-            ),
-            const SizedBox(height: 18),
-            MindButton(
-              text: _isActive ? s.stopPacer : s.startPacer,
-              leadingIcon:
-                  _isActive ? Icons.stop_rounded : Icons.play_arrow_rounded,
-              variant: _isActive
-                  ? MindButtonVariant.secondary
-                  : MindButtonVariant.primary,
-              isFullWidth: true,
-              onPressed: _toggle,
-            ),
-          ],
+              const SizedBox(height: 12),
+              Text(
+                s.pacerSub,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: tokens.ink2,
+                ),
+              ),
+              const SizedBox(height: 18),
+              MindButton(
+                text: _isActive ? s.stopPacer : s.startPacer,
+                leadingIcon:
+                    _isActive ? Icons.stop_rounded : Icons.play_arrow_rounded,
+                variant: _isActive
+                    ? MindButtonVariant.secondary
+                    : MindButtonVariant.primary,
+                isFullWidth: true,
+                onPressed: _toggle,
+              ),
+            ],
+          ),
         ),
       ),
     );

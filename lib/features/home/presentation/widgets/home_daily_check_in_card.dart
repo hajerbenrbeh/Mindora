@@ -277,36 +277,51 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: MindButton(
-                text: strings.actionBreatheLabel,
-                leadingIcon: Icons.air_rounded,
-                variant: MindButtonVariant.soft,
-                onPressed: widget.onBreatheTap ??
-                    () => ContextualSupportSheet.show(
-                          context,
-                          initialChoice: SupportChoice.settle,
-                        ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: MindButton(
-                text: strings.actionTalkAboutItLabel,
-                leadingIcon: Icons.auto_awesome_outlined,
-                variant: MindButtonVariant.soft,
-                onPressed: () {
-                  if (widget.onTalkAboutIt != null) {
-                    widget.onTalkAboutIt!(todayTrace);
-                  } else {
-                    context.go(AppRouter.companion);
-                  }
-                },
-              ),
-            ),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+            final breatheBtn = MindButton(
+              text: strings.actionBreatheLabel,
+              leadingIcon: Icons.air_rounded,
+              variant: MindButtonVariant.soft,
+              isFullWidth: constraints.maxWidth < 290 && textScale > 1.15,
+              onPressed: widget.onBreatheTap ??
+                  () => ContextualSupportSheet.show(
+                        context,
+                        initialChoice: SupportChoice.settle,
+                      ),
+            );
+            final talkBtn = MindButton(
+              text: strings.actionTalkAboutItLabel,
+              leadingIcon: Icons.auto_awesome_outlined,
+              variant: MindButtonVariant.soft,
+              isFullWidth: constraints.maxWidth < 290 && textScale > 1.15,
+              onPressed: () {
+                if (widget.onTalkAboutIt != null) {
+                  widget.onTalkAboutIt!(todayTrace);
+                } else {
+                  context.go(AppRouter.companion);
+                }
+              },
+            );
+            if (constraints.maxWidth < 290 && textScale > 1.15) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  breatheBtn,
+                  const SizedBox(height: 8),
+                  talkBtn,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: breatheBtn),
+                const SizedBox(width: 10),
+                Expanded(child: talkBtn),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 8),
         Row(
@@ -330,17 +345,21 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       ),
                       const SizedBox(width: 6),
                       Flexible(
-                        child: Text(
-                          strings.updateCheckInButton,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w600,
-                            color: tokens.ink,
-                            decoration: TextDecoration.underline,
-                            decorationColor: moodColor,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            strings.updateCheckInButton,
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              color: tokens.ink,
+                              decoration: TextDecoration.underline,
+                              decorationColor: moodColor,
+                            ),
                           ),
                         ),
                       ),

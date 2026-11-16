@@ -134,7 +134,7 @@ class _ClinicalExportPreviewSheetState extends ConsumerState<ClinicalExportPrevi
       ),
       decoration: BoxDecoration(
         color: context.tokens.surface,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(context.tokens.cardRadius)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(context.tokens.sheetRadius)),
         border: Border(top: BorderSide(color: border, width: 1)),
       ),
       child: SafeArea(

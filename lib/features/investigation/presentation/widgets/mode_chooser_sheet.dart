@@ -105,7 +105,7 @@ class ModeChooserSheet extends ConsumerWidget {
       decoration: BoxDecoration(
         color: tokens.surface,
         borderRadius:
-            BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
+            BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border.all(color: tokens.line),
       ),
       child: SafeArea(

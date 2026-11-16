@@ -461,8 +461,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: tokens.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
       ),
       builder: (ctx) => Padding(
         padding: EdgeInsets.only(
@@ -778,7 +778,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             decoration: BoxDecoration(
               color: tokens.surface,
               borderRadius: BorderRadius.vertical(
-                top: Radius.circular(tokens.cardRadius),
+                top: Radius.circular(tokens.sheetRadius),
               ),
               border: Border(top: BorderSide(color: tokens.line)),
             ),
@@ -1136,7 +1136,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             : Icons.phonelink_lock_outlined,
                         backgroundColor:
                             isCloudLinked ? tokens.cardTint : tokens.selectedTint,
-                        textColor: isCloudLinked ? tokens.ink : tokens.m1,
+                        textColor: tokens.ink,
                       ),
                     ],
                   ),
@@ -1653,15 +1653,19 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             color: tokens.ink.withValues(alpha: 0.32),
                           ),
                         ),
-                        child: Text(
-                          trailingText,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
-                            color: tokens.ink,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerStart,
+                          child: Text(
+                            trailingText,
+                            maxLines: 1,
+                            softWrap: false,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 0.3,
+                              color: tokens.ink,
+                            ),
                           ),
                         ),
                       ),
@@ -1735,32 +1739,33 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               HapticFeedback.selectionClick();
               ref.read(themeControllerProvider.notifier).setTheme(targetMode);
             },
-            borderRadius: BorderRadius.circular(tokens.chipRadius),
+            borderRadius: BorderRadius.circular(tokens.iconButtonRadius),
             child: Container(
               height: 54,
               foregroundDecoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                borderRadius: BorderRadius.circular(tokens.iconButtonRadius),
                 border: Border.all(
                   color: selected ? tokens.ink : tokens.line,
                   width: selected ? 1.8 : 1.0,
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(tokens.chipRadius),
+                borderRadius: BorderRadius.circular(tokens.iconButtonRadius),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
                     preview,
                     if (selected)
                       PositionedDirectional(
-                        top: 5,
-                        end: 5,
+                        top: 7,
+                        end: 7,
                         child: Container(
-                          width: 8,
-                          height: 8,
+                          width: 9,
+                          height: 9,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: tokens.ink,
+                            border: Border.all(color: tokens.bg, width: 1.5),
                           ),
                         ),
                       ),
@@ -1968,7 +1973,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             label: title,
             child: Switch.adaptive(
               value: value,
-              activeTrackColor: tokens.ink,
+              activeTrackColor: tokens.m1,
               onChanged: onChanged,
             ),
           ),

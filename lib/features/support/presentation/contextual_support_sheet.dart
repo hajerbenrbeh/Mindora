@@ -99,7 +99,7 @@ class _ContextualSupportSheetState
       ),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(tokens.sheetRadius)),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: SafeArea(
