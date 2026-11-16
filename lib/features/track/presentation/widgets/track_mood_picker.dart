@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_card.dart';
 import '../../../../core/widgets/mind_intensity_picker.dart';
@@ -26,7 +25,6 @@ class TrackMoodPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final normalizedSelected = selectedMoodKey?.trim().toLowerCase();
     final tileRadius = tokens.buttonRadius;
@@ -45,8 +43,8 @@ class TrackMoodPicker extends StatelessWidget {
           children: trackCoreMoods.map((option) {
             final isSelected = normalizedSelected == option.key;
             final label = trackMoodLabel(option.key, strings);
-            final moodColor = LabColors.moodColorFor(option.key, isDark: isDark);
-            final moodSoft = LabColors.moodSoftFor(option.key, isDark: isDark);
+            final moodColor = MindTokens.moodColor(AppMood.fromKey(option.key));
+            final moodSoft = tokens.selectedTintFor(moodColor);
 
             return SizedBox(
               width: colWidth,
@@ -73,7 +71,7 @@ class TrackMoodPicker extends StatelessWidget {
                       color: isSelected ? moodSoft : tokens.surface,
                       borderRadius: BorderRadius.circular(tileRadius),
                       border: Border.all(
-                        color: isSelected ? moodColor : tokens.border,
+                        color: isSelected ? moodColor : tokens.line,
                         width: isSelected ? 1.5 : 1.0,
                       ),
                     ),
@@ -84,13 +82,13 @@ class TrackMoodPicker extends StatelessWidget {
                           height: 34,
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? moodColor.withValues(alpha: isDark ? 0.22 : 0.16)
-                                : tokens.surfaceSecondary,
+                                ? tokens.selectedTintFor(moodColor)
+                                : tokens.surface2,
                             shape: BoxShape.circle,
                             border: Border.all(
                               color: isSelected
                                   ? moodColor.withValues(alpha: 0.35)
-                                  : tokens.border.withValues(alpha: 0.7),
+                                  : tokens.line,
                             ),
                           ),
                           alignment: Alignment.center,
@@ -113,7 +111,7 @@ class TrackMoodPicker extends StatelessWidget {
                               fontWeight: isSelected
                                   ? FontWeight.w700
                                   : FontWeight.w500,
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                             ),
                           ),
                         ),
@@ -130,7 +128,7 @@ class TrackMoodPicker extends StatelessWidget {
                             child: Icon(
                               Icons.check_rounded,
                               size: 12,
-                              color: tokens.onAccent,
+                              color: tokens.onMood,
                             ),
                           ),
                         ],
@@ -168,9 +166,8 @@ class TrackIntensitySlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final rounded = value.round().clamp(1, 10);
-    final activeAccent = moodColor ?? tokens.accent;
+    final activeAccent = moodColor ?? tokens.m1;
 
     final body = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -186,7 +183,7 @@ class TrackIntensitySlider extends StatelessWidget {
                   fontFamily: 'Inter',
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
               ),
             ),
@@ -196,9 +193,7 @@ class TrackIntensitySlider extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: moodColor != null
-                      ? activeAccent.withValues(alpha: isDark ? 0.14 : 0.12)
-                      : tokens.accentSoft,
+                  color: tokens.selectedTintFor(activeAccent),
                   borderRadius: BorderRadius.circular(tokens.chipRadius),
                   border: Border.all(
                     color: activeAccent.withValues(alpha: 0.42),
@@ -212,7 +207,7 @@ class TrackIntensitySlider extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: activeAccent,
+                    color: tokens.ink,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),

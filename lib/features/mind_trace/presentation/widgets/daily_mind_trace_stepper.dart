@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/localization/locale_controller.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/safety/crisis_keywords.dart';
@@ -241,10 +240,9 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (ctx) {
-        final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-        final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-        final textPrimary =
-            isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
+        final border = ctx.tokens.line;
+        final bg = ctx.tokens.surface;
+        final textPrimary = ctx.tokens.ink;
         return Padding(
           padding: EdgeInsets.only(
             bottom: MediaQuery.of(ctx).viewInsets.bottom,
@@ -282,11 +280,11 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                             ? 'Précisez le ressenti (ex. nostalgie, sérénité)...'
                             : 'Enter nuanced feeling (e.g. yearning, grounded)...'),
                     hintStyle: TextStyle(
-                      color: isDark ? Colors.grey : Colors.grey.shade600,
+                      color: ctx.tokens.ink3,
                       fontSize: 12,
                     ),
                     filled: true,
-                    fillColor: ctx.tokens.surfaceSecondary,
+                    fillColor: ctx.tokens.surface2,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(ctx.tokens.buttonRadius),
                       borderSide: BorderSide(color: border),
@@ -297,7 +295,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(ctx.tokens.buttonRadius),
-                      borderSide: BorderSide(color: ctx.tokens.accent, width: 1.3),
+                      borderSide: BorderSide(color: ctx.tokens.m1, width: 1.3),
                     ),
                   ),
                 ),
@@ -311,14 +309,14 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                         strings.isArabic
                             ? 'إلغاء'
                             : (strings.isFrench ? 'Annuler' : 'Cancel'),
-                        style: TextStyle(color: ctx.tokens.textSecondary),
+                        style: TextStyle(color: ctx.tokens.ink2),
                       ),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: ctx.tokens.accent,
-                        foregroundColor: isDark ? ctx.tokens.background : Colors.white,
+                        backgroundColor: ctx.tokens.ink,
+                        foregroundColor: ctx.tokens.bg,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(ctx.tokens.buttonRadius),
                         ),
@@ -364,14 +362,11 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
 
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final tokens = context.tokens;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     if (_currentStep == 4) {
       return _buildCompletionScreen(
@@ -792,9 +787,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                               fontWeight:
                                   isCurrent ? FontWeight.w800 : FontWeight.w600,
                               color: isCurrent
-                                  ? (isDark
-                                      ? context.tokens.background
-                                      : Colors.white)
+                                  ? context.tokens.bg
                                   : textSecondary,
                             ),
                           ),
@@ -1539,7 +1532,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                   Icon(
                     Icons.fingerprint_rounded,
                     size: 16,
-                    color: isDark ? context.tokens.background : Colors.white,
+                    color: context.tokens.bg,
                   ),
                   const SizedBox(width: 8),
                   Text(
@@ -1553,7 +1546,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       fontSize: 11.5,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.5,
-                      color: isDark ? context.tokens.background : Colors.white,
+                      color: context.tokens.bg,
                     ),
                   ),
                 ],
@@ -1717,7 +1710,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                       height: 16,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: isDark ? context.tokens.background : Colors.white,
+                        color: context.tokens.bg,
                       ),
                     )
                   : Text(
@@ -1731,7 +1724,7 @@ class _DailyMindTraceStepperState extends ConsumerState<DailyMindTraceStepper> {
                         fontSize: 11.5,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.5,
-                        color: isDark ? context.tokens.background : Colors.white,
+                        color: context.tokens.bg,
                       ),
                     ),
             ),

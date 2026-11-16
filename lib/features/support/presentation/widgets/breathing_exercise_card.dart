@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../investigation/presentation/widgets/vagal_breathing_visualizer.dart';
 
 /// Authoritative Box Breathing Pacer card:
@@ -112,14 +112,11 @@ class _BreathingExerciseCardState extends ConsumerState<BreathingExerciseCard> {
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
 
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final tokens = context.tokens;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -149,7 +146,7 @@ class _BreathingExerciseCardState extends ConsumerState<BreathingExerciseCard> {
                 onPressed: widget.onSwitchToGrounding,
                 style: TextButton.styleFrom(
                   visualDensity: VisualDensity.compact,
-                  foregroundColor: LabColors.sageGreen,
+                  foregroundColor: tokens.m1,
                   padding: EdgeInsets.zero,
                 ),
                 child: Text(
@@ -181,14 +178,14 @@ class _BreathingExerciseCardState extends ConsumerState<BreathingExerciseCard> {
                     height: 54,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: LabColors.beigeBackground(isDark: isDark),
+                      color: tokens.cardTintFor(tokens.m1),
                       border: Border.all(
-                        color: LabColors.beigeBorder(isDark: isDark),
+                        color: tokens.line,
                       ),
                     ),
                     child: Icon(
                       Icons.air_rounded,
-                      color: isDark ? LabColors.warmBeige : LabColors.warmBeigeDark,
+                      color: tokens.m1,
                       size: 26,
                     ),
                   ),
@@ -214,7 +211,7 @@ class _BreathingExerciseCardState extends ConsumerState<BreathingExerciseCard> {
               onPressed: _toggleBreathing,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _isActive ? surfaceColor : textPrimary,
-                foregroundColor: _isActive ? textPrimary : (isDark ? Colors.black : Colors.white),
+                foregroundColor: _isActive ? textPrimary : tokens.bg,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

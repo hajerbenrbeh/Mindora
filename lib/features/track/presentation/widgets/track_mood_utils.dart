@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../mind_trace/domain/emotion_descriptors.dart';
 
 /// Shared core mood definitions, icons, colors, and localized labels for Track.
@@ -21,27 +21,27 @@ const List<TrackMoodOption> trackCoreMoods = [
   TrackMoodOption(
     key: 'calm',
     icon: Icons.water_drop_outlined,
-    color: LabColors.moodCalm,
+    color: MindTokens.moodCalm,
   ),
   TrackMoodOption(
     key: 'anxious',
     icon: Icons.air_rounded,
-    color: LabColors.moodAnxious,
+    color: MindTokens.moodAnxious,
   ),
   TrackMoodOption(
     key: 'frustrated',
     icon: Icons.bolt_rounded,
-    color: LabColors.moodFrustrated,
+    color: MindTokens.moodFrustrated,
   ),
   TrackMoodOption(
     key: 'heavy',
     icon: Icons.cloud_outlined,
-    color: LabColors.moodHeavy,
+    color: MindTokens.moodHeavy,
   ),
   TrackMoodOption(
     key: 'restless',
     icon: Icons.waves_rounded,
-    color: LabColors.moodRestless,
+    color: MindTokens.moodRestless,
   ),
 ];
 
@@ -53,7 +53,7 @@ TrackMoodOption trackMoodOptionFor(String key) {
   return TrackMoodOption(
     key: canonical,
     icon: EmotionDescriptor.iconForLabel(key),
-    color: LabColors.moodCalm,
+    color: MindTokens.moodCalm,
   );
 }
 

@@ -63,14 +63,14 @@ class TrackEntryDetailSheet extends ConsumerWidget {
           backgroundColor: tokens.surface,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(tokens.cardRadius),
-            side: BorderSide(color: tokens.border),
+            side: BorderSide(color: tokens.line),
           ),
           title: Text(
             strings.deleteTraceConfirmTitle,
             style: TextStyle(
               fontSize: 17,
               fontWeight: FontWeight.w700,
-              color: tokens.textPrimary,
+              color: tokens.ink,
             ),
           ),
           content: Text(
@@ -78,7 +78,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
             style: TextStyle(
               fontSize: 13.5,
               height: 1.45,
-              color: tokens.textSecondary,
+              color: tokens.ink2,
             ),
           ),
           actions: [
@@ -86,7 +86,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
               onPressed: () => Navigator.of(dialogCtx).pop(false),
               child: Text(
                 strings.cancelActionLabel,
-                style: TextStyle(color: tokens.textSecondary),
+                style: TextStyle(color: tokens.ink2),
               ),
             ),
             TextButton(
@@ -94,7 +94,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
               child: Text(
                 strings.deleteEntryBtn,
                 style: TextStyle(
-                  color: tokens.safetyWarmth,
+                  color: tokens.safety,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -127,7 +127,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
         color: tokens.surface,
         borderRadius:
             BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
-        border: Border.all(color: tokens.border),
+        border: Border.all(color: tokens.line),
       ),
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: SafeArea(
@@ -142,7 +142,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: tokens.border,
+                    color: tokens.line,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -159,7 +159,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w700,
-                            color: tokens.textSecondary,
+                            color: tokens.ink2,
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
@@ -175,7 +175,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: moodStyle.color.withValues(alpha: 0.16),
+                                color: tokens.selectedTintFor(moodStyle.color),
                                 borderRadius: BorderRadius.circular(14),
                                 border: Border.all(
                                   color: moodStyle.color.withValues(alpha: 0.65),
@@ -195,7 +195,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                     style: TextStyle(
                                       fontSize: 13.5,
                                       fontWeight: FontWeight.w700,
-                                      color: tokens.textPrimary,
+                                      color: tokens.ink,
                                     ),
                                   ),
                                 ],
@@ -207,7 +207,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                 vertical: 6,
                               ),
                               decoration: BoxDecoration(
-                                color: tokens.surfaceSecondary,
+                                color: tokens.surface2,
                                 borderRadius: BorderRadius.circular(14),
                               ),
                               child: Text(
@@ -215,7 +215,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                 style: TextStyle(
                                   fontSize: 12.5,
                                   fontWeight: FontWeight.w600,
-                                  color: tokens.textPrimary,
+                                  color: tokens.ink,
                                   fontFeatures: const [
                                     FontFeature.tabularFigures(),
                                   ],
@@ -236,16 +236,16 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: tokens.border),
+                    border: Border.all(color: tokens.line),
                   ),
                   child: Text(
                     trace.journalText!.trim(),
                     style: TextStyle(
                       fontSize: 13.5,
                       height: 1.48,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                   ),
                 ),
@@ -260,7 +260,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: strings.isArabic ? 0 : 0.6,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -278,15 +278,15 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                             vertical: 5,
                           ),
                           decoration: BoxDecoration(
-                            color: tokens.surfaceSecondary,
+                            color: tokens.surface2,
                             borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: tokens.border),
+                            border: Border.all(color: tokens.line),
                           ),
                           child: Text(
                             strings.trackTriggerDisplay(item),
                             style: TextStyle(
                               fontSize: 12,
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                             ),
                           ),
                         ),
@@ -319,10 +319,10 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                         constraints: const BoxConstraints(minHeight: 48),
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: tokens.surfaceSecondary,
+                          color: tokens.surface2,
                           borderRadius:
                               BorderRadius.circular(tokens.buttonRadius),
-                          border: Border.all(color: tokens.border),
+                          border: Border.all(color: tokens.line),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -330,7 +330,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                             Icon(
                               Icons.edit_outlined,
                               size: 16,
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                             ),
                             const SizedBox(width: 6),
                             Flexible(
@@ -342,7 +342,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                   fontFamily: 'Inter',
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w600,
-                                  color: tokens.textPrimary,
+                                  color: tokens.ink,
                                 ),
                               ),
                             ),
@@ -362,11 +362,11 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                         constraints: const BoxConstraints(minHeight: 48),
                         padding: const EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: tokens.safetyWarmthSoft,
+                          color: tokens.safetySoft,
                           borderRadius:
                               BorderRadius.circular(tokens.buttonRadius),
                           border: Border.all(
-                            color: tokens.safetyWarmth.withValues(alpha: 0.4),
+                            color: tokens.safety.withValues(alpha: 0.4),
                           ),
                         ),
                         child: Row(
@@ -375,7 +375,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                             Icon(
                               Icons.delete_outline_rounded,
                               size: 17,
-                              color: tokens.safetyWarmth,
+                              color: tokens.safety,
                             ),
                             const SizedBox(width: 6),
                             Flexible(
@@ -387,7 +387,7 @@ class TrackEntryDetailSheet extends ConsumerWidget {
                                   fontFamily: 'Inter',
                                   fontSize: 13.5,
                                   fontWeight: FontWeight.w700,
-                                  color: tokens.safetyWarmth,
+                                  color: tokens.safety,
                                 ),
                               ),
                             ),
@@ -509,7 +509,7 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
           color: tokens.surface,
           borderRadius:
               BorderRadius.vertical(top: Radius.circular(tokens.cardRadius)),
-          border: Border.all(color: tokens.border),
+          border: Border.all(color: tokens.line),
         ),
         padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 20),
         child: SafeArea(
@@ -525,7 +525,7 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
                     fontFamily: 'Inter',
                     fontSize: 17,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -549,15 +549,15 @@ class _EditPastTraceSheetState extends ConsumerState<EditPastTraceSheet> {
                   style: TextStyle(
                     fontFamily: 'Inter',
                     fontSize: 13.5,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                   decoration: InputDecoration(
                     hintText: strings.whatsOnYourMindHint,
                     filled: true,
-                    fillColor: tokens.surfaceSecondary,
+                    fillColor: tokens.surface2,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: BorderSide(color: tokens.border),
+                      borderSide: BorderSide(color: tokens.line),
                     ),
                   ),
                 ),

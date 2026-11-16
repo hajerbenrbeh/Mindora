@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../app/localization/app_strings.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/lab_theme.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/widgets/fingerprint_thread_signature.dart';
@@ -86,8 +85,8 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: dialogTokens.accent,
-                foregroundColor: isDark ? dialogTokens.background : Colors.white,
+                backgroundColor: dialogTokens.ink,
+                foregroundColor: dialogTokens.bg,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(dialogTokens.buttonRadius),
                 ),
@@ -148,10 +147,8 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: dialogTokens.safetyWarmth,
-                foregroundColor: Theme.of(dialogCtx).brightness == Brightness.dark
-                    ? dialogTokens.background
-                    : Colors.white,
+                backgroundColor: dialogTokens.safety,
+                foregroundColor: dialogTokens.bg,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(dialogTokens.buttonRadius),
                 ),
@@ -209,10 +206,8 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: dialogTokens.safetyWarmth,
-                foregroundColor: Theme.of(dialogCtx).brightness == Brightness.dark
-                    ? dialogTokens.background
-                    : Colors.white,
+                backgroundColor: dialogTokens.safety,
+                foregroundColor: dialogTokens.bg,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(dialogTokens.buttonRadius),
                 ),
@@ -231,20 +226,20 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
     );
   }
 
-  Color _accentForMode(ConversationMode mode, bool isDark) {
+  Color _accentForMode(ConversationMode mode) {
     switch (mode) {
       case ConversationMode.exploreThought:
-        return LabColors.moodColorFor('restless', isDark: isDark);
+        return MindTokens.moodRestless;
       case ConversationMode.understandEmotion:
-        return LabColors.moodColorFor('frustrated', isDark: isDark);
+        return MindTokens.moodFrustrated;
       case ConversationMode.psychologicalAnalysis:
-        return LabColors.moodColorFor('anxious', isDark: isDark);
+        return MindTokens.moodAnxious;
       case ConversationMode.guidedReflection:
-        return isDark ? LabColors.nightAccent : LabColors.forestGreen;
+        return MindTokens.moodCalm;
       case ConversationMode.justTalk:
-        return LabColors.moodColorFor('heavy', isDark: isDark);
+        return MindTokens.moodHeavy;
       case ConversationMode.grounding:
-        return isDark ? LabColors.moodCalm : LabColors.secondaryOlive;
+        return MindTokens.moodCalm;
     }
   }
 
@@ -321,7 +316,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             final isSelected = mode == selectedMode;
             final modeTitle = localizedModeName(mode, strings);
             final modeDesc = localizedModeDesc(mode, strings);
-            final modeColor = _accentForMode(mode, isDark);
+            final modeColor = _accentForMode(mode);
 
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
@@ -453,7 +448,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
               fontSize: 11.5,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.8,
-              color: _accentForMode(selectedMode, isDark),
+              color: _accentForMode(selectedMode),
             ),
           ),
           const SizedBox(height: 8),
@@ -462,7 +457,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
             spacing: 8,
             runSpacing: 8,
             children: strings.localizedStartersForMode(selectedMode.name).map((starter) {
-              final selectedModeColor = _accentForMode(selectedMode, isDark);
+              final selectedModeColor = _accentForMode(selectedMode);
               return MindPressable(
                 semanticLabel: starter,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
@@ -524,7 +519,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                   Icon(
                     Icons.add_rounded,
                     size: 18,
-                    color: (isDark ? tokens.background : Colors.white),
+                    color: tokens.bg,
                   ),
                   const SizedBox(width: 6),
                   Text(
@@ -533,7 +528,7 @@ class _AiCompanionHubViewState extends ConsumerState<AiCompanionHubView> {
                       fontSize: 13,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
-                      color: (isDark ? tokens.background : Colors.white),
+                      color: tokens.bg,
                     ),
                   ),
                 ],

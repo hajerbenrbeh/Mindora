@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 
 /// Minimalist, interactive somatosensory anatomical body scanner.
 ///
@@ -97,18 +97,19 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
     }
   }
 
-  Color get _activeAccentColor {
+  Color _activeAccentColor(MindTokens tokens) {
     return widget.arousalIntensity >= 7
-        ? LabColors.cherryRed
-        : (widget.arousalIntensity >= 4 ? LabColors.warmBeige : LabColors.factBlue);
+        ? tokens.safety
+        : (widget.arousalIntensity >= 4 ? MindTokens.moodRestless : MindTokens.moodAnxious);
   }
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     final isDark = widget.isDark;
-    final surfaceColor = isDark ? const Color(0xFF0C0C0C) : const Color(0xFFF9FAFB);
-    final borderColor = isDark ? const Color(0xFF222222) : const Color(0xFFE4E4E7);
-    final accent = _activeAccentColor;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final accent = _activeAccentColor(tokens);
 
     return Container(
       height: 220,
@@ -126,7 +127,7 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
             ExcludeSemantics(
               child: CustomPaint(
                 size: Size.infinite,
-                painter: _SilhouettePainter(isDark: isDark, activeAccent: accent),
+                painter: _SilhouettePainter(tokens: tokens, activeAccent: accent),
               ),
             ),
 
@@ -200,11 +201,11 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
                                     shape: BoxShape.circle,
                                     color: isActive
                                         ? accent
-                                        : (isDark ? const Color(0xFF2A2A2A) : const Color(0xFFD4D4D8)),
+                                        : tokens.surface3,
                                     border: Border.all(
                                       color: isActive
-                                          ? Colors.white
-                                          : (isDark ? const Color(0xFF404040) : const Color(0xFFA1A1AA)),
+                                          ? tokens.ink
+                                          : tokens.lineStrong,
                                       width: 1.5,
                                     ),
                                   ),
@@ -214,7 +215,7 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
                                       height: 4,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
-                                        color: isActive ? Colors.black : Colors.white70,
+                                        color: isActive ? tokens.bg : tokens.ink3,
                                       ),
                                     ),
                                   ),
@@ -260,7 +261,7 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
                               fontSize: 9.5,
                               fontWeight: FontWeight.w800,
                               letterSpacing: 1.0,
-                              color: isDark ? const Color(0xFF888888) : const Color(0xFF71717A),
+                              color: tokens.ink2,
                             ),
                           ),
                         ),
@@ -274,7 +275,7 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
                       fontSize: 8.5,
                       fontWeight: FontWeight.w700,
                       letterSpacing: 0.8,
-                      color: isDark ? const Color(0xFF555555) : const Color(0xFFA1A1AA),
+                      color: tokens.ink3,
                     ),
                   ),
                 ],
@@ -289,15 +290,15 @@ class _SomaticBodyRadarState extends State<SomaticBodyRadar> with SingleTickerPr
 
 /// Architectural Minimalist Human Silhouette Painter.
 class _SilhouettePainter extends CustomPainter {
-  const _SilhouettePainter({required this.isDark, required this.activeAccent});
+  const _SilhouettePainter({required this.tokens, required this.activeAccent});
 
-  final bool isDark;
+  final MindTokens tokens;
   final Color activeAccent;
 
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = (isDark ? const Color(0xFF1B1B1B) : const Color(0xFFE4E4E7))
+      ..color = tokens.line
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -308,7 +309,7 @@ class _SilhouettePainter extends CustomPainter {
     canvas.drawLine(Offset(size.width * 0.2, size.height * 0.5), Offset(size.width * 0.8, size.height * 0.5), linePaint);
 
     final bodyPaint = Paint()
-      ..color = (isDark ? const Color(0xFF262626) : const Color(0xFFD4D4D8))
+      ..color = tokens.lineStrong
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
 
@@ -335,7 +336,7 @@ class _SilhouettePainter extends CustomPainter {
 
     // Left Arm Contour (Towards extremities point)
     final armPaint = Paint()
-      ..color = (isDark ? const Color(0xFF202020) : const Color(0xFFE4E4E7))
+      ..color = tokens.line
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
 
@@ -345,7 +346,7 @@ class _SilhouettePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _SilhouettePainter oldDelegate) {
-    return oldDelegate.isDark != isDark || oldDelegate.activeAccent != activeAccent;
+    return oldDelegate.tokens != tokens || oldDelegate.activeAccent != activeAccent;
   }
 }
 

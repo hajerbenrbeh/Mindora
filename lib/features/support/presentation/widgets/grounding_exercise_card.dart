@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 
 /// 5-4-3-2-1 Sensory Grounding Card:
 /// - Reorients cognitive attention to immediate environment
@@ -38,18 +38,13 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
 
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     final steps = [
       (
@@ -133,7 +128,7 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
                 onPressed: widget.onSwitchToBreathing,
                 style: TextButton.styleFrom(
                   visualDensity: VisualDensity.compact,
-                  foregroundColor: LabColors.sageGreen,
+                  foregroundColor: tokens.m1,
                   padding: EdgeInsets.zero,
                 ),
                 child: Text(
@@ -158,12 +153,12 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
                       height: 52,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: LabColors.sageGreen.withValues(alpha: 0.15),
-                        border: Border.all(color: LabColors.sageGreen),
+                        color: tokens.selectedTintFor(tokens.m1),
+                        border: Border.all(color: tokens.m1),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.check_rounded,
-                        color: LabColors.sageGreen,
+                        color: tokens.m1,
                         size: 26,
                       ),
                     ),
@@ -208,7 +203,7 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
                     margin: EdgeInsetsDirectional.only(end: index == 4 ? 0 : 4),
                     decoration: BoxDecoration(
                       color: isPassed
-                          ? LabColors.sageGreen
+                          ? tokens.m1
                           : (isCurrent ? textPrimary : borderColor),
                       borderRadius: BorderRadius.circular(2),
                     ),
@@ -223,9 +218,9 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
                   width: 36,
                   height: 36,
                   decoration: BoxDecoration(
-                    color: LabColors.beigeBackground(isDark: isDark),
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(color: LabColors.beigeBorder(isDark: isDark)),
+                    border: Border.all(color: tokens.line),
                   ),
                   child: Center(
                     child: Text(
@@ -233,7 +228,7 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
                       style: TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w800,
-                        color: isDark ? LabColors.warmBeige : LabColors.warmBeigeDark,
+                        color: tokens.ink,
                       ),
                     ),
                   ),
@@ -269,7 +264,7 @@ class _GroundingExerciseCardState extends ConsumerState<GroundingExerciseCard> {
               onPressed: _nextStep,
               style: ElevatedButton.styleFrom(
                 backgroundColor: textPrimary,
-                foregroundColor: isDark ? Colors.black : Colors.white,
+                foregroundColor: tokens.bg,
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

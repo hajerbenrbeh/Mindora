@@ -348,7 +348,7 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                   icon: Icon(
                     Icons.search_rounded,
                     size: 16,
-                    color: isDark ? tokens.background : Colors.white,
+                    color: tokens.bg,
                   ),
                   label: Text(
                     strings.investigateThoughtBtn.toUpperCase(),
@@ -356,12 +356,12 @@ class ThoughtTraceDetailSheet extends ConsumerWidget {
                       fontSize: 12,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.1,
-                      color: isDark ? tokens.background : Colors.white,
+                      color: tokens.bg,
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: tokens.accent,
-                    foregroundColor: isDark ? tokens.background : Colors.white,
+                    backgroundColor: tokens.ink,
+                    foregroundColor: tokens.bg,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(tokens.buttonRadius),

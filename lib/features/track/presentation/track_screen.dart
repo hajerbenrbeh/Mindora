@@ -8,11 +8,11 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/router/app_router.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/crisis_keywords.dart';
 import '../../../core/safety/safety_interceptor.dart';
 import '../../../core/safety/support_button.dart';
+import '../../../core/widgets/ambient_scaffold.dart';
 import '../../../core/widgets/mind_button.dart';
 import '../../../core/widgets/mind_card.dart';
 import '../../../core/widgets/mind_pill.dart';
@@ -211,10 +211,10 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
     if (_selectedMood.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: tokens.surfaceSecondary,
+          backgroundColor: tokens.surface2,
           content: Text(
             strings.pickHowYouFeelFirst,
-            style: TextStyle(color: tokens.textPrimary, fontSize: 13),
+            style: TextStyle(color: tokens.ink, fontSize: 13),
           ),
           duration: const Duration(seconds: 2),
         ),
@@ -305,12 +305,12 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
         setState(() => _savedConfirmed = true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: tokens.surfaceSecondary,
+            backgroundColor: tokens.surface2,
             content: Text(
               safetyLevel == 1
                   ? '${strings.checkInSavedSnackbar} ${strings.needSupportBtn}'
                   : strings.checkInSavedSnackbar,
-              style: TextStyle(color: tokens.textPrimary, fontSize: 13),
+              style: TextStyle(color: tokens.ink, fontSize: 13),
             ),
             action: safetyLevel == 1
                 ? SnackBarAction(
@@ -344,7 +344,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(tokens.cardRadius),
               ),
-              border: Border.all(color: tokens.border),
+              border: Border.all(color: tokens.line),
             ),
             child: Column(
               children: [
@@ -353,7 +353,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   width: 36,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: tokens.border,
+                    color: tokens.line,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -440,8 +440,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
       }
     });
 
-    return Scaffold(
-      backgroundColor: tokens.background,
+    return AmbientScaffold(
       body: SafeArea(
         bottom: false,
         child: Column(
@@ -480,7 +479,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     isRtl
                         ? Icons.arrow_forward_rounded
                         : Icons.arrow_back_rounded,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                     size: 20,
                   ),
                   constraints:
@@ -496,7 +495,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                     fontSize: 22,
                     fontWeight: FontWeight.w700,
                     letterSpacing: strings.isArabic ? 0 : -0.3,
@@ -507,7 +506,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 icon: Icon(
                   Icons.calendar_month_outlined,
                   size: 20,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
                 tooltip: strings.fullCalendarTooltip,
                 constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
@@ -547,9 +546,8 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
     MindTraceModel? todayTrace,
   ) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final activeMoodColor =
-        LabColors.moodColorFor(_selectedMood, isDark: isDark);
+        MindTokens.moodColor(AppMood.fromKey(_selectedMood));
 
     return Column(
       children: [
@@ -566,7 +564,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     fontFamily: 'Inter',
                     fontSize: 21,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                     letterSpacing: strings.isArabic ? 0 : -0.3,
                   ),
                 ),
@@ -577,7 +575,6 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     intensity: _moodIntensity.round(),
                     color: activeMoodColor,
                     size: 84,
-                    isDark: isDark,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -586,7 +583,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     strings.todaysCoreState,
                     style: TextStyle(
                       fontFamily: 'Inter',
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700,
                       letterSpacing: strings.isArabic ? 0 : 0.6,
@@ -620,9 +617,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 Container(
                   padding: const EdgeInsetsDirectional.fromSTEB(14, 10, 14, 10),
                   decoration: BoxDecoration(
-                    color: tokens.surface,
+                    color: tokens.surface2,
                     borderRadius: BorderRadius.circular(tokens.cardRadius),
-                    border: Border.all(color: tokens.border),
+                    border: Border.all(color: tokens.line),
                   ),
                   child: TextField(
                     controller: _noteController,
@@ -633,7 +630,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                       fontFamily: 'Inter',
                       fontSize: 14,
                       height: 1.45,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                     ),
                     decoration: InputDecoration(
                       isDense: true,
@@ -643,7 +640,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                       hintStyle: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 13.5,
-                        color: tokens.textSecondary,
+                        color: tokens.ink3,
                       ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
@@ -675,7 +672,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                           Icon(
                             Icons.tune_outlined,
                             size: 18,
-                            color: tokens.accent,
+                            color: tokens.m1,
                           ),
                           const SizedBox(width: 10),
                           Expanded(
@@ -689,7 +686,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                                     fontFamily: 'Inter',
                                     fontSize: 13.5,
                                     fontWeight: FontWeight.w700,
-                                    color: tokens.textPrimary,
+                                    color: tokens.ink,
                                   ),
                                 ),
                                 const SizedBox(height: 2),
@@ -698,7 +695,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 12,
-                                    color: tokens.textSecondary,
+                                    color: tokens.ink2,
                                   ),
                                 ),
                               ],
@@ -708,7 +705,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                             _showOptionalContext
                                 ? Icons.keyboard_arrow_up_rounded
                                 : Icons.keyboard_arrow_down_rounded,
-                            color: tokens.textSecondary,
+                            color: tokens.ink2,
                           ),
                         ],
                       ),
@@ -743,7 +740,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                           Icon(
                             Icons.layers_outlined,
                             size: 16,
-                            color: tokens.accent,
+                            color: tokens.m1,
                           ),
                           const SizedBox(width: 8),
                           Flexible(
@@ -753,7 +750,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                                 fontFamily: 'Inter',
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: tokens.accent,
+                                color: tokens.m1,
                               ),
                             ),
                           ),
@@ -779,8 +776,8 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: tokens.background,
-        border: Border(top: BorderSide(color: tokens.border, width: 1.0)),
+        color: tokens.surface,
+        border: Border(top: BorderSide(color: tokens.line, width: 1.0)),
       ),
       padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 20, 12),
       child: SafeArea(
@@ -804,9 +801,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                           Icon(
                             Icons.check_circle_rounded,
                             size: 16,
-                            color: Theme.of(context).brightness == Brightness.dark
-                                ? LabColors.sageGreen
-                                : tokens.accent,
+                            color: tokens.m1,
                           ),
                           const SizedBox(width: 6),
                           Text(
@@ -815,9 +810,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                               fontFamily: 'Inter',
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
-                              color: Theme.of(context).brightness == Brightness.dark
-                                  ? LabColors.sageGreen
-                                  : tokens.accent,
+                              color: tokens.m1,
                             ),
                           ),
                         ],
@@ -1194,10 +1187,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
     AppStrings strings, {
     bool isLast = false,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isRtl = Directionality.of(context) == TextDirection.rtl;
-    final moodColor = LabColors.moodColorFor(t.overallMood, isDark: isDark);
-    final moodSoft = LabColors.moodSoftFor(t.overallMood, isDark: isDark);
+    final moodColor = trackMoodOptionFor(t.overallMood).color;
+    final moodSoft = tokens.selectedTintFor(moodColor);
     final moodText = trackMoodLabel(t.overallMood, strings);
     final triggers = (t.situation ?? '')
         .split(',')

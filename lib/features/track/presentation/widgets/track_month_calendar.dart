@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_card.dart';
 import '../../../../core/widgets/mind_pressable.dart';
@@ -70,7 +69,7 @@ class TrackMonthCalendar extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -81,7 +80,7 @@ class TrackMonthCalendar extends StatelessWidget {
                       ? Icons.chevron_right_rounded
                       : Icons.chevron_left_rounded,
                   size: 22,
-                  color: tokens.textSecondary,
+                  color: tokens.ink2,
                 ),
                 tooltip: strings.previousMonthTooltip,
               ),
@@ -93,8 +92,8 @@ class TrackMonthCalendar extends StatelessWidget {
                       : Icons.chevron_right_rounded,
                   size: 22,
                   color: canGoNextMonth
-                      ? tokens.textSecondary
-                      : tokens.textTertiary.withValues(alpha: 0.35),
+                      ? tokens.ink2
+                      : tokens.ink3.withValues(alpha: 0.35),
                 ),
                 tooltip: strings.nextMonthTooltip,
               ),
@@ -106,7 +105,7 @@ class TrackMonthCalendar extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'Inter',
               fontSize: 12.5,
-              color: tokens.textSecondary,
+              color: tokens.ink2,
             ),
           ),
           const SizedBox(height: 14),
@@ -123,7 +122,7 @@ class TrackMonthCalendar extends StatelessWidget {
                         fontFamily: 'Inter',
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
-                        color: tokens.textTertiary,
+                        color: tokens.ink3,
                       ),
                     ),
                   ),
@@ -149,7 +148,7 @@ class TrackMonthCalendar extends StatelessWidget {
                     width: 4,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: tokens.border.withValues(alpha: 0.75),
+                      color: tokens.line.withValues(alpha: 0.75),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -166,42 +165,39 @@ class TrackMonthCalendar extends StatelessWidget {
                   month.month == now.month &&
                   month.year == now.year;
 
-              final moodColor = isLogged
-                  ? LabColors.moodColorFor(
-                      matchedTrace.overallMood,
-                      isDark: isDark,
-                    )
-                  : tokens.accent;
-              final moodSoft = isLogged
-                  ? LabColors.moodSoftFor(
-                      matchedTrace.overallMood,
-                      isDark: isDark,
-                    )
-                  : tokens.accentSoft;
+              final mood = isLogged
+                  ? AppMood.fromKey(matchedTrace.overallMood)
+                  : null;
+              final moodColor = mood != null
+                  ? MindTokens.moodColor(mood)
+                  : tokens.m1;
+              final moodFill = isLogged
+                  ? tokens.moodDayColor(moodColor, matchedTrace.moodIntensity)
+                  : tokens.surface2;
 
               Color circleBg;
               Color textColor;
               Border? circleBorder;
 
               if (isSelected) {
-                circleBg = isLogged ? moodColor : tokens.accent;
-                textColor = tokens.onAccent;
+                circleBg = isLogged ? moodColor : tokens.ink;
+                textColor = tokens.onMood;
                 circleBorder = null;
               } else if (isLogged) {
-                circleBg = moodSoft;
-                textColor = tokens.textPrimary;
+                circleBg = moodFill;
+                textColor = tokens.ink;
                 circleBorder = Border.all(
                   color: moodColor.withValues(alpha: isToday ? 0.9 : 0.45),
                   width: isToday ? 1.8 : 1.2,
                 );
               } else if (isToday) {
                 circleBg = Colors.transparent;
-                textColor = tokens.accent;
-                circleBorder = Border.all(color: tokens.accent, width: 1.6);
+                textColor = tokens.ink;
+                circleBorder = Border.all(color: tokens.m1, width: 1.6);
               } else {
                 // Open typographic calendar field — no rectangular grid cages.
                 circleBg = Colors.transparent;
-                textColor = tokens.textSecondary;
+                textColor = tokens.ink2;
                 circleBorder = null;
               }
 
@@ -264,7 +260,6 @@ class TrackMonthCalendar extends StatelessWidget {
             _SelectedDayBanner(
               tokens: tokens,
               strings: strings,
-              isDark: isDark,
               dateKey: selectedDateKey!,
               trace: selectedTrace,
               onInspectTrace: onInspectTrace,
@@ -281,7 +276,6 @@ class _SelectedDayBanner extends StatelessWidget {
   const _SelectedDayBanner({
     required this.tokens,
     required this.strings,
-    required this.isDark,
     required this.dateKey,
     required this.trace,
     required this.onClear,
@@ -290,7 +284,6 @@ class _SelectedDayBanner extends StatelessWidget {
 
   final MindTokens tokens;
   final AppStrings strings;
-  final bool isDark;
   final String dateKey;
   final MindTraceModel? trace;
   final VoidCallback onClear;
@@ -300,15 +293,15 @@ class _SelectedDayBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasTrace = trace != null;
     final moodColor = hasTrace
-        ? LabColors.moodColorFor(trace!.overallMood, isDark: isDark)
-        : tokens.textSecondary;
+        ? MindTokens.moodColor(AppMood.fromKey(trace!.overallMood))
+        : tokens.ink2;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: tokens.surfaceSecondary,
+        color: tokens.surface2,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: tokens.border),
+        border: Border.all(color: tokens.line),
       ),
       child: Row(
         children: [
@@ -323,7 +316,7 @@ class _SelectedDayBanner extends StatelessWidget {
             Icon(
               Icons.calendar_today_outlined,
               size: 16,
-              color: tokens.textSecondary,
+              color: tokens.ink2,
             ),
             const SizedBox(width: 8),
           ],
@@ -343,7 +336,7 @@ class _SelectedDayBanner extends StatelessWidget {
                   fontFamily: 'Inter',
                   fontSize: 12.5,
                   fontWeight: FontWeight.w600,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
               ),
             ),
@@ -359,7 +352,7 @@ class _SelectedDayBanner extends StatelessWidget {
               decoration: BoxDecoration(
                 color: tokens.surface,
                 borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: tokens.border),
+                border: Border.all(color: tokens.line),
               ),
               alignment: Alignment.center,
               child: Text(
@@ -368,7 +361,7 @@ class _SelectedDayBanner extends StatelessWidget {
                   fontFamily: 'Inter',
                   fontSize: 11.5,
                   fontWeight: FontWeight.w700,
-                  color: tokens.textPrimary,
+                  color: tokens.ink,
                 ),
               ),
             ),

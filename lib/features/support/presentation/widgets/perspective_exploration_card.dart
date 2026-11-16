@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_button.dart';
 import '../../../../core/widgets/mind_card.dart';
@@ -203,10 +202,10 @@ class _PerspectiveExplorationCardState
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? LabColors.factBackgroundDark : LabColors.factBackgroundLight,
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(tokens.chipRadius),
               border: Border.all(
-                color: isDark ? LabColors.factBorderDark : LabColors.factBorderLight,
+                color: tokens.line,
               ),
             ),
             child: Column(
@@ -221,7 +220,7 @@ class _PerspectiveExplorationCardState
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: isAr ? 0 : 0.5,
-                    color: LabColors.factBlue,
+                    color: MindTokens.moodAnxious,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -244,10 +243,10 @@ class _PerspectiveExplorationCardState
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDark ? LabColors.assumptionBackgroundDark : LabColors.assumptionBackgroundLight,
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(tokens.chipRadius),
               border: Border.all(
-                color: isDark ? LabColors.assumptionBorderDark : LabColors.assumptionBorderLight,
+                color: tokens.line,
               ),
             ),
             child: Column(
@@ -264,7 +263,7 @@ class _PerspectiveExplorationCardState
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: isAr ? 0 : 0.5,
-                    color: LabColors.assumptionAmber,
+                    color: MindTokens.moodRestless,
                   ),
                 ),
                 const SizedBox(height: 4),

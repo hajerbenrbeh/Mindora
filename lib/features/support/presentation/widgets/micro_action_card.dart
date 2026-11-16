@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../journey/controllers/journey_controller.dart';
 
@@ -127,17 +126,14 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
     final isAr = strings.isArabic;
     final isFr = strings.isFrench;
 
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     final action = _actions[_selectedActionIndex];
     final actionTitle = isAr
@@ -170,17 +166,17 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: LabColors.sageGreen.withValues(alpha: 0.15),
+                  color: tokens.selectedTintFor(tokens.m1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   isAr
                       ? '2 دقائق فقط'
                       : (isFr ? '2 MINUTES SEULEMENT' : '2 MINUTES ONLY'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
-                    color: LabColors.sageGreen,
+                    color: tokens.m1,
                   ),
                 ),
               ),
@@ -214,7 +210,7 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                    color: isSelected ? (isDark ? Colors.black : Colors.white) : textPrimary,
+                    color: isSelected ? tokens.bg : textPrimary,
                   ),
                 ),
                 selected: isSelected,
@@ -230,12 +226,12 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                     });
                   }
                 },
-                selectedColor: context.tokens.accent,
-                backgroundColor: context.tokens.surfaceSecondary,
+                selectedColor: tokens.ink,
+                backgroundColor: tokens.surface2,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(context.tokens.chipRadius),
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
                   side: BorderSide(
-                    color: isSelected ? context.tokens.accent : borderColor,
+                    color: isSelected ? tokens.ink : borderColor,
                     width: 1,
                   ),
                 ),
@@ -251,13 +247,13 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
             width: double.infinity,
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(color: borderColor),
             ),
             child: Row(
               children: [
-                Icon(action.icon, size: 22, color: LabColors.sageGreen),
+                Icon(action.icon, size: 22, color: tokens.m1),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -276,7 +272,7 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                     fontWeight: FontWeight.w800,
                     fontFamily: 'Inter',
                     fontFeatures: const [FontFeature.tabularFigures()],
-                    color: LabColors.sageGreen,
+                    color: tokens.m1,
                   ),
                 ),
               ],
@@ -294,7 +290,7 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                     onPressed: _isFinished ? null : _toggleTimer,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: _isTimerRunning ? surfaceColor : textPrimary,
-                      foregroundColor: _isTimerRunning ? textPrimary : (isDark ? Colors.black : Colors.white),
+                      foregroundColor: _isTimerRunning ? textPrimary : tokens.bg,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -322,8 +318,8 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                 child: OutlinedButton(
                   onPressed: _completeNow,
                   style: OutlinedButton.styleFrom(
-                    foregroundColor: LabColors.sageGreen,
-                    side: const BorderSide(color: LabColors.sageGreen),
+                    foregroundColor: tokens.m1,
+                    side: BorderSide(color: tokens.m1),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -348,9 +344,9 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                         : (isFr
                             ? 'Bravo. Un petit pas suffit à relancer l’élan sans pression.'
                             : 'Well done. One tiny step breaks inertia with zero pressure.'),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11.5,
-                      color: LabColors.sageGreen,
+                      color: tokens.m1,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -386,7 +382,7 @@ class _MicroActionCardState extends ConsumerState<MicroActionCard> {
                     style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
                   ),
                   style: TextButton.styleFrom(
-                    foregroundColor: LabColors.sageGreen,
+                    foregroundColor: tokens.m1,
                     visualDensity: VisualDensity.compact,
                   ),
                 ),

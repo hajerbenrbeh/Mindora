@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/localization/locale_controller.dart';
 import '../../../../app/router/app_router.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/safety/crisis_keywords.dart';
 import '../../../../core/safety/safety_interceptor.dart';
@@ -1074,7 +1073,11 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
   }) {
     final isUser = statement.speaker == StatementSpeaker.user;
     final epistemicColor = statement.label != null
-        ? LabColors.forLabel(statement.label!, isDark: isDark)
+        ? switch (statement.label!) {
+            LabelType.fact => MindTokens.moodAnxious,
+            LabelType.assumption => MindTokens.moodRestless,
+            LabelType.interpretation => MindTokens.moodHeavy,
+          }
         : null;
     final bubbleBg = isUser ? tokens.surfaceSecondary : tokens.surface;
     final bubbleBorder = epistemicColor != null
@@ -1179,11 +1182,8 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                                       vertical: 6,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: statement.label != null
-                                          ? LabColors.labelBackground(
-                                              statement.label!,
-                                              isDark: isDark,
-                                            )
+                                      color: epistemicColor != null
+                                          ? tokens.selectedTintFor(epistemicColor)
                                           : tokens.surface,
                                       borderRadius: BorderRadius.circular(tokens.chipRadius),
                                       border: Border.all(
@@ -1527,7 +1527,7 @@ class _LiveDialogueViewState extends ConsumerState<LiveDialogueView> {
                 size: 20,
                 color: isPaused || _isInvestigatorTyping
                     ? tokens.textSecondary
-                    : (isDark ? tokens.background : Colors.white),
+                    : tokens.bg,
               ),
             ),
           ),

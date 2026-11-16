@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../controllers/investigation_providers.dart';
 import '../../data/direct_gemini_investigator_service.dart';
 import '../../data/direct_groq_investigator_service.dart';
@@ -165,15 +165,14 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final tokens = context.tokens;
     final aiConfig = ref.watch(aiConfigProvider);
     final strings = ref.watch(appStringsProvider);
 
-    final bg = isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final border = isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary = isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary = isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final bg = tokens.surface;
+    final border = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       decoration: BoxDecoration(
@@ -205,7 +204,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.auto_awesome, size: 20, color: isDark ? LabColors.sageGreenGlow : LabColors.daylightAccent),
+                Icon(Icons.auto_awesome, size: 20, color: tokens.m1),
                 const SizedBox(width: 10),
                 Expanded(
                   child: Text(
@@ -222,13 +221,13 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                   decoration: BoxDecoration(
                     color: aiConfig.isLiveActive
-                        ? LabColors.sageBackground(isDark: isDark)
-                        : LabColors.beigeBackground(isDark: isDark),
+                        ? tokens.selectedTintFor(tokens.m1)
+                        : tokens.surface2,
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
                       color: aiConfig.isLiveActive
-                          ? LabColors.sageBorder(isDark: isDark)
-                          : LabColors.beigeBorder(isDark: isDark),
+                          ? tokens.m1
+                          : tokens.line,
                     ),
                   ),
                   child: Text(
@@ -242,8 +241,8 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.4,
                       color: aiConfig.isLiveActive
-                          ? (isDark ? LabColors.sageGreenGlow : LabColors.daylightAccent)
-                          : (isDark ? LabColors.warmBeige : LabColors.warmBeigeDark),
+                          ? tokens.m1
+                          : tokens.ink2,
                     ),
                   ),
                 ),
@@ -292,7 +291,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+                color: tokens.surface2,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: border),
               ),
@@ -324,7 +323,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                       HapticFeedback.lightImpact();
                       await ref.read(aiConfigProvider.notifier).toggleLiveMode(!isTestMode);
                     },
-                    activeThumbColor: LabColors.warmBeige,
+                    activeThumbColor: tokens.m1,
                   ),
                 ],
               ),
@@ -354,10 +353,10 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                     : 'AIza...',
                 hintStyle: TextStyle(fontSize: 12, color: textSecondary.withValues(alpha: 0.6)),
                 filled: true,
-                fillColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+                fillColor: tokens.surface2,
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
                 enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
-                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1.5)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: tokens.focusRing, width: 1.5)),
                 suffixIcon: IconButton(
                   tooltip: strings.isArabic
                       ? 'إظهار أو إخفاء المفتاح'
@@ -388,10 +387,10 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                   hintText: strings.aiEngineProxyHint,
                   hintStyle: TextStyle(fontSize: 11.5, color: textSecondary.withValues(alpha: 0.6)),
                   filled: true,
-                  fillColor: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+                  fillColor: tokens.surface2,
                   border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
                   enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: border)),
-                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? Colors.white : Colors.black, width: 1.5)),
+                  focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: tokens.focusRing, width: 1.5)),
                 ),
               ),
             ],
@@ -400,8 +399,8 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
               const SizedBox(height: 12),
               Builder(builder: (_) {
                 final statusColor = _testSuccess == true
-                    ? (isDark ? LabColors.sageGreenGlow : LabColors.daylightAccent)
-                    : (isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth);
+                    ? tokens.m1
+                    : tokens.safety;
                 return Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
@@ -470,8 +469,8 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                   child: FilledButton(
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(0, 48),
-                      backgroundColor: isDark ? Colors.white : Colors.black,
-                      foregroundColor: isDark ? Colors.black : Colors.white,
+                      backgroundColor: tokens.ink,
+                      foregroundColor: tokens.bg,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -491,7 +490,7 @@ class _AiEngineConfigSheetState extends ConsumerState<AiEngineConfigSheet> {
                 child: TextButton(
                   style: TextButton.styleFrom(
                     minimumSize: const Size(48, 48),
-                    foregroundColor: isDark ? LabColors.safetyWarmthDark : LabColors.safetyWarmth,
+                    foregroundColor: tokens.safety,
                   ),
                   onPressed: _clearKey,
                   child: Text(

@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 
 /// Luxury concentric bio-luminescent vagal breathing visualizer.
 ///
@@ -66,30 +66,20 @@ class _VagalBreathingVisualizerState extends State<VagalBreathingVisualizer>
 
   Color get _phaseAccentColor {
     switch (widget.phase) {
-      case 0: // Inhale - Warm Sand / Amber clarity
-        return LabColors.moodColorFor('anxious', isDark: widget.isDark);
-      case 1: // Hold - Grounded Blue focus
-        return LabColors.moodColorFor('restless', isDark: widget.isDark);
-      case 2: // Exhale - Warm Coral release
-        return LabColors.moodColorFor('frustrated', isDark: widget.isDark);
-      case 3: // Hold - Eucalyptus / Stillness
+      case 0: // Inhale
+        return MindTokens.moodAnxious;
+      case 1: // Hold
+        return MindTokens.moodRestless;
+      case 2: // Exhale
+        return MindTokens.moodFrustrated;
+      case 3: // Hold
       default:
-        return widget.isDark ? LabColors.nightAccent : LabColors.forestGreen;
+        return MindTokens.moodCalm;
     }
   }
 
-  Color get _phaseBgColor {
-    switch (widget.phase) {
-      case 0:
-        return LabColors.moodSoftFor('anxious', isDark: widget.isDark);
-      case 1:
-        return LabColors.moodSoftFor('restless', isDark: widget.isDark);
-      case 2:
-        return LabColors.moodSoftFor('frustrated', isDark: widget.isDark);
-      case 3:
-      default:
-        return LabColors.moodSoftFor('calm', isDark: widget.isDark);
-    }
+  Color _phaseBgColor(BuildContext context) {
+    return context.tokens.cardTintFor(_phaseAccentColor);
   }
 
   double get _targetScale {
@@ -109,7 +99,7 @@ class _VagalBreathingVisualizerState extends State<VagalBreathingVisualizer>
   @override
   Widget build(BuildContext context) {
     final accent = _phaseAccentColor;
-    final bg = _phaseBgColor;
+    final bg = _phaseBgColor(context);
     final isDark = widget.isDark;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
@@ -158,13 +148,15 @@ class _VagalBreathingVisualizerState extends State<VagalBreathingVisualizer>
                   shape: BoxShape.circle,
                   color: bg,
                   border: Border.all(color: accent, width: 2.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accent.withValues(alpha: isDark ? 0.35 : 0.2),
-                      blurRadius: 22,
-                      spreadRadius: 2,
-                    ),
-                  ],
+                  boxShadow: isDark
+                      ? const []
+                      : [
+                          BoxShadow(
+                            color: accent.withValues(alpha: 0.2),
+                            blurRadius: 22,
+                            spreadRadius: 2,
+                          ),
+                        ],
                 ),
                 child: Center(
                   child: Column(

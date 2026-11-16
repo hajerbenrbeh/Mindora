@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 import '../../../journey/controllers/journey_controller.dart';
 
 /// Low-pressure routine anchor card:
@@ -72,17 +72,14 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final strings = ref.watch(appStringsProvider);
+    final tokens = context.tokens;
     final isAr = strings.isArabic;
     final isFr = strings.isFrench;
 
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     final current = _anchors[_selectedAnchorIndex];
     final title = isAr
@@ -118,17 +115,17 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: LabColors.sageGreen.withValues(alpha: 0.15),
+                  color: tokens.selectedTintFor(tokens.m1),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
                   isAr
                       ? 'نقطة توازن واحدة'
                       : (isFr ? 'UN POINT D’ANCRAGE DOUX' : 'ONE GENTLE ANCHOR'),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9.5,
                     fontWeight: FontWeight.w800,
-                    color: LabColors.sageGreen,
+                    color: tokens.m1,
                   ),
                 ),
               ),
@@ -167,16 +164,14 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                 labelStyle: TextStyle(
                   fontSize: 11,
                   fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                  color: isSelected ? textPrimary : textSecondary,
+                  color: isSelected ? tokens.bg : textSecondary,
                 ),
-                backgroundColor: isDark
-                    ? LabColors.nightSurfaceElevated
-                    : LabColors.daylightSurfaceSubtle,
-                selectedColor: LabColors.sageGreen.withValues(alpha: 0.25),
+                backgroundColor: tokens.surface2,
+                selectedColor: tokens.ink,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(6),
                   side: BorderSide(
-                    color: isSelected ? LabColors.sageGreen : borderColor,
+                    color: isSelected ? tokens.ink : borderColor,
                   ),
                 ),
                 showCheckmark: false,
@@ -191,10 +186,10 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: isDark ? LabColors.nightSurfaceElevated : LabColors.daylightSurfaceSubtle,
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: _isAdopted ? LabColors.sageGreen : borderColor,
+                color: _isAdopted ? tokens.m1 : borderColor,
                 width: _isAdopted ? 1.5 : 1,
               ),
             ),
@@ -204,10 +199,10 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: LabColors.sageGreen.withValues(alpha: 0.15),
+                    color: tokens.selectedTintFor(tokens.m1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Icon(current.icon, size: 22, color: LabColors.sageGreen),
+                  child: Icon(current.icon, size: 22, color: tokens.m1),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -249,10 +244,8 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                 setState(() => _isAdopted = true);
               },
               style: FilledButton.styleFrom(
-                backgroundColor: _isAdopted ? LabColors.sageGreen : textPrimary,
-                foregroundColor: _isAdopted
-                    ? Colors.black
-                    : (isDark ? Colors.black : Colors.white),
+                backgroundColor: _isAdopted ? tokens.m1 : textPrimary,
+                foregroundColor: _isAdopted ? tokens.onMood : tokens.bg,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -307,7 +300,7 @@ class _RoutineAnchorCardState extends ConsumerState<RoutineAnchorCard> {
                   style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
                 ),
                 style: TextButton.styleFrom(
-                  foregroundColor: LabColors.sageGreen,
+                  foregroundColor: tokens.m1,
                   visualDensity: VisualDensity.compact,
                 ),
               ),

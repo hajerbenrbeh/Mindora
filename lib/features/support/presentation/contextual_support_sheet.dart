@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/router/app_router.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/support_button.dart';
 import '../../profile/controllers/profile_controller.dart';
@@ -87,15 +86,12 @@ class _ContextualSupportSheetState
     final strings = ref.watch(appStringsProvider);
     final isAr = strings.isArabic;
 
-    final bg = isDark ? LabColors.nightBackground : LabColors.daylightBackground;
-    final surfaceColor =
-        isDark ? LabColors.nightSurface : LabColors.daylightSurface;
-    final borderColor =
-        isDark ? LabColors.nightBorder : LabColors.daylightBorder;
-    final textPrimary =
-        isDark ? LabColors.nightTextPrimary : LabColors.daylightTextPrimary;
-    final textSecondary =
-        isDark ? LabColors.nightTextSecondary : LabColors.daylightTextSecondary;
+    final tokens = context.tokens;
+    final bg = tokens.surface;
+    final surfaceColor = tokens.surface;
+    final borderColor = tokens.line;
+    final textPrimary = tokens.ink;
+    final textSecondary = tokens.ink2;
 
     return Container(
       constraints: BoxConstraints(
@@ -118,7 +114,7 @@ class _ContextualSupportSheetState
                 width: 38,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: isDark ? LabColors.nightBorder : LabColors.daylightBorder,
+                  color: tokens.lineStrong,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -252,7 +248,7 @@ class _ContextualSupportSheetState
           title: strings.needSettleTitle,
           subtitle: strings.needSettleDesc,
           icon: Icons.air_rounded,
-          accentColor: LabColors.sageGreen,
+          accentColor: MindTokens.moodCalm,
           isSuggested: suggestSettle,
           onTap: () => _selectChoice(SupportChoice.settle),
           isDark: isDark,
@@ -268,7 +264,7 @@ class _ContextualSupportSheetState
           title: strings.needThoughtsTitle,
           subtitle: strings.needThoughtsDesc,
           icon: Icons.psychology_outlined,
-          accentColor: isDark ? LabColors.warmBeige : LabColors.warmBeigeDark,
+          accentColor: MindTokens.moodAnxious,
           isSuggested: suggestThoughts,
           onTap: () => _selectChoice(SupportChoice.thoughts),
           isDark: isDark,
@@ -329,66 +325,71 @@ class _ContextualSupportSheetState
         const SizedBox(height: 20),
 
         // Global Crisis Access Button
-        Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: context.tokens.safetyWarmthSoft,
-            borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
-            border: Border.all(
-              color: context.tokens.safetyWarmth.withValues(alpha: 0.45),
-            ),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(context.tokens.buttonRadius),
-              onTap: () {
-                Navigator.of(context).pop();
-                SupportModalSheet.show(context);
-              },
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.phone_in_talk_outlined,
-                      size: 20,
-                      color: context.tokens.safetyWarmth,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            strings.needCrisisHelp,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w800,
-                              color: LabColors.cherryRed,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            strings.emergencyCallDirect,
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Icon(
-                      strings.isArabic ? Icons.arrow_back_ios_rounded : Icons.arrow_forward_ios_rounded,
-                      size: 13,
-                      color: LabColors.cherryRed,
-                    ),
-                  ],
+        Builder(
+          builder: (ctx) {
+            final sheetTokens = ctx.tokens;
+            return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: sheetTokens.safetySoft,
+                borderRadius: BorderRadius.circular(sheetTokens.buttonRadius),
+                border: Border.all(
+                  color: sheetTokens.safety.withValues(alpha: 0.45),
                 ),
               ),
-            ),
-          ),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(sheetTokens.buttonRadius),
+                  onTap: () {
+                    Navigator.of(ctx).pop();
+                    SupportModalSheet.show(ctx);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.phone_in_talk_outlined,
+                          size: 20,
+                          color: sheetTokens.safety,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                strings.needCrisisHelp,
+                                style: TextStyle(
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: sheetTokens.safety,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                strings.emergencyCallDirect,
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          strings.isArabic ? Icons.arrow_back_ios_rounded : Icons.arrow_forward_ios_rounded,
+                          size: 13,
+                          color: sheetTokens.safety,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 8),
       ],

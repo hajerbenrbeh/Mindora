@@ -309,8 +309,8 @@ class _TraceInvestigationSheetState
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _handleSave,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: tokens.accent,
-                  foregroundColor: isDark ? tokens.background : Colors.white,
+                  backgroundColor: tokens.ink,
+                  foregroundColor: tokens.bg,
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(tokens.buttonRadius),
@@ -323,7 +323,7 @@ class _TraceInvestigationSheetState
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            isDark ? tokens.background : Colors.white,
+                            tokens.bg,
                           ),
                         ),
                       )

@@ -282,8 +282,8 @@ class _CustomAiInstructionsSheetState
             width: double.infinity,
             child: FilledButton(
               style: FilledButton.styleFrom(
-                backgroundColor: tokens.accent,
-                foregroundColor: isDark ? tokens.background : Colors.white,
+                backgroundColor: tokens.ink,
+                foregroundColor: tokens.bg,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(tokens.buttonRadius),
                 ),
