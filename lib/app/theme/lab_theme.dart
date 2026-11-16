@@ -1,324 +1,403 @@
 import 'package:flutter/material.dart';
-import 'lab_colors.dart';
+
 import 'mind_tokens.dart';
 
-/// Mind Forensics Design System Theme.
+/// Builds unified Light ("Dawn") and Dark ("Vercel") [ThemeData] exclusively from [MindTokens].
 ///
-/// Implements the calm, human, sophisticated, emotionally reassuring identity
-/// using the Earth/Sage palette (Light #F7F8F5, Dark #151B19).
-/// Precision 20px corner radii, subtle 1px hairline borders, balanced typography.
-class LabTheme {
-  /// Ordered Arabic fallback chain so Inter never renders missing glyphs on
-  /// Android (`Noto Naskh Arabic`), iOS (`Geeza Pro`), or bundled fonts.
-  static const List<String> fontFallback = [
-    'Noto Sans Arabic',
-    'Noto Naskh Arabic',
-    'Noto Naskh Arabic UI',
-    'Geeza Pro',
-    'Arial',
-  ];
+/// Zero raw color literals exist in this file; all visual properties map from
+/// [MindTokens]. Set [isArabic] to `true` to enforce `letterSpacing: 0.0` so
+/// Arabic cursive glyph joining never breaks.
+ThemeData buildMindTheme(
+  Brightness brightness, {
+  MindTokens? tokensOverride,
+  bool isArabic = false,
+}) {
+  final tokens = tokensOverride ?? MindTokens.forBrightness(brightness);
+  final isDark = brightness == Brightness.dark;
+  final textTheme = _buildTextTheme(tokens, isArabic: isArabic);
 
-  static TextStyle monoStyle({
-    double fontSize = 12,
-    FontWeight fontWeight = FontWeight.w600,
-    Color? color,
-    double letterSpacing = -0.2,
-  }) {
-    return TextStyle(
-      fontFamily: 'Inter',
-      fontFamilyFallback: fontFallback,
-      fontFeatures: const [FontFeature.tabularFigures()],
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: color,
-      letterSpacing: letterSpacing,
-    );
-  }
+  final colorScheme = ColorScheme(
+    brightness: brightness,
+    primary: tokens.ink,
+    onPrimary: tokens.bg,
+    secondary: tokens.m1,
+    onSecondary: tokens.onMood,
+    error: tokens.safety,
+    onError: tokens.bg,
+    surface: tokens.surface,
+    onSurface: tokens.ink,
+    surfaceContainerLowest: tokens.bg,
+    surfaceContainerLow: tokens.surface,
+    surfaceContainer: tokens.surface2,
+    surfaceContainerHigh: tokens.surface3,
+    surfaceContainerHighest: tokens.surface3,
+    onSurfaceVariant: tokens.ink2,
+    outline: tokens.line,
+    outlineVariant: tokens.lineStrong,
+    shadow: isDark ? Colors.transparent : tokens.ink,
+    scrim: tokens.scrim,
+  );
 
-  /// Warm, thoughtful heading style built cleanly on bundled Inter.
-  static TextStyle serifStyle({
-    double fontSize = 20,
-    FontWeight fontWeight = FontWeight.w700,
-    Color? color,
-    double letterSpacing = -0.3,
-    double height = 1.25,
-  }) {
-    return TextStyle(
-      fontFamily: 'Inter',
-      fontFamilyFallback: fontFallback,
-      fontSize: fontSize,
-      fontWeight: fontWeight,
-      color: color,
-      letterSpacing: letterSpacing,
-      height: height,
-    );
-  }
+  return ThemeData(
+    useMaterial3: true,
+    brightness: brightness,
+    fontFamily: LabTheme.fontFamily,
+    scaffoldBackgroundColor: tokens.bg,
+    canvasColor: tokens.bg,
+    dividerColor: tokens.line,
+    splashFactory: NoSplash.splashFactory,
+    highlightColor: Colors.transparent,
+    splashColor: Colors.transparent,
+    hoverColor: tokens.surface3,
+    focusColor: tokens.focusRing,
+    colorScheme: colorScheme,
+    textTheme: textTheme,
+    extensions: [tokens],
+    appBarTheme: AppBarTheme(
+      backgroundColor: tokens.bg,
+      foregroundColor: tokens.ink,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      iconTheme: IconThemeData(color: tokens.ink),
+      titleTextStyle: textTheme.titleLarge?.copyWith(color: tokens.ink),
+    ),
+    cardTheme: CardThemeData(
+      color: tokens.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      margin: EdgeInsets.zero,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(tokens.cardRadius),
+        side: BorderSide(color: tokens.line, width: 1.0),
+      ),
+    ),
+    dividerTheme: DividerThemeData(color: tokens.line, thickness: 1, space: 1),
+    sliderTheme: SliderThemeData(
+      trackHeight: 14.0,
+      activeTrackColor: tokens.m1,
+      inactiveTrackColor: tokens.surface2,
+      thumbColor: MindTokens.pureWhiteConstant,
+      overlayColor: Colors.transparent,
+      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 13),
+      trackShape: const RoundedRectSliderTrackShape(),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return MindTokens.pureWhiteConstant;
+        }
+        return tokens.ink3;
+      }),
+      trackColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return Color.alphaBlend(
+            tokens.m1.withValues(alpha: tokens.switchOnTrackTint),
+            tokens.surface,
+          );
+        }
+        return isDark ? tokens.surface3 : tokens.surface2;
+      }),
+      trackOutlineColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.selected)) {
+          return tokens.m1;
+        }
+        return tokens.line;
+      }),
+      trackOutlineWidth: const WidgetStatePropertyAll(1.5),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: tokens.surface2,
+      hintStyle: textTheme.bodyMedium?.copyWith(color: tokens.ink3),
+      labelStyle: textTheme.bodyMedium?.copyWith(color: tokens.ink2),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(tokens.inputRadius),
+        borderSide: BorderSide(color: tokens.line, width: 1.0),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(tokens.inputRadius),
+        borderSide: BorderSide(color: tokens.line, width: 1.0),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(tokens.inputRadius),
+        borderSide: BorderSide(color: tokens.focusRing, width: 2.0),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(tokens.inputRadius),
+        borderSide: BorderSide(color: tokens.safety, width: 1.5),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(tokens.inputRadius),
+        borderSide: BorderSide(color: tokens.safety, width: 2.0),
+      ),
+    ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: tokens.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      barrierColor: tokens.scrim,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(tokens.cardRadius),
+        side: BorderSide(color: tokens.line, width: 1.0),
+      ),
+      titleTextStyle: textTheme.titleLarge?.copyWith(color: tokens.ink),
+      contentTextStyle: textTheme.bodyMedium?.copyWith(color: tokens.ink2),
+    ),
+    bottomSheetTheme: BottomSheetThemeData(
+      backgroundColor: tokens.surface,
+      modalBackgroundColor: tokens.surface,
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      modalElevation: 0,
+      modalBarrierColor: tokens.scrim,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(tokens.sheetRadius),
+        ),
+        side: BorderSide(color: tokens.line, width: 1.0),
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: tokens.ink,
+        foregroundColor: tokens.bg,
+        minimumSize: const Size(0, 54),
+        elevation: 0,
+        splashFactory: NoSplash.splashFactory,
+        textStyle: textTheme.labelLarge,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(tokens.buttonRadius),
+        ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: tokens.ink,
+        minimumSize: const Size(0, 48),
+        elevation: 0,
+        splashFactory: NoSplash.splashFactory,
+        side: BorderSide(color: tokens.line, width: 1.5),
+        textStyle: textTheme.labelLarge,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(tokens.buttonRadius),
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: tokens.ink,
+        minimumSize: const Size(48, 48),
+        splashFactory: NoSplash.splashFactory,
+        textStyle: textTheme.labelLarge,
+      ),
+    ),
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: tokens.ink,
+      contentTextStyle: textTheme.bodyMedium?.copyWith(
+        color: tokens.bg,
+        fontWeight: FontWeight.w600,
+      ),
+      behavior: SnackBarBehavior.floating,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(tokens.inputRadius),
+      ),
+    ),
+  );
+}
 
-  /// Secondary editorial body style with calm leading for reflective quotes and insights.
-  static TextStyle editorialSerif({
-    double fontSize = 14,
-    FontWeight fontWeight = FontWeight.w400,
-    Color? color,
+TextTheme _buildTextTheme(MindTokens tokens, {required bool isArabic}) {
+  double? track(double value) => isArabic ? 0.0 : value;
+
+  TextStyle style({
+    required double size,
+    required FontWeight weight,
+    required double height,
+    required Color color,
     double letterSpacing = 0.0,
-    double height = 1.5,
     FontStyle fontStyle = FontStyle.normal,
   }) {
     return TextStyle(
-      fontFamily: 'Inter',
+      fontFamily: LabTheme.fontFamily,
+      fontFamilyFallback: LabTheme.fontFallback,
+      fontSize: size,
+      fontWeight: weight,
+      height: height,
+      letterSpacing: track(letterSpacing),
+      fontStyle: fontStyle,
+      color: color,
+    );
+  }
+
+  return TextTheme(
+    displayLarge: style(
+      size: 31,
+      weight: FontWeight.w800,
+      height: 1.08,
+      letterSpacing: -0.9,
+      color: tokens.ink,
+    ),
+    headlineLarge: style(
+      size: 31,
+      weight: FontWeight.w800,
+      height: 1.12,
+      letterSpacing: -0.8,
+      color: tokens.ink,
+    ),
+    headlineMedium: style(
+      size: 21,
+      weight: FontWeight.w800,
+      height: 1.2,
+      letterSpacing: -0.5,
+      color: tokens.ink,
+    ),
+    headlineSmall: style(
+      size: 18,
+      weight: FontWeight.w700,
+      height: 1.25,
+      letterSpacing: -0.3,
+      color: tokens.ink,
+    ),
+    titleLarge: style(
+      size: 17,
+      weight: FontWeight.w700,
+      height: 1.25,
+      letterSpacing: -0.2,
+      color: tokens.ink,
+    ),
+    titleMedium: style(
+      size: 16,
+      weight: FontWeight.w700,
+      height: 1.3,
+      letterSpacing: -0.15,
+      color: tokens.ink,
+    ),
+    titleSmall: style(
+      size: 14,
+      weight: FontWeight.w600,
+      height: 1.35,
+      letterSpacing: 0.0,
+      color: tokens.ink2,
+    ),
+    bodyLarge: style(
+      size: 15.5,
+      weight: FontWeight.w400,
+      height: 1.55,
+      letterSpacing: 0.0,
+      color: tokens.ink,
+    ),
+    bodyMedium: style(
+      size: 15.0,
+      weight: FontWeight.w400,
+      height: 1.5,
+      letterSpacing: 0.0,
+      color: tokens.ink2,
+    ),
+    bodySmall: style(
+      size: 13.0,
+      weight: FontWeight.w400,
+      height: 1.45,
+      letterSpacing: 0.0,
+      color: tokens.ink3,
+    ),
+    labelLarge: style(
+      size: 15.5,
+      weight: FontWeight.w700,
+      height: 1.2,
+      letterSpacing: -0.1,
+      color: tokens.ink,
+    ),
+    labelMedium: style(
+      size: 13.5,
+      weight: FontWeight.w600,
+      height: 1.25,
+      letterSpacing: 0.0,
+      color: tokens.ink2,
+    ),
+    labelSmall: style(
+      size: 11.5,
+      weight: FontWeight.w700,
+      height: 1.2,
+      letterSpacing: 0.8,
+      color: tokens.ink3,
+    ),
+  );
+}
+
+/// Centralized typography & legacy theme entry point.
+abstract final class LabTheme {
+  static const String fontFamily = 'Inter';
+  static const List<String> fontFallback = ['Noto Sans Arabic'];
+
+  /// Light ("Dawn") Material ThemeData built strictly from [MindTokens.light].
+  @Deprecated('Removed in Step 5')
+  static ThemeData get daylightTheme => buildMindTheme(Brightness.light);
+
+  /// Dark ("Vercel") Material ThemeData built strictly from [MindTokens.dark].
+  @Deprecated('Removed in Step 5')
+  static ThemeData get nightTheme => buildMindTheme(Brightness.dark);
+
+  /// Display/editorial style helper preserved until Step 5 removes legacy calls.
+  @Deprecated('Removed in Step 5')
+  static TextStyle serifStyle({
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    double? height,
+    double? letterSpacing,
+    Color? color,
+  }) {
+    return TextStyle(
+      fontFamily: fontFamily,
       fontFamilyFallback: fontFallback,
       fontSize: fontSize,
       fontWeight: fontWeight,
-      color: color,
-      letterSpacing: letterSpacing,
-      height: height,
       fontStyle: fontStyle,
+      height: height,
+      letterSpacing: letterSpacing,
+      color: color,
     );
   }
 
-  /// Daylight Theme (Calm Linen & Botanical Sage)
-  static ThemeData get daylightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.light,
-      fontFamily: 'Inter',
-      fontFamilyFallback: fontFallback,
-      scaffoldBackgroundColor: LabColors.daylightBackground,
-      extensions: const [MindTokens.light],
-      colorScheme: const ColorScheme.light(
-        primary: LabColors.daylightAccent,
-        surface: LabColors.daylightSurface,
-        onSurface: LabColors.daylightTextPrimary,
-        outline: LabColors.daylightBorder,
-        surfaceContainerHighest: LabColors.daylightSurfaceSubtle,
-      ),
-      cardTheme: CardThemeData(
-        color: LabColors.daylightSurface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: LabColors.daylightBorder, width: 1),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: LabColors.daylightSurfaceSubtle,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        hintStyle: const TextStyle(color: LabColors.daylightTextSecondary, fontSize: 13),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: LabColors.daylightBorder, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: LabColors.daylightBorder, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: LabColors.daylightAccent, width: 1.5),
-        ),
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: LabColors.daylightSurface,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-      ),
-      dialogTheme: DialogThemeData(
-        backgroundColor: LabColors.daylightSurface,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: LabColors.daylightBorder, width: 1),
-        ),
-      ),
-      dividerTheme: const DividerThemeData(
-        color: LabColors.daylightBorder,
-        thickness: 1,
-        space: 1,
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: LabColors.forestGreen,
-          foregroundColor: LabColors.daylightOnAccent,
-          minimumSize: const Size(48, 48), // Accessible touch target
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          elevation: 0,
-          textStyle: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-            letterSpacing: -0.2,
-          ),
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: LabColors.daylightTextPrimary,
-          minimumSize: const Size(48, 48),
-          side: const BorderSide(color: LabColors.daylightBorder, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          textStyle: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-        ),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: LabColors.daylightBackground,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontFamily: 'Inter',
-          color: LabColors.daylightTextPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.3,
-        ),
-      ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontFamily: 'Inter',
-          color: LabColors.daylightTextPrimary,
-          fontSize: 22,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.5,
-        ),
-        bodyMedium: TextStyle(
-          fontFamily: 'Inter',
-          color: LabColors.daylightTextSecondary,
-          fontSize: 14,
-          height: 1.5,
-        ),
-      ),
+  /// Alias preserved until Step 5 removes legacy calls.
+  @Deprecated('Removed in Step 5')
+  static TextStyle editorialSerif({
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    double? height,
+    double? letterSpacing,
+    Color? color,
+  }) {
+    return serifStyle(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      fontStyle: fontStyle,
+      height: height,
+      letterSpacing: letterSpacing,
+      color: color,
     );
   }
 
-  /// Night Theme (Warm Smoked Charcoal — Non-Gloomy Evening Companion)
-  static ThemeData get nightTheme {
-    return ThemeData(
-      useMaterial3: true,
-      brightness: Brightness.dark,
-      fontFamily: 'Inter',
-      fontFamilyFallback: fontFallback,
-      scaffoldBackgroundColor: LabColors.nightBackground,
-      extensions: const [MindTokens.dark],
-      colorScheme: const ColorScheme.dark(
-        primary: LabColors.nightAccent,
-        onPrimary: LabColors.nightOnAccent,
-        surface: LabColors.nightSurface,
-        onSurface: LabColors.nightTextPrimary,
-        outline: LabColors.nightBorder,
-        surfaceContainerHighest: LabColors.nightSurfaceSubtle,
-      ),
-      cardTheme: CardThemeData(
-        color: LabColors.nightSurface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: LabColors.nightBorder, width: 1),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: LabColors.nightSurfaceSubtle,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        hintStyle: const TextStyle(color: LabColors.nightTextSecondary, fontSize: 13),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: LabColors.nightBorder, width: 1),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: LabColors.nightBorder, width: 1),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: LabColors.nightAccent, width: 1.5),
-        ),
-      ),
-      bottomSheetTheme: const BottomSheetThemeData(
-        backgroundColor: LabColors.nightSurface,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-      ),
-      dialogTheme: DialogThemeData(
-        backgroundColor: LabColors.nightSurface,
-        surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: LabColors.nightBorder, width: 1),
-        ),
-      ),
-      dividerTheme: const DividerThemeData(
-        color: LabColors.nightBorderSubtle,
-        thickness: 1,
-        space: 1,
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: LabColors.nightAccent,
-          foregroundColor: LabColors.nightOnAccent,
-          minimumSize: const Size(48, 48), // Accessible touch target
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          elevation: 0,
-          textStyle: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w700,
-            fontSize: 13,
-            letterSpacing: -0.2,
-          ),
-        ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: LabColors.nightTextPrimary,
-          minimumSize: const Size(48, 48),
-          side: const BorderSide(color: LabColors.nightBorder, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-          textStyle: const TextStyle(
-            fontFamily: 'Inter',
-            fontWeight: FontWeight.w600,
-            fontSize: 13,
-          ),
-        ),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: LabColors.nightBackground,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
-          fontFamily: 'Inter',
-          color: LabColors.nightTextPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.3,
-        ),
-      ),
-      textTheme: const TextTheme(
-        displayLarge: TextStyle(
-          fontFamily: 'Inter',
-          color: LabColors.nightTextPrimary,
-          fontSize: 22,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -0.5,
-        ),
-        bodyMedium: TextStyle(
-          fontFamily: 'Inter',
-          color: LabColors.nightTextSecondary,
-          fontSize: 14,
-          height: 1.5,
-        ),
-      ),
+  /// Numeric/caption style helper preserved until Step 5 removes legacy calls.
+  @Deprecated('Removed in Step 5')
+  static TextStyle monoStyle({
+    double? fontSize,
+    FontWeight? fontWeight,
+    FontStyle? fontStyle,
+    double? height,
+    double? letterSpacing,
+    Color? color,
+  }) {
+    return serifStyle(
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      fontStyle: fontStyle,
+      height: height,
+      letterSpacing: letterSpacing,
+      color: color,
     );
   }
 }

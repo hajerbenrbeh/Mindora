@@ -2,41 +2,87 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-/// Notifier controlling dynamic Light, Dark, and System theme modes.
+import 'mind_tokens.dart';
+
+/// Preloaded [ThemeMode] override populated before `runApp` to prevent startup flash.
+final initialThemeModeProvider = Provider<ThemeMode>((ref) => ThemeMode.system);
+
+/// Notifier controlling dynamic Light ("Dawn"), Dark ("Vercel"), and System theme modes.
+///
+/// Defaults to [ThemeMode.system] and persists selection in [SharedPreferences].
 class ThemeController extends Notifier<ThemeMode> {
-  static const String _keyTheme = 'mind_forensics_theme_mode';
+  static const String keyTheme = 'mind_forensics_theme_mode';
+  bool _hasExplicitSelection = false;
+
+  /// Reads persisted [ThemeMode] prior to `runApp()` so the first rendered frame
+  /// matches the user's choice with zero theme flash.
+  static Future<ThemeMode> loadInitialThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return parseThemeMode(prefs.getString(keyTheme));
+  }
+
+  static ThemeMode parseThemeMode(String? saved) {
+    return switch (saved) {
+      'light' => ThemeMode.light,
+      'dark' => ThemeMode.dark,
+      'system' => ThemeMode.system,
+      _ => ThemeMode.system,
+    };
+  }
+
+  static String serializeThemeMode(ThemeMode mode) {
+    return switch (mode) {
+      ThemeMode.light => 'light',
+      ThemeMode.dark => 'dark',
+      ThemeMode.system => 'system',
+    };
+  }
 
   @override
   ThemeMode build() {
+    _hasExplicitSelection = false;
+    final initial = ref.read(initialThemeModeProvider);
     _loadSavedTheme();
-    return ThemeMode.light; // Default to soft Daylight Lab
+    return initial;
   }
 
   Future<void> _loadSavedTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final saved = prefs.getString(_keyTheme);
-    if (saved == 'dark') {
-      state = ThemeMode.dark;
-    } else if (saved == 'light') {
-      state = ThemeMode.light;
-    } else if (saved == 'system') {
-      state = ThemeMode.system;
+    final saved = prefs.getString(keyTheme);
+    if (_hasExplicitSelection || !ref.mounted) return;
+    if (saved != null) {
+      state = parseThemeMode(saved);
     }
   }
 
   Future<void> setTheme(ThemeMode mode) async {
+    _hasExplicitSelection = true;
     state = mode;
     final prefs = await SharedPreferences.getInstance();
-    if (mode == ThemeMode.dark) {
-      await prefs.setString(_keyTheme, 'dark');
-    } else if (mode == ThemeMode.light) {
-      await prefs.setString(_keyTheme, 'light');
-    } else {
-      await prefs.setString(_keyTheme, 'system');
-    }
+    await prefs.setString(keyTheme, serializeThemeMode(mode));
   }
 }
 
-final themeControllerProvider =
-    NotifierProvider<ThemeController, ThemeMode>(ThemeController.new);
+final themeControllerProvider = NotifierProvider<ThemeController, ThemeMode>(
+  ThemeController.new,
+);
 
+/// Active mood driving dynamic `m1` / `m2` accent tokens across the app.
+class ActiveMoodController extends Notifier<AppMood> {
+  @override
+  AppMood build() => AppMood.calm;
+
+  void setMood(AppMood mood) {
+    if (state != mood) {
+      state = mood;
+    }
+  }
+
+  void setMoodByKey(String? key) {
+    setMood(AppMood.fromKey(key));
+  }
+}
+
+final activeMoodProvider = NotifierProvider<ActiveMoodController, AppMood>(
+  ActiveMoodController.new,
+);
