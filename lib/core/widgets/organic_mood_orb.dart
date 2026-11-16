@@ -190,35 +190,49 @@ class _OrbShapeSpec {
 
 class _OrganicMoodOrbState extends State<OrganicMoodOrb>
     with TickerProviderStateMixin {
-  late final AnimationController _morphController;
-  final ValueNotifier<double> _flowPhaseNotifier = ValueNotifier<double>(0.0);
-  late final Listenable _paintListenable;
+  AnimationController? _morphController;
+  ValueNotifier<double>? _flowPhaseNotifier;
+  Listenable? _paintListenable;
   Ticker? _flowTicker;
   Duration _lastElapsed = Duration.zero;
   double _tapScale = 1.0;
 
-  late _OrbShapeSpec _fromSpec;
-  late _OrbShapeSpec _toSpec;
+  _OrbShapeSpec? _fromSpec;
+  _OrbShapeSpec? _toSpec;
 
-  @override
-  void initState() {
-    super.initState();
-    _toSpec = _OrbShapeSpec.forState(
+  void _ensureInitialized() {
+    _toSpec ??= _OrbShapeSpec.forState(
       moodKey: widget.moodKey,
       intensity: widget.intensity,
       color: widget.color,
     );
-    _fromSpec = _toSpec;
-    _morphController = AnimationController(
+    _fromSpec ??= _toSpec;
+    _flowPhaseNotifier ??= ValueNotifier<double>(0.0);
+    _morphController ??= AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 520),
     )..value = 1.0;
-    _paintListenable = Listenable.merge([_morphController, _flowPhaseNotifier]);
+    _paintListenable ??=
+        Listenable.merge([_morphController!, _flowPhaseNotifier!]);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _ensureInitialized();
+  }
+
+  @override
+  void reassemble() {
+    super.reassemble();
+    _ensureInitialized();
+    _syncContinuousTicker();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _ensureInitialized();
     _syncContinuousTicker();
   }
 
@@ -242,6 +256,7 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
   }
 
   void _onTick(Duration elapsed) {
+    _ensureInitialized();
     if (_lastElapsed == Duration.zero) {
       _lastElapsed = elapsed;
       return;
@@ -250,23 +265,24 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
         ((elapsed - _lastElapsed).inMicroseconds / 1000000.0).clamp(0.0, 0.05);
     _lastElapsed = elapsed;
 
-    final morphT = Curves.easeOutCubic.transform(_morphController.value);
-    final activeSpec = _OrbShapeSpec.lerp(_fromSpec, _toSpec, morphT);
+    final morphT = Curves.easeOutCubic.transform(_morphController!.value);
+    final activeSpec = _OrbShapeSpec.lerp(_fromSpec!, _toSpec!, morphT);
 
     // Monotonic velocity integration avoids widget rebuilds and drag stutters.
-    _flowPhaseNotifier.value =
-        (_flowPhaseNotifier.value + dtSec * activeSpec.speedFactor) %
+    _flowPhaseNotifier!.value =
+        (_flowPhaseNotifier!.value + dtSec * activeSpec.speedFactor) %
             (math.pi * 200.0);
   }
 
   @override
   void didUpdateWidget(covariant OrganicMoodOrb oldWidget) {
     super.didUpdateWidget(oldWidget);
+    _ensureInitialized();
     if (oldWidget.moodKey != widget.moodKey ||
         oldWidget.intensity != widget.intensity ||
         oldWidget.color != widget.color) {
-      final currentT = Curves.easeOutCubic.transform(_morphController.value);
-      _fromSpec = _OrbShapeSpec.lerp(_fromSpec, _toSpec, currentT);
+      final currentT = Curves.easeOutCubic.transform(_morphController!.value);
+      _fromSpec = _OrbShapeSpec.lerp(_fromSpec!, _toSpec!, currentT);
       _toSpec = _OrbShapeSpec.forState(
         moodKey: widget.moodKey,
         intensity: widget.intensity,
@@ -274,9 +290,9 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
       );
       final reduceMotion = MediaQuery.disableAnimationsOf(context);
       if (reduceMotion) {
-        _morphController.value = 1.0;
+        _morphController!.value = 1.0;
       } else {
-        _morphController
+        _morphController!
           ..value = 0.0
           ..forward();
       }
@@ -287,8 +303,8 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
   @override
   void dispose() {
     _flowTicker?.dispose();
-    _flowPhaseNotifier.dispose();
-    _morphController.dispose();
+    _flowPhaseNotifier?.dispose();
+    _morphController?.dispose();
     super.dispose();
   }
 
@@ -307,6 +323,7 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
 
   @override
   Widget build(BuildContext context) {
+    _ensureInitialized();
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final isTest =
         WidgetsBinding.instance.runtimeType.toString().contains('Test');
@@ -317,14 +334,15 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
           reduceMotion ? Duration.zero : const Duration(milliseconds: 150),
       curve: Curves.easeOutCubic,
       child: AnimatedBuilder(
-        animation: _paintListenable,
+        animation: _paintListenable!,
         builder: (context, _) {
-          final morphT = Curves.easeOutCubic.transform(_morphController.value);
-          final spec = _OrbShapeSpec.lerp(_fromSpec, _toSpec, morphT);
+          final morphT =
+              Curves.easeOutCubic.transform(_morphController!.value);
+          final spec = _OrbShapeSpec.lerp(_fromSpec!, _toSpec!, morphT);
           // Seed deterministic visual asymmetry in headless screenshots based on intensity.
           final effectivePhase = (isTest || reduceMotion)
               ? spec.intensityNorm * 1.4
-              : _flowPhaseNotifier.value;
+              : _flowPhaseNotifier!.value;
           return CustomPaint(
             size: Size.square(widget.size),
             painter: _OrganicMoodOrbPainter(
