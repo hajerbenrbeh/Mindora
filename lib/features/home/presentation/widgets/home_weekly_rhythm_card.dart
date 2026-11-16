@@ -1,0 +1,231 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../../../app/localization/app_strings.dart';
+import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
+import '../../../../core/widgets/mind_pressable.dart';
+import '../../../../core/widgets/mood_emblem.dart';
+import '../../../mind_trace/domain/mind_trace_model.dart';
+
+/// Non-punitive 7-day observation continuity strip rendered on [HomeScreen].
+///
+/// Maps the trailing 7 calendar days (ending today) against real [MindTraceModel]
+/// records so users can glance at their rhythm and jump directly to a logged day
+/// without streak guilt.
+class HomeWeeklyRhythmCard extends StatelessWidget {
+  const HomeWeeklyRhythmCard({
+    super.key,
+    required this.traces,
+    required this.tokens,
+    required this.strings,
+    required this.isDark,
+    required this.getMoodColor,
+    required this.getMoodLabel,
+    this.onDayTap,
+  });
+
+  final List<MindTraceModel> traces;
+  final MindTokens tokens;
+  final AppStrings strings;
+  final bool isDark;
+  final Color Function(String key) getMoodColor;
+  final String Function(String key, AppStrings strings) getMoodLabel;
+  final void Function(DateTime day, MindTraceModel? trace)? onDayTap;
+
+  String _dateKeyFor(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
+  @override
+  Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final trailingDays = List<DateTime>.generate(
+      7,
+      (i) => today.subtract(Duration(days: 6 - i)),
+    );
+
+    final byDateKey = <String, MindTraceModel>{};
+    for (final t in traces) {
+      byDateKey.putIfAbsent(t.dateKey, () => t);
+    }
+
+    int observedCount = 0;
+    for (final day in trailingDays) {
+      if (byDateKey.containsKey(_dateKeyFor(day))) {
+        observedCount++;
+      }
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: tokens.surface,
+        borderRadius: BorderRadius.circular(tokens.cardRadius),
+        border: Border.all(color: tokens.border, width: 1.0),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.025),
+                  blurRadius: 14,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  strings.thisWeekTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: tokens.textPrimary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: tokens.surfaceSecondary,
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
+                  border: Border.all(color: tokens.border),
+                ),
+                child: Text(
+                  strings.observedDaysCount(observedCount),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                    color: observedCount > 0
+                        ? tokens.textPrimary
+                        : tokens.textSecondary,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: List.generate(trailingDays.length, (i) {
+              final day = trailingDays[i];
+              final isToday = i == 6;
+              final trace = byDateKey[_dateKeyFor(day)];
+              final weekdayChar = strings.weekdayInitial(day.weekday);
+
+              final Color nodeBg;
+              final Color nodeBorder;
+              final double nodeBorderWidth;
+              if (trace != null) {
+                final moodColor = getMoodColor(trace.overallMood);
+                nodeBg = LabColors.moodSoftFor(trace.overallMood, isDark: isDark);
+                nodeBorder = isToday ? tokens.textPrimary : moodColor;
+                nodeBorderWidth = isToday ? 1.8 : 1.3;
+              } else {
+                nodeBg = tokens.surfaceSecondary;
+                nodeBorder = isToday ? tokens.accent : tokens.border;
+                nodeBorderWidth = isToday ? 1.5 : 1.0;
+              }
+
+              final semanticLabel = trace != null
+                  ? '${strings.weekdayName(day.weekday)}: ${getMoodLabel(trace.overallMood, strings)} (${trace.moodIntensity}/10)'
+                  : strings.weekdayName(day.weekday);
+
+              return Expanded(
+                child: Semantics(
+                  button: onDayTap != null,
+                  label: semanticLabel,
+                  child: MindPressable(
+                    enabled: onDayTap != null,
+                    borderRadius: BorderRadius.circular(14),
+                    onPressed: onDayTap != null
+                        ? () {
+                            HapticFeedback.selectionClick();
+                            onDayTap!(day, trace);
+                          }
+                        : null,
+                    child: Container(
+                      constraints: const BoxConstraints(minHeight: 54),
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 34,
+                            height: 34,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: nodeBg,
+                              border: Border.all(
+                                color: nodeBorder,
+                                width: nodeBorderWidth,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: trace != null
+                                ? MoodEmblem(
+                                    moodKey: trace.overallMood,
+                                    size: 16,
+                                    color: getMoodColor(trace.overallMood),
+                                  )
+                                : Container(
+                                    width: 4,
+                                    height: 4,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: isToday
+                                          ? tokens.accent
+                                          : tokens.textTertiary
+                                              .withValues(alpha: 0.45),
+                                    ),
+                                  ),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            weekdayChar,
+                            maxLines: 1,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 11,
+                              fontWeight:
+                                  isToday ? FontWeight.w700 : FontWeight.w500,
+                              color: isToday
+                                  ? tokens.textPrimary
+                                  : tokens.textTertiary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            strings.thisWeekSupportiveCaption,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12,
+              height: 1.35,
+              color: tokens.textSecondary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

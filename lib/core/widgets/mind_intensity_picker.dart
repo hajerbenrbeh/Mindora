@@ -194,63 +194,92 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                         updateFromDx(details.localPosition.dx),
                     child: SizedBox(
                       height: 48,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          for (int level = 1; level <= 10; level++)
-                            Expanded(
-                              key: ValueKey<String>('intensity-bar-$level'),
-                              child: Center(
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    AnimatedContainer(
+                          // Subtle continuous slider track unifying all 10 levels
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(2),
+                              child: SizedBox(
+                                height: 3,
+                                child: FractionallySizedBox(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  widthFactor: 1.0,
+                                  child: Container(
+                                    color: tokens.border.withValues(alpha: 0.75),
+                                    child: FractionallySizedBox(
+                                      alignment: AlignmentDirectional.centerStart,
+                                      widthFactor:
+                                          ((selected - 1) / 9.0).clamp(0.04, 1.0),
+                                      child: Container(
+                                        color: activeColor.withValues(
+                                          alpha: isDark ? 0.55 : 0.45,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              for (int level = 1; level <= 10; level++)
+                                Expanded(
+                                  key: ValueKey<String>('intensity-bar-$level'),
+                                  child: Center(
+                                    child: AnimatedContainer(
                                       duration: animDuration,
                                       curve: Curves.easeOutCubic,
-                                      width: level == selected ? 6.5 : 4.5,
-                                      height: (10.0 + (level - 1) * 1.45) +
-                                          (level == selected ? 4.5 : 0.0),
+                                      width: level == selected ? 14.0 : 4.5,
+                                      height: level == selected
+                                          ? 26.0
+                                          : (10.0 + (level - 1) * 1.35),
                                       decoration: BoxDecoration(
                                         color: level == selected
                                             ? activeColor
                                             : (level < selected
                                                 ? activeColor.withValues(
                                                     alpha: isDark
-                                                        ? 0.50 +
-                                                            (level / 10) * 0.28
-                                                        : 0.40 +
-                                                            (level / 10) * 0.36,
+                                                        ? 0.65 +
+                                                            (level / 10) * 0.25
+                                                        : 0.52 +
+                                                            (level / 10) * 0.34,
                                                   )
                                                 : tokens.textTertiary.withValues(
                                                     alpha: 0.42,
                                                   )),
-                                        borderRadius: BorderRadius.circular(3.5),
-                                        boxShadow: (level == selected && isDark)
+                                        borderRadius: BorderRadius.circular(
+                                          level == selected ? 8.0 : 3.5,
+                                        ),
+                                        border: level == selected
+                                            ? Border.all(
+                                                color: isDark
+                                                    ? Colors.white
+                                                        .withValues(alpha: 0.85)
+                                                    : Colors.white,
+                                                width: 2.0,
+                                              )
+                                            : null,
+                                        boxShadow: level == selected
                                             ? [
                                                 BoxShadow(
                                                   color: activeColor.withValues(
-                                                    alpha: 0.36,
+                                                    alpha: isDark ? 0.42 : 0.28,
                                                   ),
-                                                  blurRadius: 8,
+                                                  blurRadius: isDark ? 10 : 6,
                                                 ),
                                               ]
                                             : null,
                                       ),
                                     ),
-                                    AnimatedContainer(
-                                      duration: animDuration,
-                                      margin: const EdgeInsets.only(top: 3),
-                                      width: level == selected ? 4.0 : 0.0,
-                                      height: level == selected ? 4.0 : 0.0,
-                                      decoration: BoxDecoration(
-                                        color: activeColor,
-                                        shape: BoxShape.circle,
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
-                              ),
-                            ),
+                            ],
+                          ),
                         ],
                       ),
                     ),

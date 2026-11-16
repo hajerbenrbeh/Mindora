@@ -9,16 +9,19 @@ import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_intensity_picker.dart';
 import '../../../../core/widgets/mind_pressable.dart';
 import '../../../../core/widgets/mood_emblem.dart';
+import '../../../../core/widgets/organic_mood_orb.dart';
 import '../../../mind_trace/domain/mind_trace_model.dart';
+import '../../../support/presentation/contextual_support_sheet.dart';
 
 /// Daily Check-In Sanctuary card rendered inside [HomeScreen].
 ///
 /// Options-first with zero compulsory blank essays:
-/// - Before today is logged (or when actively editing), renders bespoke vector
-///   mood pills, a unified 10-step waveform intensity control, optional single
-///   line note input, and primary check-in action.
-/// - Once recorded today, collapses calmly into a serene 1-line check-in
-///   summary with `VIEW` and `Edit` pills so Home breathes cleanly.
+/// - Interactive Check-In mode features a living [OrganicMoodOrb], a 3+2
+///   tactile vector mood grid, unified 10-step intensity slider, optional single-line
+///   note, and a single crisp primary action.
+/// - Once recorded today, settles into an empathetic Sanctuary loop showing the
+///   living orb, today's mood summary, and immediate 1-tap `Breathe` / `Talk about it`
+///   next steps alongside `Edit` and `VIEW`.
 class HomeDailyCheckInCard extends StatefulWidget {
   const HomeDailyCheckInCard({
     super.key,
@@ -36,6 +39,8 @@ class HomeDailyCheckInCard extends StatefulWidget {
     required this.onSave,
     required this.getMoodLabel,
     required this.getMoodColor,
+    this.onBreatheTap,
+    this.onTalkAboutIt,
   });
 
   final MindTokens tokens;
@@ -52,6 +57,8 @@ class HomeDailyCheckInCard extends StatefulWidget {
   final VoidCallback onSave;
   final String Function(String key, AppStrings strings) getMoodLabel;
   final Color Function(String key) getMoodColor;
+  final VoidCallback? onBreatheTap;
+  final ValueChanged<MindTraceModel>? onTalkAboutIt;
 
   @override
   State<HomeDailyCheckInCard> createState() => _HomeDailyCheckInCardState();
@@ -63,7 +70,6 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
   @override
   void didUpdateWidget(covariant HomeDailyCheckInCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Automatically settle back to compact summary after logging a new trace.
     if (oldWidget.todayTrace == null && widget.todayTrace != null) {
       _isEditing = false;
     }
@@ -81,12 +87,29 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
         ? 'عرض'
         : (strings.isFrench ? 'VOIR' : 'VIEW');
 
+    final showRecordedSummary = hasLoggedToday && !_isEditing;
+    final summaryMoodColor = showRecordedSummary
+        ? widget.getMoodColor(todayTrace.overallMood)
+        : tokens.border;
+    final summaryMoodSoft = showRecordedSummary
+        ? LabColors.moodSoftFor(todayTrace.overallMood, isDark: isDark)
+        : tokens.surface;
+    final cardSurface = showRecordedSummary
+        ? Color.alphaBlend(
+            summaryMoodSoft.withValues(alpha: isDark ? 0.36 : 0.42),
+            tokens.surface,
+          )
+        : tokens.surface;
+    final cardBorder = showRecordedSummary
+        ? summaryMoodColor.withValues(alpha: isDark ? 0.38 : 0.32)
+        : tokens.border;
+
     final cardBody = Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: tokens.surface,
+        color: cardSurface,
         borderRadius: BorderRadius.circular(tokens.cardRadius),
-        border: Border.all(color: tokens.border, width: 1.0),
+        border: Border.all(color: cardBorder, width: 1.0),
         boxShadow: isDark
             ? null
             : [
@@ -97,7 +120,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                 ),
               ],
       ),
-      child: hasLoggedToday && !_isEditing
+      child: showRecordedSummary
           ? _buildRecordedSummaryView(
               context: context,
               todayTrace: todayTrace,
@@ -149,20 +172,12 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: moodSoft,
-                shape: BoxShape.circle,
-                border: Border.all(color: moodColor.withValues(alpha: 0.36)),
-              ),
-              alignment: Alignment.center,
-              child: MoodEmblem(
-                moodKey: moodKey,
-                size: 22,
-                color: moodColor,
-              ),
+            OrganicMoodOrb(
+              moodKey: moodKey,
+              intensity: todayTrace.moodIntensity,
+              color: moodColor,
+              size: 64,
+              isDark: isDark,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -174,38 +189,54 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                     children: [
                       Icon(
                         Icons.check_circle_rounded,
-                        size: 14,
-                        color: tokens.accent,
+                        size: 13,
+                        color: moodColor,
                       ),
                       const SizedBox(width: 5),
-                      Expanded(
+                      Flexible(
                         child: Text(
-                          '${strings.todayCheckInRecorded}: $moodLabel (${todayTrace.moodIntensity}/10)',
-                          maxLines: 2,
+                          strings.loggedTodayEyebrow,
+                          maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Inter',
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: strings.isArabic ? 0 : 0.7,
                             color: tokens.textSecondary,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 3),
+                  Text(
+                    '$moodLabel (${todayTrace.moodIntensity}/10)',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                      color: tokens.textPrimary,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                  const SizedBox(height: 5),
                   Wrap(
                     spacing: 8,
-                    runSpacing: 6,
+                    runSpacing: 4,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 4,
+                          horizontal: 9,
+                          vertical: 3,
                         ),
                         decoration: BoxDecoration(
                           color: moodSoft,
-                          borderRadius: BorderRadius.circular(tokens.chipRadius),
+                          borderRadius:
+                              BorderRadius.circular(tokens.chipRadius),
                           border: Border.all(
                             color: moodColor.withValues(alpha: 0.35),
                           ),
@@ -213,19 +244,20 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                         child: Text(
                           moodLabel,
                           style: TextStyle(
-                            fontSize: 12.5,
+                            fontFamily: 'Inter',
+                            fontSize: 11.5,
                             fontWeight: FontWeight.w700,
-                            color: tokens.textPrimary,
+                            color: moodColor,
                           ),
                         ),
                       ),
                       Text(
-                        '${todayTrace.moodIntensity}/10 · ${strings.intensityLevelWord(todayTrace.moodIntensity)}',
+                        strings.intensityLevelWord(todayTrace.moodIntensity),
                         style: TextStyle(
+                          fontFamily: 'Inter',
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
                           color: tokens.textSecondary,
-                          fontFeatures: const [FontFeature.tabularFigures()],
                         ),
                       ),
                     ],
@@ -236,18 +268,20 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           ],
         ),
         if (note.isNotEmpty) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: tokens.surfaceSecondary,
+              color: tokens.surface.withValues(alpha: isDark ? 0.65 : 0.85),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: tokens.border),
             ),
             child: Text(
               note,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
+                fontFamily: 'Inter',
                 fontSize: 12.5,
                 height: 1.35,
                 color: tokens.textSecondary,
@@ -255,31 +289,65 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
             ),
           ),
         ],
+        const SizedBox(height: 14),
+        Divider(height: 1, color: tokens.border),
         const SizedBox(height: 12),
+        Text(
+          strings.aGentleNextStepHeader,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 11,
+            fontWeight: FontWeight.w700,
+            letterSpacing: strings.isArabic ? 0 : 0.7,
+            color: tokens.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 8),
         Row(
           children: [
-            MindPressable(
-              onPressed: () => context.go('${AppRouter.track}?tab=1'),
-              semanticLabel: viewLabel,
-              borderRadius: BorderRadius.circular(tokens.chipRadius),
-              child: Container(
-                constraints: const BoxConstraints(minWidth: 72, minHeight: 44),
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: tokens.accentSoft,
-                  borderRadius: BorderRadius.circular(tokens.chipRadius),
-                  border: Border.all(
-                    color: tokens.accent.withValues(alpha: 0.25),
+            Expanded(
+              child: MindPressable(
+                onPressed: widget.onBreatheTap ??
+                    () => ContextualSupportSheet.show(
+                          context,
+                          initialChoice: SupportChoice.settle,
+                        ),
+                semanticLabel: strings.actionBreatheLabel,
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: tokens.surface.withValues(alpha: isDark ? 0.7 : 0.9),
+                    borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                    border: Border.all(color: tokens.border),
                   ),
-                ),
-                child: Text(
-                  viewLabel,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    fontWeight: FontWeight.w700,
-                    color: tokens.accent,
-                    letterSpacing: strings.isArabic ? 0 : 0.4,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.air_rounded,
+                        size: 16,
+                        color: tokens.textPrimary,
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          strings.actionBreatheLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: tokens.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -287,25 +355,72 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
             const SizedBox(width: 10),
             Expanded(
               child: MindPressable(
+                onPressed: () {
+                  if (widget.onTalkAboutIt != null) {
+                    widget.onTalkAboutIt!(todayTrace);
+                  } else {
+                    context.go(AppRouter.companion);
+                  }
+                },
+                semanticLabel: strings.actionTalkAboutItLabel,
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                child: Container(
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: tokens.surface.withValues(alpha: isDark ? 0.7 : 0.9),
+                    borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                    border: Border.all(color: tokens.border),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.auto_awesome_outlined,
+                        size: 16,
+                        color: moodColor,
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          strings.actionTalkAboutItLabel,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: tokens.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              child: MindPressable(
                 onPressed: () => setState(() => _isEditing = true),
                 semanticLabel: strings.updateCheckInButton,
                 borderRadius: BorderRadius.circular(tokens.chipRadius),
                 child: Container(
-                  constraints: const BoxConstraints(minHeight: 44),
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: tokens.surfaceSecondary,
-                    borderRadius: BorderRadius.circular(tokens.chipRadius),
-                    border: Border.all(color: tokens.border),
-                  ),
+                  constraints: const BoxConstraints(minHeight: 48),
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.edit_outlined,
-                        size: 14,
-                        color: tokens.textPrimary,
+                        size: 15,
+                        color: tokens.textSecondary,
                       ),
                       const SizedBox(width: 6),
                       Flexible(
@@ -314,14 +429,50 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
+                            fontFamily: 'Inter',
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
                             color: tokens.textPrimary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: moodColor,
                           ),
                         ),
                       ),
                     ],
                   ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            MindPressable(
+              onPressed: () => context.go('${AppRouter.track}?tab=1'),
+              semanticLabel: viewLabel,
+              borderRadius: BorderRadius.circular(tokens.chipRadius),
+              child: Container(
+                constraints: const BoxConstraints(minHeight: 48, minWidth: 56),
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      viewLabel,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: tokens.textPrimary,
+                        letterSpacing: strings.isArabic ? 0 : 0.4,
+                        decoration: TextDecoration.underline,
+                        decorationColor: moodColor,
+                      ),
+                    ),
+                    const SizedBox(width: 3),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 16,
+                      color: tokens.textSecondary,
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -348,7 +499,9 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
     final activeMoodSoft = LabColors.moodSoftFor(activeMood, isDark: isDark);
     final roundedIntensity = widget.moodIntensity.round().clamp(1, 10);
     final previousTrace = widget.traces.firstOrNull;
-    final borderRadius = BorderRadius.circular(tokens.chipRadius);
+    final rowOneCount =
+        widget.moodOptions.length >= 3 ? 3 : widget.moodOptions.length;
+    final hasSecondRow = widget.moodOptions.length > 3;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -360,7 +513,8 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                 child: Text(
                   strings.editEntryTitle,
                   style: TextStyle(
-                    fontSize: 13,
+                    fontFamily: 'Inter',
+                    fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: tokens.textPrimary,
                   ),
@@ -381,109 +535,136 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
               ),
             ],
           ),
-          const SizedBox(height: 10),
-        ] else if (!hasLoggedToday && previousTrace != null) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: tokens.surfaceSecondary,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: tokens.border),
-            ),
-            child: Row(
-              children: [
-                MoodEmblem(
-                  moodKey: previousTrace.overallMood,
-                  size: 15,
-                  color: widget.getMoodColor(previousTrace.overallMood),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    '${strings.lastMoodLabel}: ${widget.getMoodLabel(previousTrace.overallMood, strings)} (${previousTrace.moodIntensity}/10)',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: tokens.textSecondary,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
+          const SizedBox(height: 8),
+        ] else ...[
+          Text(
+            strings.homeQuestion,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              height: 1.28,
+              color: tokens.textPrimary,
+              letterSpacing: -0.2,
             ),
           ),
-          const SizedBox(height: 14),
-        ],
-
-        // Options-First Emotion Choice Pills with bespoke vector MoodEmblem
-        Wrap(
-          spacing: 8,
-          runSpacing: 10,
-          children: List.generate(widget.moodOptions.length, (index) {
-            final option = widget.moodOptions[index];
-            final isSelected = index == safeIdx;
-            final label = widget.getMoodLabel(option.key, strings);
-            final moodColor = widget.getMoodColor(option.key);
-            final moodSoft = LabColors.moodSoftFor(option.key, isDark: isDark);
-
-            return Semantics(
-              button: true,
-              selected: isSelected,
-              label: label,
-              child: MindPressable(
-                onPressed: () => widget.onMoodSelected(index),
-                borderRadius: borderRadius,
-                child: AnimatedContainer(
-                  duration: reduceMotion
-                      ? Duration.zero
-                      : const Duration(milliseconds: 160),
-                  curve: Curves.easeOutCubic,
-                  constraints: const BoxConstraints(minHeight: 48),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isSelected ? moodSoft : tokens.surfaceSecondary,
-                    borderRadius: borderRadius,
-                    border: Border.all(
-                      color: isSelected ? moodColor : tokens.border,
-                      width: 1.4,
+          if (!hasLoggedToday && previousTrace != null) ...[
+            const SizedBox(height: 6),
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: tokens.surfaceSecondary,
+                  borderRadius: BorderRadius.circular(tokens.chipRadius),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    MoodEmblem(
+                      moodKey: previousTrace.overallMood,
+                      size: 13,
+                      color: widget.getMoodColor(previousTrace.overallMood),
                     ),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      MoodEmblem(
-                        moodKey: option.key,
-                        size: 16,
-                        color: isSelected ? moodColor : tokens.textSecondary,
-                      ),
-                      const SizedBox(width: 7),
-                      Text(
-                        label,
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        '${strings.lastMoodLabel}: ${widget.getMoodLabel(previousTrace.overallMood, strings)} (${previousTrace.moodIntensity}/10)',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 12.5,
-                          // Invariant weight avoids 1px reflow on sibling pills.
-                          fontWeight: FontWeight.w600,
-                          color: isSelected
-                              ? tokens.textPrimary
-                              : tokens.textSecondary,
+                          fontFamily: 'Inter',
+                          fontSize: 11.5,
+                          color: tokens.textSecondary,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-            );
-          }),
+            ),
+          ],
+          const SizedBox(height: 8),
+        ],
+
+        // Living Organic Mood Orb (responds smoothly to state + intensity)
+        Center(
+          child: OrganicMoodOrb(
+            moodKey: activeMood,
+            intensity: roundedIntensity,
+            color: activeMoodColor,
+            size: 102,
+            isDark: isDark,
+            semanticLabel: widget.getMoodLabel(activeMood, strings),
+            onTap: () {
+              if (widget.moodOptions.length > 1) {
+                widget.onMoodSelected(
+                  (safeIdx + 1) % widget.moodOptions.length,
+                );
+              }
+            },
+          ),
         ),
+        const SizedBox(height: 2),
+        Center(
+          child: Text(
+            '${strings.intensityLevelWord(roundedIntensity)} · $roundedIntensity/10',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: tokens.textSecondary,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+        ),
+        const SizedBox(height: 14),
+
+        // 3 + 2 Tactile Emotion Tile Grid with invariant label geometry
+        Row(
+          children: [
+            for (int i = 0; i < rowOneCount; i++) ...[
+              if (i > 0) const SizedBox(width: 8),
+              Expanded(
+                child: _buildMoodTile(
+                  option: widget.moodOptions[i],
+                  index: i,
+                  isSelected: i == safeIdx,
+                  tokens: tokens,
+                  strings: strings,
+                  isDark: isDark,
+                  reduceMotion: reduceMotion,
+                ),
+              ),
+            ],
+          ],
+        ),
+        if (hasSecondRow) ...[
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              for (int i = 3; i < widget.moodOptions.length; i++) ...[
+                if (i > 3) const SizedBox(width: 8),
+                Expanded(
+                  child: _buildMoodTile(
+                    option: widget.moodOptions[i],
+                    index: i,
+                    isSelected: i == safeIdx,
+                    tokens: tokens,
+                    strings: strings,
+                    isDark: isDark,
+                    reduceMotion: reduceMotion,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
         const SizedBox(height: 16),
 
-        // Intensity Header & Word Badge + Bespoke Vector Emblem
+        // Intensity Header & Word Badge
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -496,6 +677,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
+                        fontFamily: 'Inter',
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: strings.isArabic ? 0 : 0.7,
@@ -522,6 +704,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
+                        fontFamily: 'Inter',
                         fontSize: 11,
                         fontWeight: FontWeight.w700,
                         color: activeMoodColor,
@@ -541,7 +724,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
         ),
         const SizedBox(height: 10),
 
-        // Unified 10-step graduated waveform intensity picker
+        // Unified 10-step graduated waveform + progress rail intensity picker
         MindIntensityPicker(
           value: roundedIntensity,
           accentColor: activeMoodColor,
@@ -555,10 +738,18 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           controller: widget.todayNoteController,
           maxLines: 2,
           minLines: 1,
-          style: TextStyle(fontSize: 13.5, color: tokens.textPrimary),
+          style: TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 13.5,
+            color: tokens.textPrimary,
+          ),
           decoration: InputDecoration(
             hintText: strings.todaysNoteHint,
-            hintStyle: TextStyle(color: tokens.textTertiary, fontSize: 13),
+            hintStyle: TextStyle(
+              fontFamily: 'Inter',
+              color: tokens.textTertiary,
+              fontSize: 13,
+            ),
             filled: true,
             fillColor: tokens.surfaceSecondary,
             contentPadding: const EdgeInsets.symmetric(
@@ -575,7 +766,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: tokens.accent, width: 1.4),
+              borderSide: BorderSide(color: activeMoodColor, width: 1.4),
             ),
           ),
         ),
@@ -620,6 +811,118 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildMoodTile({
+    required ({String key, IconData icon}) option,
+    required int index,
+    required bool isSelected,
+    required MindTokens tokens,
+    required AppStrings strings,
+    required bool isDark,
+    required bool reduceMotion,
+  }) {
+    final label = widget.getMoodLabel(option.key, strings);
+    final moodColor = widget.getMoodColor(option.key);
+    final moodSoft = LabColors.moodSoftFor(option.key, isDark: isDark);
+    final tileRadius = BorderRadius.circular(16);
+
+    return Semantics(
+      button: true,
+      selected: isSelected,
+      label: label,
+      child: MindPressable(
+        onPressed: () => widget.onMoodSelected(index),
+        borderRadius: tileRadius,
+        child: AnimatedContainer(
+          duration:
+              reduceMotion ? Duration.zero : const Duration(milliseconds: 160),
+          curve: Curves.easeOutCubic,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Color.alphaBlend(
+                    moodSoft.withValues(alpha: isDark ? 0.55 : 0.72),
+                    tokens.surfaceSecondary,
+                  )
+                : tokens.surfaceSecondary,
+            borderRadius: tileRadius,
+            border: Border.all(
+              color: isSelected ? moodColor : tokens.border,
+              width: 1.4,
+            ),
+          ),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 11),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 34,
+                      height: 34,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: moodColor.withValues(alpha: isDark ? 0.18 : 0.14),
+                        border: Border.all(
+                          color:
+                              moodColor.withValues(alpha: isSelected ? 0.45 : 0.2),
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: MoodEmblem(
+                        moodKey: option.key,
+                        size: 17,
+                        color: moodColor,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12.5,
+                        // Invariant weight prevents sibling layout shifts on tap.
+                        fontWeight: FontWeight.w600,
+                        color: isSelected
+                            ? tokens.textPrimary
+                            : tokens.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                PositionedDirectional(
+                  top: 6,
+                  end: 6,
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: moodColor,
+                    ),
+                    alignment: Alignment.center,
+                    child: Icon(
+                      Icons.check_rounded,
+                      size: 11,
+                      color: moodColor.computeLuminance() > 0.45
+                          ? const Color(0xFF111110)
+                          : Colors.white,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

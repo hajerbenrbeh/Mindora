@@ -4,10 +4,13 @@ import 'package:mind_forensics/app/localization/app_strings.dart';
 import 'package:mind_forensics/app/theme/lab_colors.dart';
 import 'package:mind_forensics/app/theme/mind_tokens.dart';
 import 'package:mind_forensics/core/widgets/mood_emblem.dart';
+import 'package:mind_forensics/core/widgets/organic_mood_orb.dart';
 import 'package:mind_forensics/features/home/presentation/widgets/home_active_case_card.dart';
 import 'package:mind_forensics/features/home/presentation/widgets/home_daily_check_in_card.dart';
+import 'package:mind_forensics/features/home/presentation/widgets/home_weekly_rhythm_card.dart';
 import 'package:mind_forensics/features/investigation/domain/case_model.dart';
 import 'package:mind_forensics/features/investigation/domain/case_stage.dart';
+import 'package:mind_forensics/features/mind_trace/domain/mind_trace_model.dart';
 
 void main() {
   group('Home Extracted Components Unit & Widget Tests', () {
@@ -220,6 +223,169 @@ void main() {
       expect(find.byType(MoodEmblem), findsNWidgets(moodKeys.length));
       expect(find.byType(CustomPaint), findsAtLeastNWidgets(moodKeys.length));
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('OrganicMoodOrb morphs cleanly across moods and intensity changes', (tester) async {
+      String activeMood = 'calm';
+      int intensity = 4;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: StatefulBuilder(
+              builder: (context, setState) {
+                return Center(
+                  child: OrganicMoodOrb(
+                    moodKey: activeMood,
+                    intensity: intensity,
+                    color: LabColors.moodColorFor(activeMood, isDark: true),
+                    isDark: true,
+                    size: 96,
+                    semanticLabel: activeMood,
+                    onTap: () => setState(() {
+                      activeMood = 'frustrated';
+                      intensity = 9;
+                    }),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OrganicMoodOrb), findsOneWidget);
+      await tester.tap(find.byType(OrganicMoodOrb));
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('HomeDailyCheckInCard logged summary exposes Breathe & Talk about it actions', (tester) async {
+      bool breatheTapped = false;
+      MindTraceModel? talkedTrace;
+      final now = DateTime.now();
+      final todayTrace = MindTraceModel(
+        id: 't_logged',
+        userId: 'u1',
+        date: now,
+        overallMood: 'frustrated',
+        moodIntensity: 9,
+        energyLevel: 4,
+        anxietyLevel: 7,
+        journalText: 'Too many notifications today',
+        createdAt: now,
+        updatedAt: now,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: HomeDailyCheckInCard(
+              tokens: MindTokens.dark,
+              strings: const AppStrings('en'),
+              isDark: true,
+              todayTrace: todayTrace,
+              traces: [todayTrace],
+              selectedMoodIndex: 2,
+              moodIntensity: 9,
+              todayNoteController: TextEditingController(),
+              moodOptions: moodOptions,
+              onMoodSelected: (_) {},
+              onIntensityChanged: (_) {},
+              onSave: () {},
+              getMoodLabel: (key, s) => key == 'frustrated' ? s.moodFrustrated : key,
+              getMoodColor: (key) => LabColors.moodColorFor(key, isDark: true),
+              onBreatheTap: () => breatheTapped = true,
+              onTalkAboutIt: (trace) => talkedTrace = trace,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('Frustrated (9/10)'), findsOneWidget);
+      expect(find.text('Breathe'), findsOneWidget);
+      expect(find.text('Talk about it'), findsOneWidget);
+
+      await tester.tap(find.text('Breathe'));
+      await tester.pumpAndSettle();
+      expect(breatheTapped, isTrue);
+
+      await tester.tap(find.text('Talk about it'));
+      await tester.pumpAndSettle();
+      expect(talkedTrace?.id, equals('t_logged'));
+    });
+
+    testWidgets('HomeWeeklyRhythmCard maps 7-day continuity and renders cleanly in 320px RTL', (tester) async {
+      tester.view.physicalSize = const Size(320, 640);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final now = DateTime.now();
+      final traces = <MindTraceModel>[
+        MindTraceModel(
+          id: 't_today',
+          userId: 'u1',
+          date: now,
+          overallMood: 'calm',
+          moodIntensity: 4,
+          energyLevel: 7,
+          anxietyLevel: 2,
+          createdAt: now,
+          updatedAt: now,
+        ),
+        MindTraceModel(
+          id: 't_prev',
+          userId: 'u1',
+          date: now.subtract(const Duration(days: 2)),
+          overallMood: 'anxious',
+          moodIntensity: 6,
+          energyLevel: 5,
+          anxietyLevel: 6,
+          createdAt: now,
+          updatedAt: now,
+        ),
+      ];
+
+      MindTraceModel? tappedTrace;
+      const arStrings = AppStrings('ar');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: TextDirection.rtl,
+            child: MediaQuery(
+              data: const MediaQueryData(textScaler: TextScaler.linear(1.3)),
+              child: Scaffold(
+                body: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: HomeWeeklyRhythmCard(
+                    traces: traces,
+                    tokens: MindTokens.light,
+                    strings: arStrings,
+                    isDark: false,
+                    getMoodColor: (k) => LabColors.moodColorFor(k),
+                    getMoodLabel: (k, _) => k,
+                    onDayTap: (_, trace) => tappedTrace = trace,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text(arStrings.thisWeekTitle), findsOneWidget);
+      expect(find.text(arStrings.observedDaysCount(2)), findsOneWidget);
+      expect(find.byType(MoodEmblem), findsNWidgets(2));
+      expect(tester.takeException(), isNull);
+
+      await tester.tap(find.byType(MoodEmblem).first);
+      await tester.pumpAndSettle();
+      expect(tappedTrace, isNotNull);
     });
   });
 }

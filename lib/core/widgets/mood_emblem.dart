@@ -26,7 +26,7 @@ class MoodEmblem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final normalized = _normalizeMoodKey(moodKey);
+    final normalized = normalizeKey(moodKey);
     final effectiveStroke = strokeWidth ?? (size * 0.11).clamp(1.5, 2.6);
 
     return ExcludeSemantics(
@@ -44,7 +44,8 @@ class MoodEmblem extends StatelessWidget {
     );
   }
 
-  static String _normalizeMoodKey(String raw) {
+  /// Normalizes canonical or localized mood names to one of the 5 core keys.
+  static String normalizeKey(String raw) {
     final key = raw.toLowerCase().trim();
     if (key.contains('calm') || key.contains('calme') || key.contains('هاد')) {
       return 'calm';

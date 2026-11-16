@@ -153,9 +153,38 @@ class AppStrings {
   String get noEntriesThisWeek => isArabic ? 'لا توجد تسجيلات' : (isFrench ? 'Aucune entrée' : 'No entries yet');
   String get updateCheckInButton => isArabic ? 'تحديث تقييم اليوم' : (isFrench ? 'Mettre à jour' : 'Update Check-in');
   String get todayCheckInRecorded => isArabic ? 'تم توثيق تقييم اليوم' : (isFrench ? 'Entrée du jour enregistrée' : 'Today\'s check-in recorded');
+  String get loggedTodayEyebrow => isArabic ? 'مسجّل اليوم' : (isFrench ? 'NOTÉ AUJOURD’HUI' : 'LOGGED TODAY');
+  String get aGentleNextStepHeader => isArabic ? 'خطوة هادية جاية' : (isFrench ? 'UN PETIT PAS SUIVANT' : 'A GENTLE NEXT STEP');
+  String get actionBreatheLabel => isArabic ? 'تنفّس' : (isFrench ? 'Respirer' : 'Breathe');
+  String get actionTalkAboutItLabel => isArabic ? 'احكي فيه' : (isFrench ? 'En parler' : 'Talk about it');
+  String get thisWeekTitle => isArabic ? 'الجمعة هاذي' : (isFrench ? 'Cette semaine' : 'This week');
+  String observedDaysCount(int count) => isArabic
+      ? '$count/7 أيام'
+      : (isFrench ? '$count/7 observés' : '$count/7 observed');
+  String get thisWeekSupportiveCaption => isArabic
+      ? 'كلّ تسجيل هو نهار وقفت فيه مع روحك.'
+      : (isFrench
+          ? 'Chaque suivi est un jour où vous avez pris soin de vous.'
+          : 'Every check-in is a day you showed up for yourself.');
+  String talkAboutMoodPrompt(String moodLabel, int intensity, String? note) {
+    final trimmed = note?.trim() ?? '';
+    if (isArabic) {
+      return trimmed.isNotEmpty
+          ? 'سجّلت اليوم شعور "$moodLabel" بشدة $intensity/10: $trimmed'
+          : 'سجّلت اليوم شعور "$moodLabel" بشدة $intensity/10 ونحب نفهمو شوية معاك.';
+    }
+    if (isFrench) {
+      return trimmed.isNotEmpty
+          ? 'Je viens de noter "$moodLabel" ($intensity/10) : $trimmed'
+          : 'Je me sens "$moodLabel" ($intensity/10) aujourd’hui et j’aimerais explorer ce qui se passe.';
+    }
+    return trimmed.isNotEmpty
+        ? 'Today I logged "$moodLabel" ($intensity/10): $trimmed'
+        : 'Right now I feel "$moodLabel" ($intensity/10) and would like to talk through what is coming up.';
+  }
   String get homeQuestion => isArabic 
-      ? 'شنوة الفكرة ولا التوتر اللي تحب نستكشفوه توا؟' 
-      : (isFrench ? 'Quelle pensée ou tension aimeriez-vous explorer ?' : 'What thought or tension would you like to explore?');
+      ? 'كيفاش تحسّ روحك في اللحظة هاذي؟' 
+      : (isFrench ? 'Comment va votre esprit en ce moment ?' : 'How is your mind right now?');
 
   // Dashboard Sections
   String get activeCaseSection => isArabic ? 'الجلسة النشطة' : (isFrench ? 'SESSION EN COURS' : 'ACTIVE SESSION');
@@ -304,7 +333,7 @@ class AppStrings {
   String get settingsTitle => isArabic ? 'إعدادات المنظومة' : (isFrench ? 'Paramètres Cliniques' : 'Clinical Settings');
   String get themeModeTitle => isArabic ? 'بيئة الإضاءة البصرية' : (isFrench ? 'Environnement Visuel' : 'Visual Environment');
   String get themeDaylight => isArabic ? 'نهاري' : (isFrench ? 'Jour' : 'Daylight');
-  String get themeNight => isArabic ? 'ليلي' : (isFrench ? 'Sombre OLED' : 'OLED Dark');
+  String get themeNight => isArabic ? 'ليلي' : (isFrench ? 'Sombre' : 'Charcoal');
   String get themeSystem => isArabic ? 'النظام' : (isFrench ? 'Système' : 'System');
   String get languageTitle => isArabic ? 'لغة المنظومة' : (isFrench ? 'Langue clinique' : 'Clinical Language');
   String get aiHistoryTitle => isArabic ? 'سياق الأنماط المعرفية التراكمية' : (isFrench ? 'Mémoire des schémas cognitifs' : 'Cognitive Pattern Memory');
@@ -1461,6 +1490,41 @@ class AppStrings {
     if (isArabic) return ar[idx];
     if (isFrench) return fr[idx];
     return en[idx];
+  }
+
+  String weekdayName(int weekday) {
+    const en = [
+      'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+    ];
+    const fr = [
+      'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche',
+    ];
+    const ar = [
+      'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد',
+    ];
+    final idx = (weekday - 1).clamp(0, 6);
+    if (isArabic) return ar[idx];
+    if (isFrench) return fr[idx];
+    return en[idx];
+  }
+
+  String weekdayInitial(int weekday) {
+    const en = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    const fr = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+    const ar = ['ن', 'ث', 'ر', 'خ', 'ج', 'س', 'ح'];
+    final idx = (weekday - 1).clamp(0, 6);
+    if (isArabic) return ar[idx];
+    if (isFrench) return fr[idx];
+    return en[idx];
+  }
+
+  String formattedDateOverline(DateTime dt) {
+    final dayLabel = weekdayName(dt.weekday);
+    final mLabel = monthName(dt.month);
+    if (isArabic) {
+      return '$dayLabel ${dt.day} $mLabel';
+    }
+    return '${dayLabel.toUpperCase()} ${dt.day} ${mLabel.toUpperCase()}';
   }
 
   String get observatoryHeroSubtitle => isArabic ? 'نظرة هادئة وأعمق على أفكارك' : (isFrench ? 'Un regard calme et lucide sur votre esprit' : 'A deeper, calmer look into your mind');

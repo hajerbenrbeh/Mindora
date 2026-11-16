@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,6 +21,7 @@ import '../../auth/controllers/auth_controller.dart';
 import '../../investigation/controllers/investigation_providers.dart';
 import '../../investigation/domain/case_model.dart';
 import '../../investigation/domain/case_stage.dart';
+import '../../investigation/domain/conversation_mode.dart';
 import '../../mind_trace/controllers/mind_trace_controller.dart';
 import '../../mind_trace/domain/emotion_descriptors.dart';
 import '../../mind_trace/domain/mind_trace_model.dart';
@@ -28,6 +30,7 @@ import '../../support/presentation/contextual_support_sheet.dart';
 import 'widgets/home_active_case_card.dart';
 import 'widgets/home_daily_check_in_card.dart';
 import 'widgets/home_organic_exercise_art.dart';
+import 'widgets/home_weekly_rhythm_card.dart';
 
 /// The calm, uncluttered Home screen for v1.0:
 /// Greeting, Daily Check-In, Active/Recent Investigations, and a single Breathing Reset shortcut.
@@ -260,6 +263,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return LabColors.moodColorFor(key, isDark: isDark);
   }
 
+  ConversationMode _recommendedModeForTrace(MindTraceModel trace) {
+    final moodKey = EmotionDescriptor.canonicalKey(trace.overallMood).toLowerCase();
+    if (trace.moodIntensity >= 8) {
+      return ConversationMode.grounding;
+    }
+    switch (moodKey) {
+      case 'frustrated':
+      case 'heavy':
+        return ConversationMode.understandEmotion;
+      case 'anxious':
+      case 'restless':
+        return ConversationMode.exploreThought;
+      case 'calm':
+      default:
+        return ConversationMode.guidedReflection;
+    }
+  }
+
+  Future<void> _openCompanionForTrace(
+    MindTraceModel trace,
+    AppStrings strings,
+  ) async {
+    HapticFeedback.mediumImpact();
+    final noteText = trace.journalText?.trim();
+    if (noteText != null &&
+        noteText.isNotEmpty &&
+        CrisisKeywords.evaluateText(noteText) == 2) {
+      if (mounted) {
+        SafetyInterceptor.showCrisisPauseDialog(context);
+      }
+      return;
+    }
+
+    final mode = _recommendedModeForTrace(trace);
+    ref.read(currentConversationModeProvider.notifier).setMode(mode);
+    final moodLabel = _getMoodLabel(trace.overallMood, strings);
+    final seedPrompt = strings.talkAboutMoodPrompt(
+      moodLabel,
+      trace.moodIntensity,
+      noteText,
+    );
+
+    final controller = ref.read(activeCaseControllerProvider.notifier);
+    await controller.startNewCase(seedPrompt, mode: mode);
+    unawaited(controller.requestAiReply());
+    if (mounted) {
+      context.go(AppRouter.companion);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
@@ -274,6 +327,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final activeCase = ref.watch(activeCaseControllerProvider).value;
     final traces = ref.watch(mindTraceControllerProvider).value ?? [];
     final todayTrace = traces.todayTrace;
+    final headerMoodKey = todayTrace?.overallMood ??
+        _moodOptions[_selectedMoodIndex.clamp(0, _moodOptions.length - 1)].key;
+    final headerAvatarColor = _getMoodColor(headerMoodKey);
+    final headerAvatarFg = headerAvatarColor.computeLuminance() > 0.45
+        ? const Color(0xFF111110)
+        : Colors.white;
+    final todayDateOverline = strings.formattedDateOverline(DateTime.now());
 
     final nextSig = todayTrace != null ? _traceSignature(todayTrace) : null;
     if (nextSig != _hydratedTraceSignature) {
@@ -356,6 +416,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                            todayDateOverline,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: strings.isArabic ? 0 : 0.8,
+                              color: tokens.textTertiary,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
                             strings.dearUserGreeting(userName),
                             style: TextStyle(
                               fontFamily: 'Inter',
@@ -428,11 +501,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 width: 38,
                                 height: 38,
                                 decoration: BoxDecoration(
-                                  color: isDark ? tokens.surfaceSecondary : tokens.accent,
+                                  color: headerAvatarColor,
                                   shape: BoxShape.circle,
-                                  border: isDark
-                                      ? Border.all(color: tokens.border, width: 1.0)
-                                      : null,
+                                  border: Border.all(
+                                    color: headerAvatarColor.withValues(alpha: 0.45),
+                                    width: 1.0,
+                                  ),
                                 ),
                                 alignment: Alignment.center,
                                 child: (profile?.preferredName.isNotEmpty == true && profile!.preferredName != 'Friend')
@@ -441,13 +515,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
-                                          color: isDark ? tokens.textPrimary : Colors.white,
+                                          color: headerAvatarFg,
                                         ),
                                       )
                                     : Icon(
                                         Icons.person_outline_rounded,
                                         size: 19,
-                                        color: isDark ? tokens.textPrimary : Colors.white,
+                                        color: headerAvatarFg,
                                       ),
                               ),
                             ),
@@ -460,8 +534,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                 const SizedBox(height: 18),
 
-                // 2. DAILY CHECK-IN HERO
+                // 2. DAILY CHECK-IN SANCTUARY + WEEKLY CONTINUITY STRIP
                 _buildDailyCheckInCard(tokens, strings, isDark, todayTrace, traces),
+                const SizedBox(height: 14),
+                HomeWeeklyRhythmCard(
+                  traces: traces,
+                  tokens: tokens,
+                  strings: strings,
+                  isDark: isDark,
+                  getMoodColor: _getMoodColor,
+                  getMoodLabel: _getMoodLabel,
+                  onDayTap: (day, trace) {
+                    if (trace != null) {
+                      context.go('${AppRouter.track}?tab=1');
+                    } else {
+                      context.go(AppRouter.track);
+                    }
+                  },
+                ),
 
                 const SizedBox(height: 18),
 
@@ -671,6 +761,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       onSave: _saveDailyCheckIn,
       getMoodLabel: _getMoodLabel,
       getMoodColor: _getMoodColor,
+      onBreatheTap: () => ContextualSupportSheet.show(
+        context,
+        initialChoice: SupportChoice.settle,
+      ),
+      onTalkAboutIt: (trace) => _openCompanionForTrace(trace, strings),
     );
   }
 
