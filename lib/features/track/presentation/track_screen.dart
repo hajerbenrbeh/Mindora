@@ -19,6 +19,7 @@ import '../../../core/widgets/mind_pill.dart';
 import '../../../core/widgets/mind_pressable.dart';
 import '../../../core/widgets/mind_segmented.dart';
 import '../../../core/widgets/mood_emblem.dart';
+import '../../../core/widgets/organic_mood_orb.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../home/presentation/widgets/home_organic_exercise_art.dart';
 import '../../investigation/controllers/investigation_providers.dart';
@@ -546,6 +547,9 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
     MindTraceModel? todayTrace,
   ) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final activeMoodColor =
+        LabColors.moodColorFor(_selectedMood, isDark: isDark);
 
     return Column(
       children: [
@@ -566,7 +570,17 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                     letterSpacing: strings.isArabic ? 0 : -0.3,
                   ),
                 ),
-                const SizedBox(height: 14),
+                const SizedBox(height: 10),
+                Center(
+                  child: OrganicMoodOrb(
+                    moodKey: _selectedMood,
+                    intensity: _moodIntensity.round(),
+                    color: activeMoodColor,
+                    size: 84,
+                    isDark: isDark,
+                  ),
+                ),
+                const SizedBox(height: 8),
                 Center(
                   child: Text(
                     strings.todaysCoreState,
@@ -593,10 +607,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
                 const SizedBox(height: 16),
                 TrackIntensitySlider(
                   value: _moodIntensity,
-                  moodColor: LabColors.moodColorFor(
-                    _selectedMood,
-                    isDark: Theme.of(context).brightness == Brightness.dark,
-                  ),
+                  moodColor: activeMoodColor,
                   strings: strings,
                   onChanged: (v) {
                     setState(() {

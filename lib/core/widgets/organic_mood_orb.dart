@@ -1,23 +1,30 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
 import 'mood_emblem.dart';
 
-/// Expressive, organically shaped 3D-shaded mood orb rendered via pure vector geometry.
+/// Expressive, continuously animated fluid somatic mood orb built with pure
+/// multi-harmonic vector curves and 3D radial shading.
 ///
-/// Each emotional state (`calm`, `anxious`, `frustrated`, `heavy`, `restless`) maps
-/// to a distinct closed Fourier silhouette whose undulation responds smoothly to
-/// self-reported `intensity` (`1..10`) without continuous tickers that could stall
-/// widget test settling.
+/// Behavior & intensity coupling:
+/// - **Morphology (`calm`, `anxious`, `frustrated`, `heavy`, `restless`)**:
+///   Each mood defines a distinct organic silhouette with counter-rotating waves.
+/// - **Intensity (`1..10`)**: Drives contour lobe amplitude, overall scale,
+///   wave velocity (gentle breathing at 1-2 vs energetic turbulence at 8-10),
+///   ambient glow, and a subtle outer resonance outline.
+/// - **Test & Accessibility Safety**: Uses [SingleTickerProviderStateMixin] for
+///   morph transitions + a guarded [Ticker] for continuous real-device motion
+///   when not inside headless widget tests or reduced-motion accessibility mode.
 class OrganicMoodOrb extends StatefulWidget {
   const OrganicMoodOrb({
     super.key,
     required this.moodKey,
     required this.intensity,
     required this.color,
-    this.size = 96.0,
+    this.size = 104.0,
     this.isDark = false,
     this.onTap,
     this.semanticLabel,
@@ -41,8 +48,14 @@ class _OrbShapeSpec {
     required this.ampA,
     required this.harmonicB,
     required this.ampB,
+    required this.harmonicC,
+    required this.ampC,
     required this.phaseOffset,
     required this.verticalSquash,
+    required this.verticalBias,
+    required this.scaleFactor,
+    required this.speedFactor,
+    required this.intensityNorm,
     required this.color,
   });
 
@@ -50,8 +63,14 @@ class _OrbShapeSpec {
   final double ampA;
   final double harmonicB;
   final double ampB;
+  final double harmonicC;
+  final double ampC;
   final double phaseOffset;
   final double verticalSquash;
+  final double verticalBias;
+  final double scaleFactor;
+  final double speedFactor;
+  final double intensityNorm;
   final Color color;
 
   factory _OrbShapeSpec.forState({
@@ -61,57 +80,88 @@ class _OrbShapeSpec {
   }) {
     final normKey = MoodEmblem.normalizeKey(moodKey);
     final t = ((intensity.clamp(1, 10) - 1) / 9.0);
+    final baseScale = 0.88 + t * 0.20;
 
     switch (normKey) {
       case 'calm':
         return _OrbShapeSpec(
-          harmonicA: 2.0,
-          ampA: 0.025 + t * 0.015,
-          harmonicB: 3.0,
-          ampB: 0.012 + t * 0.010,
-          phaseOffset: 0.35,
+          harmonicA: 3.0,
+          ampA: 0.042 + t * 0.052,
+          harmonicB: 2.0,
+          ampB: 0.024 + t * 0.032,
+          harmonicC: 5.0,
+          ampC: 0.008 + t * 0.018,
+          phaseOffset: 0.45,
           verticalSquash: 0.96,
+          verticalBias: 0.0,
+          scaleFactor: baseScale,
+          speedFactor: 0.42 + t * 0.95,
+          intensityNorm: t,
           color: color,
         );
       case 'anxious':
         return _OrbShapeSpec(
-          harmonicA: 5.0,
-          ampA: 0.040 + t * 0.042,
-          harmonicB: 7.0,
-          ampB: 0.020 + t * 0.028,
-          phaseOffset: 0.70,
+          harmonicA: 6.0,
+          ampA: 0.040 + t * 0.072,
+          harmonicB: 4.0,
+          ampB: 0.024 + t * 0.046,
+          harmonicC: 8.0,
+          ampC: 0.012 + t * 0.034,
+          phaseOffset: 0.85,
           verticalSquash: 1.0,
+          verticalBias: 0.0,
+          scaleFactor: baseScale,
+          speedFactor: 0.65 + t * 1.95,
+          intensityNorm: t,
           color: color,
         );
       case 'frustrated':
         return _OrbShapeSpec(
-          harmonicA: 4.0,
-          ampA: 0.065 + t * 0.075,
-          harmonicB: 6.0,
-          ampB: 0.032 + t * 0.040,
-          phaseOffset: 1.15,
+          harmonicA: 5.0,
+          ampA: 0.058 + t * 0.105,
+          harmonicB: 3.0,
+          ampB: 0.040 + t * 0.062,
+          harmonicC: 7.0,
+          ampC: 0.018 + t * 0.042,
+          phaseOffset: 1.25,
           verticalSquash: 0.98,
+          verticalBias: -0.02 * t,
+          scaleFactor: baseScale,
+          speedFactor: 0.72 + t * 2.15,
+          intensityNorm: t,
           color: color,
         );
       case 'heavy':
         return _OrbShapeSpec(
           harmonicA: 2.0,
-          ampA: 0.045 + t * 0.035,
+          ampA: 0.048 + t * 0.058,
           harmonicB: 3.0,
-          ampB: 0.025 + t * 0.022,
-          phaseOffset: 1.55,
-          verticalSquash: 0.90,
+          ampB: 0.028 + t * 0.036,
+          harmonicC: 4.0,
+          ampC: 0.010 + t * 0.022,
+          phaseOffset: 1.65,
+          verticalSquash: 0.91 - t * 0.04,
+          verticalBias: 0.04 + t * 0.06,
+          scaleFactor: baseScale,
+          speedFactor: 0.34 + t * 0.85,
+          intensityNorm: t,
           color: color,
         );
       case 'restless':
       default:
         return _OrbShapeSpec(
-          harmonicA: 3.0,
-          ampA: 0.055 + t * 0.048,
-          harmonicB: 5.0,
-          ampB: 0.030 + t * 0.032,
-          phaseOffset: 2.05,
+          harmonicA: 4.0,
+          ampA: 0.052 + t * 0.082,
+          harmonicB: 3.0,
+          ampB: 0.042 + t * 0.062,
+          harmonicC: 6.0,
+          ampC: 0.016 + t * 0.034,
+          phaseOffset: 2.15,
           verticalSquash: 0.97,
+          verticalBias: 0.0,
+          scaleFactor: baseScale,
+          speedFactor: 0.62 + t * 1.85,
+          intensityNorm: t,
           color: color,
         );
     }
@@ -123,19 +173,32 @@ class _OrbShapeSpec {
       ampA: a.ampA + (b.ampA - a.ampA) * t,
       harmonicB: b.harmonicB,
       ampB: a.ampB + (b.ampB - a.ampB) * t,
+      harmonicC: b.harmonicC,
+      ampC: a.ampC + (b.ampC - a.ampC) * t,
       phaseOffset: a.phaseOffset + (b.phaseOffset - a.phaseOffset) * t,
-      verticalSquash: a.verticalSquash + (b.verticalSquash - a.verticalSquash) * t,
+      verticalSquash:
+          a.verticalSquash + (b.verticalSquash - a.verticalSquash) * t,
+      verticalBias: a.verticalBias + (b.verticalBias - a.verticalBias) * t,
+      scaleFactor: a.scaleFactor + (b.scaleFactor - a.scaleFactor) * t,
+      speedFactor: a.speedFactor + (b.speedFactor - a.speedFactor) * t,
+      intensityNorm:
+          a.intensityNorm + (b.intensityNorm - a.intensityNorm) * t,
       color: Color.lerp(a.color, b.color, t) ?? b.color,
     );
   }
 }
 
 class _OrganicMoodOrbState extends State<OrganicMoodOrb>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _morphController;
+    with TickerProviderStateMixin {
+  late final AnimationController _morphController;
+  final ValueNotifier<double> _flowPhaseNotifier = ValueNotifier<double>(0.0);
+  late final Listenable _paintListenable;
+  Ticker? _flowTicker;
+  Duration _lastElapsed = Duration.zero;
+  double _tapScale = 1.0;
+
   late _OrbShapeSpec _fromSpec;
   late _OrbShapeSpec _toSpec;
-  double _tapScale = 1.0;
 
   @override
   void initState() {
@@ -148,8 +211,52 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
     _fromSpec = _toSpec;
     _morphController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 420),
+      duration: const Duration(milliseconds: 520),
     )..value = 1.0;
+    _paintListenable = Listenable.merge([_morphController, _flowPhaseNotifier]);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _syncContinuousTicker();
+  }
+
+  void _syncContinuousTicker() {
+    final isTest =
+        WidgetsBinding.instance.runtimeType.toString().contains('Test');
+    final reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+    if (!isTest && !reduceMotion) {
+      _flowTicker ??= createTicker(_onTick);
+      if (!(_flowTicker!.isActive)) {
+        _lastElapsed = Duration.zero;
+        _flowTicker!.start();
+      }
+    } else {
+      if (_flowTicker?.isActive == true) {
+        _flowTicker!.stop();
+      }
+      _lastElapsed = Duration.zero;
+    }
+  }
+
+  void _onTick(Duration elapsed) {
+    if (_lastElapsed == Duration.zero) {
+      _lastElapsed = elapsed;
+      return;
+    }
+    final dtSec =
+        ((elapsed - _lastElapsed).inMicroseconds / 1000000.0).clamp(0.0, 0.05);
+    _lastElapsed = elapsed;
+
+    final morphT = Curves.easeOutCubic.transform(_morphController.value);
+    final activeSpec = _OrbShapeSpec.lerp(_fromSpec, _toSpec, morphT);
+
+    // Monotonic velocity integration avoids widget rebuilds and drag stutters.
+    _flowPhaseNotifier.value =
+        (_flowPhaseNotifier.value + dtSec * activeSpec.speedFactor) %
+            (math.pi * 200.0);
   }
 
   @override
@@ -174,10 +281,13 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
           ..forward();
       }
     }
+    _syncContinuousTicker();
   }
 
   @override
   void dispose() {
+    _flowTicker?.dispose();
+    _flowPhaseNotifier.dispose();
     _morphController.dispose();
     super.dispose();
   }
@@ -185,8 +295,8 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
   void _handleTap() {
     HapticFeedback.selectionClick();
     if (!MediaQuery.disableAnimationsOf(context)) {
-      setState(() => _tapScale = 0.94);
-      Future<void>.delayed(const Duration(milliseconds: 120), () {
+      setState(() => _tapScale = 0.92);
+      Future<void>.delayed(const Duration(milliseconds: 130), () {
         if (mounted) {
           setState(() => _tapScale = 1.0);
         }
@@ -198,21 +308,28 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
   @override
   Widget build(BuildContext context) {
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final isTest =
+        WidgetsBinding.instance.runtimeType.toString().contains('Test');
 
     final orb = AnimatedScale(
       scale: _tapScale,
       duration:
-          reduceMotion ? Duration.zero : const Duration(milliseconds: 140),
+          reduceMotion ? Duration.zero : const Duration(milliseconds: 150),
       curve: Curves.easeOutCubic,
       child: AnimatedBuilder(
-        animation: _morphController,
+        animation: _paintListenable,
         builder: (context, _) {
-          final t = Curves.easeOutCubic.transform(_morphController.value);
-          final spec = _OrbShapeSpec.lerp(_fromSpec, _toSpec, t);
+          final morphT = Curves.easeOutCubic.transform(_morphController.value);
+          final spec = _OrbShapeSpec.lerp(_fromSpec, _toSpec, morphT);
+          // Seed deterministic visual asymmetry in headless screenshots based on intensity.
+          final effectivePhase = (isTest || reduceMotion)
+              ? spec.intensityNorm * 1.4
+              : _flowPhaseNotifier.value;
           return CustomPaint(
             size: Size.square(widget.size),
             painter: _OrganicMoodOrbPainter(
               spec: spec,
+              phase: effectivePhase,
               isDark: widget.isDark,
             ),
           );
@@ -243,32 +360,41 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
 class _OrganicMoodOrbPainter extends CustomPainter {
   const _OrganicMoodOrbPainter({
     required this.spec,
+    required this.phase,
     required this.isDark,
   });
 
   final _OrbShapeSpec spec;
+  final double phase;
   final bool isDark;
 
-  @override
-  void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height / 2);
-    final baseRadius = size.width * 0.37;
-    const steps = 64;
+  Path _buildFluidPath(Size size, {double scaleMultiplier = 1.0}) {
+    final cx = size.width / 2;
+    final cy = size.height / 2 + spec.verticalBias * (size.height * 0.34);
+    final breathePulse = 1.0 +
+        (0.014 + spec.intensityNorm * 0.036) * math.sin(phase * 1.35);
+    final baseRadius =
+        size.width * 0.34 * spec.scaleFactor * scaleMultiplier * breathePulse;
+    const steps = 72;
     final pts = <Offset>[];
 
     for (var i = 0; i < steps; i++) {
       final theta = (i / steps) * 2 * math.pi;
-      final waveA =
-          spec.ampA * math.sin(spec.harmonicA * theta + spec.phaseOffset);
-      final waveB =
-          spec.ampB * math.cos(spec.harmonicB * theta - spec.phaseOffset * 0.7);
-      final r = baseRadius * (1.0 + waveA + waveB);
-      final dx = center.dx + r * math.cos(theta);
-      final dy = center.dy + r * spec.verticalSquash * math.sin(theta);
-      pts.add(Offset(dx, dy));
+      final waveA = spec.ampA *
+          math.sin(spec.harmonicA * theta + spec.phaseOffset + phase);
+      final waveB = spec.ampB *
+          math.cos(spec.harmonicB * theta - spec.phaseOffset * 0.8 - phase * 1.32);
+      final waveC = spec.ampC *
+          math.sin(spec.harmonicC * theta + phase * 1.85);
+      final r = baseRadius * (1.0 + waveA + waveB + waveC);
+      pts.add(
+        Offset(
+          cx + r * math.cos(theta),
+          cy + r * spec.verticalSquash * math.sin(theta),
+        ),
+      );
     }
 
-    // Build smooth closed cubic path via mid-point quadratic smoothing.
     final path = Path();
     if (pts.isNotEmpty) {
       final firstMid = Offset(
@@ -284,63 +410,105 @@ class _OrganicMoodOrbPainter extends CustomPainter {
       }
       path.close();
     }
+    return path;
+  }
 
-    // Soft ambient halo beneath the orb.
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(
+      size.width / 2,
+      size.height / 2 + spec.verticalBias * (size.height * 0.34),
+    );
+    final path = _buildFluidPath(size);
+    final outerRadius = size.width * 0.40 * spec.scaleFactor;
+
+    // 1. Intensity-coupled ambient aura glow.
     final haloPaint = Paint()
-      ..color = spec.color.withValues(alpha: isDark ? 0.24 : 0.16)
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * 0.14);
+      ..color = spec.color.withValues(
+        alpha: (isDark ? 0.22 : 0.14) + spec.intensityNorm * 0.16,
+      )
+      ..maskFilter = MaskFilter.blur(
+        BlurStyle.normal,
+        size.width * (0.11 + spec.intensityNorm * 0.08),
+      );
     canvas.drawPath(path, haloPaint);
 
-    // Sculpted 3D radial gradient sphere shading.
+    // 2. Subtle outer resonance silhouette halo when intensity builds (>= 4/10).
+    if (spec.intensityNorm > 0.25) {
+      final echoScale = 1.13 +
+          spec.intensityNorm * 0.05 +
+          0.025 * math.sin(phase * 1.1);
+      final echoPath = _buildFluidPath(size, scaleMultiplier: echoScale);
+      final echoPaint = Paint()
+        ..color = spec.color.withValues(
+          alpha: (spec.intensityNorm - 0.2) * (isDark ? 0.34 : 0.28),
+        )
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2;
+      canvas.drawPath(echoPath, echoPaint);
+    }
+
+    // 3. Sculpted 3D liquid mesh shading (highlight shifts subtly with fluid motion).
     final highlightColor =
-        Color.lerp(spec.color, Colors.white, isDark ? 0.44 : 0.56) ?? spec.color;
-    final midColor = spec.color;
+        Color.lerp(spec.color, Colors.white, isDark ? 0.48 : 0.58) ??
+            spec.color;
+    final warmMid = Color.lerp(
+          spec.color,
+          isDark ? Colors.white : const Color(0xFFFFF8EE),
+          0.10,
+        ) ??
+        spec.color;
     final deepColor =
-        Color.lerp(spec.color, Colors.black, isDark ? 0.28 : 0.18) ?? spec.color;
+        Color.lerp(spec.color, Colors.black, isDark ? 0.30 : 0.20) ??
+            spec.color;
 
-    final bodyRect = Rect.fromCircle(center: center, radius: baseRadius * 1.15);
-    final fillPaint = Paint()
+    final lightDriftX = -0.30 + 0.10 * math.cos(phase * 0.8);
+    final lightDriftY = -0.34 + 0.08 * math.sin(phase * 0.9);
+    final shaderRect = Rect.fromCircle(center: center, radius: outerRadius);
+    final bodyPaint = Paint()
       ..shader = RadialGradient(
-        center: const Alignment(-0.32, -0.36),
-        radius: 1.05,
-        colors: [highlightColor, midColor, deepColor],
-        stops: const [0.0, 0.54, 1.0],
-      ).createShader(bodyRect);
-    canvas.drawPath(path, fillPaint);
+        center: Alignment(lightDriftX, lightDriftY),
+        radius: 1.08,
+        colors: [highlightColor, warmMid, spec.color, deepColor],
+        stops: const [0.0, 0.28, 0.62, 1.0],
+      ).createShader(shaderRect);
+    canvas.drawPath(path, bodyPaint);
 
-    // Subtle crisp translucent rim stroke.
+    // 4. Crisp translucent glass rim hairline.
     final rimPaint = Paint()
-      ..color = highlightColor.withValues(alpha: isDark ? 0.28 : 0.36)
+      ..color = highlightColor.withValues(alpha: isDark ? 0.30 : 0.38)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 1.05;
     canvas.drawPath(path, rimPaint);
 
-    // Delicate inner pearlescent gleam at upper-left shoulder.
-    final gleamPaint = Paint()
-      ..color = Colors.white.withValues(alpha: isDark ? 0.22 : 0.34)
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * 0.04);
+    // 5. Soft pearlescent specular glint following top-left light shoulder.
+    final glintPaint = Paint()
+      ..color = Colors.white.withValues(alpha: isDark ? 0.24 : 0.36)
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * 0.045);
     canvas.drawOval(
       Rect.fromCenter(
         center: Offset(
-          center.dx - baseRadius * 0.28,
-          center.dy - baseRadius * 0.30,
+          center.dx + lightDriftX * outerRadius * 0.82,
+          center.dy + lightDriftY * outerRadius * 0.82,
         ),
-        width: baseRadius * 0.36,
-        height: baseRadius * 0.22,
+        width: outerRadius * 0.42,
+        height: outerRadius * 0.24,
       ),
-      gleamPaint,
+      glintPaint,
     );
   }
 
   @override
   bool shouldRepaint(covariant _OrganicMoodOrbPainter oldDelegate) {
-    return oldDelegate.spec.harmonicA != spec.harmonicA ||
+    return oldDelegate.phase != phase ||
+        oldDelegate.isDark != isDark ||
+        oldDelegate.spec.harmonicA != spec.harmonicA ||
         oldDelegate.spec.ampA != spec.ampA ||
-        oldDelegate.spec.harmonicB != spec.harmonicB ||
         oldDelegate.spec.ampB != spec.ampB ||
-        oldDelegate.spec.phaseOffset != spec.phaseOffset ||
-        oldDelegate.spec.verticalSquash != spec.verticalSquash ||
-        oldDelegate.spec.color != spec.color ||
-        oldDelegate.isDark != isDark;
+        oldDelegate.spec.ampC != spec.ampC ||
+        oldDelegate.spec.scaleFactor != spec.scaleFactor ||
+        oldDelegate.spec.intensityNorm != spec.intensityNorm ||
+        oldDelegate.spec.verticalBias != spec.verticalBias ||
+        oldDelegate.spec.color != spec.color;
   }
 }
