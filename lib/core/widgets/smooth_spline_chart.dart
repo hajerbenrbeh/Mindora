@@ -1,10 +1,16 @@
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
 
-/// Smooth Bezier Spline Chart with horizontal rules, subtle gradient fill,
-/// and interactive scrub tooltip clamped within chart bounds.
+/// Smooth Bezier Spline Chart driven by [MindTokens]:
+/// - `3.5px` smooth curve colored by `lineColor` (`tokens.m1` by default)
+/// - dashed horizontal grid rules in `tokens.line`
+/// - mood dots ringed by `tokens.surface` (`#0A0A0A` in Dark, `#FFFFFF` in Light)
+/// - scrub tooltip in `tokens.ink` fill + `tokens.bg` text
 class SmoothSplineChart extends StatelessWidget {
   const SmoothSplineChart({
     super.key,
@@ -12,6 +18,7 @@ class SmoothSplineChart extends StatelessWidget {
     this.height = 132,
     this.lineColor,
     this.fillColors,
+    this.pointColors,
     this.activePointIndex,
     this.activePointLabel,
     this.showDots = true,
@@ -23,6 +30,7 @@ class SmoothSplineChart extends StatelessWidget {
   final double height;
   final Color? lineColor;
   final List<Color>? fillColors;
+  final List<Color>? pointColors;
   final int? activePointIndex;
   final String? activePointLabel;
   final bool showDots;
@@ -37,13 +45,21 @@ class SmoothSplineChart extends StatelessWidget {
     return math.max(0, math.min(values.length - 1, raw));
   }
 
+  void _notifyIndex(int next) {
+    if (next != activePointIndex) {
+      HapticFeedback.selectionClick();
+    }
+    onPointSelected?.call(next);
+  }
+
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final effectiveLine = lineColor ?? tokens.accent;
-    final effectiveFill = fillColors ??
+    final effectiveLine = lineColor ?? tokens.m1;
+    final effectiveFill =
+        fillColors ??
         [
-          effectiveLine.withValues(alpha: 0.28),
+          effectiveLine.withValues(alpha: 0.34),
           effectiveLine.withValues(alpha: 0.0),
         ];
 
@@ -63,10 +79,11 @@ class SmoothSplineChart extends StatelessWidget {
               values: values,
               lineColor: effectiveLine,
               fillColors: effectiveFill,
-              gridColor: tokens.border.withValues(alpha: 0.65),
-              dotCenterColor: tokens.surface,
-              tooltipBgColor: tokens.textPrimary,
-              tooltipTextColor: tokens.background,
+              pointColors: pointColors,
+              gridColor: tokens.line,
+              dotRingColor: tokens.surface,
+              tooltipBgColor: tokens.ink,
+              tooltipTextColor: tokens.bg,
               activePointIndex: activePointIndex,
               activePointLabel: activePointLabel,
               showDots: showDots,
@@ -83,11 +100,11 @@ class SmoothSplineChart extends StatelessWidget {
             child: GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTapDown: (details) =>
-                  onPointSelected!(_nearestIndex(details.localPosition.dx, width)),
+                  _notifyIndex(_nearestIndex(details.localPosition.dx, width)),
               onHorizontalDragStart: (details) =>
-                  onPointSelected!(_nearestIndex(details.localPosition.dx, width)),
+                  _notifyIndex(_nearestIndex(details.localPosition.dx, width)),
               onHorizontalDragUpdate: (details) =>
-                  onPointSelected!(_nearestIndex(details.localPosition.dx, width)),
+                  _notifyIndex(_nearestIndex(details.localPosition.dx, width)),
               child: chart,
             ),
           );
@@ -103,10 +120,11 @@ class _SplinePainter extends CustomPainter {
     required this.lineColor,
     required this.fillColors,
     required this.gridColor,
-    required this.dotCenterColor,
+    required this.dotRingColor,
     required this.tooltipBgColor,
     required this.tooltipTextColor,
     required this.textDirection,
+    this.pointColors,
     this.activePointIndex,
     this.activePointLabel,
     this.showDots = true,
@@ -115,8 +133,9 @@ class _SplinePainter extends CustomPainter {
   final List<double> values;
   final Color lineColor;
   final List<Color> fillColors;
+  final List<Color>? pointColors;
   final Color gridColor;
-  final Color dotCenterColor;
+  final Color dotRingColor;
   final Color tooltipBgColor;
   final Color tooltipTextColor;
   final TextDirection textDirection;
@@ -134,17 +153,19 @@ class _SplinePainter extends CustomPainter {
     final usableHeight = math.max(12.0, size.height - topPad - bottomPad);
     final usableWidth = math.max(12.0, size.width - hPad * 2);
 
-    // Subtle horizontal grid rules (High / Mid / Low)
+    // Dashed horizontal grid rules (High / Mid / Low)
     final gridPaint = Paint()
       ..color = gridColor
-      ..strokeWidth = 1.0;
+      ..strokeWidth = 1.0
+      ..strokeCap = StrokeCap.round;
+    const dashLen = 4.0;
+    const dashGap = 4.0;
     for (final factor in [0.0, 0.5, 1.0]) {
       final y = topPad + usableHeight * factor;
-      canvas.drawLine(
-        Offset(hPad, y),
-        Offset(size.width - hPad, y),
-        gridPaint,
-      );
+      for (double x = hPad; x < size.width - hPad; x += dashLen + dashGap) {
+        final endX = math.min(x + dashLen, size.width - hPad);
+        canvas.drawLine(Offset(x, y), Offset(endX, y), gridPaint);
+      }
     }
 
     final points = <Offset>[];
@@ -157,8 +178,15 @@ class _SplinePainter extends CustomPainter {
       points.add(Offset(dx, dy));
     }
 
+    Color dotColorAt(int index) {
+      if (pointColors != null && index < pointColors!.length) {
+        return pointColors![index];
+      }
+      return lineColor;
+    }
+
     if (points.length == 1) {
-      _drawDot(canvas, points.first, true);
+      _drawDot(canvas, points.first, dotColorAt(0), true);
       if (activePointLabel != null) {
         _drawTooltip(canvas, size, points.first, activePointLabel!);
       }
@@ -188,7 +216,7 @@ class _SplinePainter extends CustomPainter {
 
     final linePaint = Paint()
       ..color = lineColor
-      ..strokeWidth = 2.6
+      ..strokeWidth = 3.5
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
     canvas.drawPath(linePath, linePaint);
@@ -197,43 +225,43 @@ class _SplinePainter extends CustomPainter {
     for (int i = 0; i < points.length; i++) {
       final isTarget = i == activeIdx;
       if (showDots || isTarget) {
-        _drawDot(canvas, points[i], isTarget);
+        _drawDot(canvas, points[i], dotColorAt(i), isTarget);
       }
     }
 
     if (activePointLabel != null &&
         activeIdx >= 0 &&
         activeIdx < points.length) {
-      _drawTooltip(canvas, size, points[activeIdx], activePointLabel!);
+      final anchor = points[activeIdx];
+      // Dashed vertical scrub guide line
+      for (
+        double y = anchor.dy + 9.0;
+        y < topPad + usableHeight;
+        y += dashLen + dashGap
+      ) {
+        final endY = math.min(y + dashLen, topPad + usableHeight);
+        canvas.drawLine(
+          Offset(anchor.dx, y),
+          Offset(anchor.dx, endY),
+          gridPaint,
+        );
+      }
+      _drawTooltip(canvas, size, anchor, activePointLabel!);
     }
   }
 
-  void _drawDot(Canvas canvas, Offset center, bool isTarget) {
+  void _drawDot(Canvas canvas, Offset center, Color dotColor, bool isTarget) {
     if (isTarget) {
       canvas.drawCircle(
         center,
-        9.0,
-        Paint()..color = lineColor.withValues(alpha: 0.22),
+        9.5,
+        Paint()..color = dotColor.withValues(alpha: 0.22),
       );
-      canvas.drawCircle(center, 5.0, Paint()..color = dotCenterColor);
-      canvas.drawCircle(
-        center,
-        5.0,
-        Paint()
-          ..color = lineColor
-          ..strokeWidth = 2.4
-          ..style = PaintingStyle.stroke,
-      );
+      canvas.drawCircle(center, 6.2, Paint()..color = dotRingColor);
+      canvas.drawCircle(center, 4.4, Paint()..color = dotColor);
     } else {
-      canvas.drawCircle(center, 3.0, Paint()..color = dotCenterColor);
-      canvas.drawCircle(
-        center,
-        3.0,
-        Paint()
-          ..color = lineColor.withValues(alpha: 0.65)
-          ..strokeWidth = 1.6
-          ..style = PaintingStyle.stroke,
-      );
+      canvas.drawCircle(center, 4.8, Paint()..color = dotRingColor);
+      canvas.drawCircle(center, 3.2, Paint()..color = dotColor);
     }
   }
 
@@ -247,9 +275,10 @@ class _SplinePainter extends CustomPainter {
       text: TextSpan(
         text: label,
         style: TextStyle(
-          fontSize: 11.5,
+          fontSize: 12.0,
           fontWeight: FontWeight.w700,
-          fontFamily: 'Inter',
+          fontFamily: LabTheme.fontFamily,
+          fontFamilyFallback: LabTheme.fontFallback,
           fontFeatures: const [FontFeature.tabularFigures()],
           color: tooltipTextColor,
         ),
@@ -257,24 +286,24 @@ class _SplinePainter extends CustomPainter {
       textDirection: textDirection,
     )..layout();
 
-    final tooltipW = textPainter.width + 18;
-    const tooltipH = 24.0;
+    final tooltipW = textPainter.width + 20;
+    const tooltipH = 26.0;
     final maxX = math.max(4.0, size.width - tooltipW - 4.0);
     final tooltipX = (target.dx - tooltipW / 2).clamp(4.0, maxX);
-    final tooltipY = (target.dy - 9.0 - tooltipH).clamp(2.0, size.height - tooltipH);
+    final tooltipY = (target.dy - 11.0 - tooltipH).clamp(
+      2.0,
+      size.height - tooltipH,
+    );
 
     final rect = RRect.fromRectAndRadius(
       Rect.fromLTWH(tooltipX, tooltipY, tooltipW, tooltipH),
-      const Radius.circular(8),
+      const Radius.circular(14),
     );
     canvas.drawRRect(rect, Paint()..color = tooltipBgColor);
 
     textPainter.paint(
       canvas,
-      Offset(
-        tooltipX + 9,
-        tooltipY + (tooltipH - textPainter.height) / 2,
-      ),
+      Offset(tooltipX + 10, tooltipY + (tooltipH - textPainter.height) / 2),
     );
   }
 
@@ -284,6 +313,8 @@ class _SplinePainter extends CustomPainter {
         oldDelegate.activePointIndex != activePointIndex ||
         oldDelegate.activePointLabel != activePointLabel ||
         oldDelegate.lineColor != lineColor ||
+        oldDelegate.pointColors != pointColors ||
+        oldDelegate.dotRingColor != dotRingColor ||
         oldDelegate.tooltipBgColor != tooltipBgColor ||
         oldDelegate.textDirection != textDirection;
   }

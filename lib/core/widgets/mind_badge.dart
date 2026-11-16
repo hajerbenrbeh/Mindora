@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
 
-/// Semantic pill/badge for Mind Forensics. Zero emojis, vector outline or text only.
+/// Token-driven semantic pill/badge. Zero emojis; pairs icon or clear text.
 class MindBadge extends StatelessWidget {
   const MindBadge({
     super.key,
@@ -27,16 +29,14 @@ class MindBadge extends StatelessWidget {
     final tokens = context.tokens;
 
     final defaultBg = isSelected
-        ? tokens.accent
-        : (backgroundColor ?? tokens.surfaceSecondary);
-    final defaultFg = isSelected
-        ? tokens.onAccent
-        : (textColor ?? tokens.textPrimary);
+        ? tokens.ink
+        : (backgroundColor ?? tokens.surface2);
+    final defaultFg = isSelected ? tokens.bg : (textColor ?? tokens.ink);
     final defaultBorder = isSelected
         ? Colors.transparent
-        : (borderColor ?? tokens.border);
+        : (borderColor ?? tokens.line);
 
-    Widget badge = Container(
+    final badge = Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
         color: defaultBg,
@@ -56,9 +56,11 @@ class MindBadge extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
+                fontFamily: LabTheme.fontFamily,
+                fontFamilyFallback: LabTheme.fontFallback,
                 color: defaultFg,
                 fontSize: 11.5,
-                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w600,
                 letterSpacing: -0.1,
               ),
             ),
@@ -82,4 +84,3 @@ class MindBadge extends StatelessWidget {
     return badge;
   }
 }
-

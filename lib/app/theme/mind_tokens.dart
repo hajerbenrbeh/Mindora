@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../features/investigation/domain/label_type.dart';
+
 /// The five somatic mood states sharing identical semantic colors across
 /// Light ("Dawn") and Dark ("Vercel") themes.
 ///
@@ -151,6 +153,27 @@ class MindTokens extends ThemeExtension<MindTokens> {
   static const Color onMoodConstant = Color(0xFF0E1626);
   static const Color pureWhiteConstant = Color(0xFFFFFFFF);
   static const Color pureBlackConstant = Color(0xFF000000);
+
+  // Decorative wave/wireframe artwork constants (referenced by art primitives)
+  static const Color waveSkyTop = Color(0xFFF0E8D9);
+  static const Color waveSkyBottom = Color(0xFFE2D6C3);
+  static const Color waveSunHighlight = Color(0xFFFFFDF5);
+  static const Color waveSunGlow = Color(0xFFFFF0D0);
+  static const Color waveSunCore = Color(0xFFFFF9E6);
+  static const Color waveRidgeLightTop = Color(0xFF9EAA8E);
+  static const Color waveRidgeLightBottom = Color(0xFF7E8C6F);
+  static const Color waveRidgeMidTop = Color(0xFF5E6C50);
+  static const Color waveRidgeMidBottom = Color(0xFF4A583E);
+  static const Color waveRidgeDeepBottom = Color(0xFF222B1C);
+
+  static const Color wireframeGlowInner = Color(0xFFD9D4A7);
+  static const Color wireframeGlowOuter = Color(0xFF92977D);
+  static const Color wireframeRingOuter = Color(0xFFC7CDAD);
+  static const Color wireframeRingInner = Color(0xFFE2E7CB);
+  static const Color wireframeFold = Color(0xFFE8ECD4);
+  static const Color wireframeSulcus = Color(0xFFB4BC9B);
+  static const Color wireframeNode = Color(0xFFFBFEE6);
+  static const Color orbWarmHighlight = Color(0xFFFFF8EE);
 
   // ---------------------------------------------------------------------------
   // Exact Light ("Dawn") constants (referenced by buildMindTheme / Step 5 bridge)
@@ -378,6 +401,102 @@ class MindTokens extends ThemeExtension<MindTokens> {
         : (Color.lerp(ink, nextM1, 0.60) ?? lightFocusRingDefault);
     return copyWith(m1: nextM1, m2: nextM2, focusRing: nextFocusRing);
   }
+
+  // ---------------------------------------------------------------------------
+  // Token-Driven Component Helpers (Single Theme Branch Inside MindTokens Only)
+  // ---------------------------------------------------------------------------
+
+  /// Soft ambient shadow under primary CTAs in Light Dawn; flat in Dark Vercel.
+  List<BoxShadow> get primaryButtonShadows => glow > 0
+      ? [
+          BoxShadow(
+            color: m1.withValues(alpha: 0.35),
+            blurRadius: 20,
+            spreadRadius: -6,
+            offset: const Offset(0, 10),
+          ),
+        ]
+      : const [];
+
+  /// Soft button surface: 17% mood tint in Dawn Light, `surface2` in Vercel Dark.
+  Color get softButtonBg => isDark ? surface2 : tint(m1, 0.17);
+
+  /// Soft button hairline border: `line` in Vercel Dark, borderless in Dawn Light.
+  Color get softButtonBorder => isDark ? line : Colors.transparent;
+
+  /// Border color for active segments: `lineStrong` in Dark Vercel, `line` in Dawn Light.
+  Color get segmentedActiveBorder => isDark ? lineStrong : line;
+
+  /// Elevation under selected segments in Dawn Light; none in Dark Vercel.
+  List<BoxShadow> get segmentedActiveShadows => shadows.isEmpty
+      ? const []
+      : [
+          BoxShadow(
+            color: ink.withValues(alpha: 0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ];
+
+  /// Hairline safety border (`safety` at 30%).
+  Color get dangerBorder => safety.withValues(alpha: 0.30);
+
+  /// Switch off track: `#1F1F1F` (`surface3`) in Dark Vercel, `#ECEFF5` (`surface2`) in Dawn Light.
+  Color get switchOffTrack => isDark ? surface3 : surface2;
+
+  /// Switch on track: `m1` blended at 55% over `surface`.
+  Color get switchOnTrack => tint(m1, switchOnTrackTint);
+
+  /// Thumb color when switch is enabled.
+  Color get switchThumbOn => pureWhiteConstant;
+
+  /// Equalizer / slider thumb border color.
+  Color get controlThumbBorder =>
+      isDark ? pureWhiteConstant.withValues(alpha: 0.85) : pureWhiteConstant;
+
+  /// Outer elevation under the floating nav pill (Dawn Light only; hairline in Dark Vercel).
+  List<BoxShadow> get navPillShadows => shadows.isEmpty
+      ? const []
+      : [
+          BoxShadow(
+            color: ink.withValues(alpha: 0.16),
+            blurRadius: 28,
+            spreadRadius: -10,
+            offset: const Offset(0, 14),
+          ),
+        ];
+
+  /// Center AI hero ring glow (Dawn Light only; crisp flat `#000` ring in Dark Vercel).
+  List<BoxShadow> get navCenterShadows => glow > 0
+      ? [
+          BoxShadow(
+            color: m1.withValues(alpha: 0.45),
+            blurRadius: 18,
+            spreadRadius: -4,
+            offset: const Offset(0, 8),
+          ),
+        ]
+      : const [];
+
+  /// Active capsule fill behind the selected bottom-nav item (`m1` at `navActiveTint`).
+  Color get navCapsuleFill => tint(m1, navActiveTint);
+
+  /// Semantic foreground color for Fact / Assumption / Interpretation badges.
+  Color labelColor(LabelType label) {
+    return switch (label) {
+      LabelType.fact => moodAnxious,
+      LabelType.assumption => moodRestless,
+      LabelType.interpretation => moodHeavy,
+    };
+  }
+
+  /// Tinted badge fill derived from [labelColor].
+  Color labelBackground(LabelType label) =>
+      tint(labelColor(label), tintSelected);
+
+  /// Hairline badge border derived from [labelColor].
+  Color labelBorder(LabelType label) =>
+      labelColor(label).withValues(alpha: 0.30);
 
   // ---------------------------------------------------------------------------
   // Transitional Aliases for Steps 2–5 Backward Compatibility (Removed in Step 5)

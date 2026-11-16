@@ -1,7 +1,10 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
 import '../../app/localization/app_strings.dart';
-import '../../app/theme/lab_colors.dart';
+import '../../app/theme/lab_theme.dart';
+import '../../app/theme/mind_tokens.dart';
 
 /// Real-time animated neural waveform telemetry canvas.
 ///
@@ -12,7 +15,7 @@ class NeuralWaveformVisualizer extends StatefulWidget {
     super.key,
     required this.intensity,
     required this.moodColor,
-    required this.isDark,
+    this.isDark = false,
     required this.strings,
   });
 
@@ -86,7 +89,7 @@ class _NeuralWaveformVisualizerState extends State<NeuralWaveformVisualizer>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDark;
+    final tokens = context.tokens;
     final telemetry = _getFrequencyTelemetry(widget.intensity, widget.strings);
 
     return Container(
@@ -94,12 +97,9 @@ class _NeuralWaveformVisualizerState extends State<NeuralWaveformVisualizer>
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF070707) : const Color(0xFFF4F4F5),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFE4E4E7),
-          width: 1,
-        ),
+        color: tokens.surface2,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tokens.line, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,16 +113,13 @@ class _NeuralWaveformVisualizerState extends State<NeuralWaveformVisualizer>
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontFamily: 'Inter',
+                    fontFamily: LabTheme.fontFamily,
+                    fontFamilyFallback: LabTheme.fontFallback,
                     fontFeatures: const [FontFeature.tabularFigures()],
-                    fontSize: 10,
+                    fontSize: 10.5,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.6,
-                    color: widget.intensity >= 7
-                        ? (isDark ? LabColors.cherryRedGlow : LabColors.cherryRedDeep)
-                        : (widget.intensity >= 4
-                            ? (isDark ? LabColors.warmBeigeGlow : LabColors.warmBeigeDark)
-                            : (isDark ? LabColors.sageGreenGlow : LabColors.sageGreen)),
+                    color: widget.intensity >= 7 ? tokens.safety : tokens.ink2,
                   ),
                 ),
               ),
@@ -133,13 +130,15 @@ class _NeuralWaveformVisualizerState extends State<NeuralWaveformVisualizer>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: widget.moodColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: widget.moodColor.withValues(alpha: 0.6),
-                      blurRadius: 4,
-                      spreadRadius: 1,
-                    ),
-                  ],
+                  boxShadow: tokens.glow > 0
+                      ? [
+                          BoxShadow(
+                            color: widget.moodColor.withValues(alpha: 0.6),
+                            blurRadius: 4,
+                            spreadRadius: 1,
+                          ),
+                        ]
+                      : const <BoxShadow>[],
                 ),
               ),
             ],
@@ -155,7 +154,7 @@ class _NeuralWaveformVisualizerState extends State<NeuralWaveformVisualizer>
                       phase: _controller.value * 2 * math.pi,
                       intensity: widget.intensity,
                       color: widget.moodColor,
-                      isDark: isDark,
+                      glowAlpha: tokens.glow > 0 ? 0.20 : 0.35,
                     ),
                     size: Size.infinite,
                   );
@@ -174,20 +173,19 @@ class _WaveformPainter extends CustomPainter {
     required this.phase,
     required this.intensity,
     required this.color,
-    required this.isDark,
+    required this.glowAlpha,
   });
 
   final double phase;
   final double intensity;
   final Color color;
-  final bool isDark;
+  final double glowAlpha;
 
   @override
   void paint(Canvas canvas, Size size) {
     final midY = size.height / 2;
     final width = size.width;
 
-    // Amplitude and frequency scaling according to self-reported arousal
     final amp = 4.0 + (intensity * 2.2);
     final freq = 0.02 + (intensity * 0.015);
 
@@ -201,15 +199,13 @@ class _WaveformPainter extends CustomPainter {
       path.lineTo(x, y);
     }
 
-    // Layer 1: Diffused ambient glow
     final glowPaint = Paint()
-      ..color = color.withValues(alpha: isDark ? 0.35 : 0.20)
+      ..color = color.withValues(alpha: glowAlpha)
       ..strokeWidth = 3.5
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
     canvas.drawPath(path, glowPaint);
 
-    // Layer 2: Precision razor hairline core
     final corePaint = Paint()
       ..color = color
       ..strokeWidth = 1.3
@@ -222,6 +218,7 @@ class _WaveformPainter extends CustomPainter {
   bool shouldRepaint(covariant _WaveformPainter oldDelegate) {
     return oldDelegate.phase != phase ||
         oldDelegate.intensity != intensity ||
-        oldDelegate.color != color;
+        oldDelegate.color != color ||
+        oldDelegate.glowAlpha != glowAlpha;
   }
 }

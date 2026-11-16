@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/localization/app_strings.dart';
-import '../../app/theme/lab_colors.dart';
+import '../../app/theme/lab_theme.dart';
+import '../../app/theme/mind_tokens.dart';
 import '../../features/investigation/domain/label_type.dart';
 
 /// Minimalist, accessible badge representing Fact, Assumption, or Interpretation.
 ///
-/// Geometric precision: 6px radius, hairline border, no emoji, high contrast.
-/// Trilingual: Displays authentic localized label names (AR / FR / EN).
+/// Always pairs letter code, vector icon, and localized text label using [MindTokens].
 class LabelBadge extends ConsumerWidget {
   const LabelBadge({
     super.key,
@@ -34,12 +34,11 @@ class LabelBadge extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final tokens = context.tokens;
     final strings = ref.watch(appStringsProvider);
-    final fgColor = LabColors.forLabel(label, isDark: isDark);
-    final bgColor = LabColors.labelBackground(label, isDark: isDark);
-    final borderColor = LabColors.labelBorder(label, isDark: isDark);
-
+    final accentColor = tokens.labelColor(label);
+    final bgColor = tokens.labelBackground(label);
+    final borderColor = tokens.labelBorder(label);
     final localizedName = strings.localizedLabelName(label);
 
     return Container(
@@ -49,36 +48,38 @@ class LabelBadge extends ConsumerWidget {
       ),
       decoration: BoxDecoration(
         color: bgColor,
-        borderRadius: BorderRadius.circular(6),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: borderColor, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Letter indicator (F, A, or I)
+          Icon(
+            _iconForLabel(),
+            size: compact ? 12 : 13.5,
+            color: accentColor,
+          ),
+          const SizedBox(width: 4),
           Text(
             label.letter,
             style: TextStyle(
+              fontFamily: LabTheme.fontFamily,
+              fontFamilyFallback: LabTheme.fontFallback,
               fontSize: compact ? 10.5 : 11.5,
               fontWeight: FontWeight.w800,
-              color: fgColor,
+              color: tokens.ink,
             ),
           ),
-          const SizedBox(width: 4),
-          // Icon indicator for non-color accessibility
-          Icon(
-            _iconForLabel(),
-            size: compact ? 11 : 13,
-            color: fgColor,
-          ),
           if (showText) ...[
-            const SizedBox(width: 5),
+            const SizedBox(width: 4),
             Text(
               localizedName,
               style: TextStyle(
+                fontFamily: LabTheme.fontFamily,
+                fontFamilyFallback: LabTheme.fontFallback,
                 fontSize: compact ? 10.5 : 11.5,
                 fontWeight: FontWeight.w600,
-                color: fgColor,
+                color: tokens.ink,
               ),
             ),
           ],

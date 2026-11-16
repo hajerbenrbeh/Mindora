@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../app/localization/app_strings.dart';
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
@@ -38,7 +39,7 @@ class MindIntensityPicker extends StatelessWidget {
     final tokens = context.tokens;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final selected = value.clamp(1, 10);
-    final activeColor = accentColor ?? tokens.accent;
+    final activeColor = accentColor ?? tokens.m1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -64,10 +65,11 @@ class MindIntensityPicker extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: LabTheme.fontFamily,
+                      fontFamilyFallback: LabTheme.fontFallback,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w500,
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                     ),
                   ),
                 ),
@@ -79,10 +81,11 @@ class MindIntensityPicker extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.end,
                     style: TextStyle(
-                      fontFamily: 'Inter',
+                      fontFamily: LabTheme.fontFamily,
+                      fontFamilyFallback: LabTheme.fontFallback,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w500,
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                     ),
                   ),
                 ),
@@ -127,7 +130,6 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final direction = Directionality.of(context);
     final animDuration =
         reduceMotion ? Duration.zero : const Duration(milliseconds: 140);
@@ -136,9 +138,9 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minHeight: 50),
       decoration: BoxDecoration(
-        color: tokens.surfaceSecondary,
+        color: tokens.surface2,
         borderRadius: BorderRadius.circular(capsuleRadius),
-        border: Border.all(color: tokens.border),
+        border: Border.all(color: tokens.line),
       ),
       child: Row(
         children: [
@@ -155,7 +157,7 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                 child: Icon(
                   Icons.remove_rounded,
                   size: 18,
-                  color: selected > 1 ? tokens.textPrimary : tokens.textTertiary,
+                  color: selected > 1 ? tokens.ink : tokens.ink3,
                 ),
               ),
             ),
@@ -208,15 +210,13 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                                   alignment: AlignmentDirectional.centerStart,
                                   widthFactor: 1.0,
                                   child: Container(
-                                    color: tokens.border.withValues(alpha: 0.75),
+                                    color: tokens.lineStrong,
                                     child: FractionallySizedBox(
                                       alignment: AlignmentDirectional.centerStart,
                                       widthFactor:
                                           ((selected - 1) / 9.0).clamp(0.04, 1.0),
                                       child: Container(
-                                        color: activeColor.withValues(
-                                          alpha: isDark ? 0.55 : 0.45,
-                                        ),
+                                        color: activeColor.withValues(alpha: 0.50),
                                       ),
                                     ),
                                   ),
@@ -243,13 +243,10 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                                             ? activeColor
                                             : (level < selected
                                                 ? activeColor.withValues(
-                                                    alpha: isDark
-                                                        ? 0.65 +
-                                                            (level / 10) * 0.25
-                                                        : 0.52 +
-                                                            (level / 10) * 0.34,
+                                                    alpha: 0.55 +
+                                                        (level / 10) * 0.30,
                                                   )
-                                                : tokens.textTertiary.withValues(
+                                                : tokens.ink3.withValues(
                                                     alpha: 0.42,
                                                   )),
                                         borderRadius: BorderRadius.circular(
@@ -257,23 +254,21 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                                         ),
                                         border: level == selected
                                             ? Border.all(
-                                                color: isDark
-                                                    ? Colors.white
-                                                        .withValues(alpha: 0.85)
-                                                    : Colors.white,
+                                                color: tokens.controlThumbBorder,
                                                 width: 2.0,
                                               )
                                             : null,
-                                        boxShadow: level == selected
+                                        boxShadow: level == selected &&
+                                                tokens.glow > 0
                                             ? [
                                                 BoxShadow(
                                                   color: activeColor.withValues(
-                                                    alpha: isDark ? 0.42 : 0.28,
+                                                    alpha: 0.35,
                                                   ),
-                                                  blurRadius: isDark ? 10 : 6,
+                                                  blurRadius: 6,
                                                 ),
                                               ]
-                                            : null,
+                                            : const <BoxShadow>[],
                                       ),
                                     ),
                                   ),
@@ -301,7 +296,7 @@ class _PrecisionEqualizerCapsule extends StatelessWidget {
                 child: Icon(
                   Icons.add_rounded,
                   size: 18,
-                  color: selected < 10 ? tokens.textPrimary : tokens.textTertiary,
+                  color: selected < 10 ? tokens.ink : tokens.ink3,
                 ),
               ),
             ),

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
-/// Calm pill-based segmented selector built against [MindTokens].
+/// Calm pill-based segmented selector driven exclusively by [MindTokens].
 ///
 /// Enforces minimum 48dp tap targets per option, non-color selection cues
-/// (surface fill + border + font weight), reduced-motion safety, and RTL layout.
+/// (surface3 pill + active border + font weight), reduced-motion safety, and RTL layout.
 class MindSegmented extends StatelessWidget {
   const MindSegmented({
     super.key,
@@ -22,16 +23,15 @@ class MindSegmented extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
-    final innerRadius = (tokens.buttonRadius - 4).clamp(6.0, 16.0);
+    final innerRadius = (tokens.buttonRadius - 3).clamp(8.0, 16.0);
 
     return Container(
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: tokens.surfaceSecondary,
+        color: tokens.surface2,
         borderRadius: BorderRadius.circular(tokens.buttonRadius),
-        border: Border.all(color: tokens.border, width: 1.0),
+        border: Border.all(color: tokens.line, width: 1.0),
       ),
       child: Row(
         children: [
@@ -47,7 +47,7 @@ class MindSegmented extends StatelessWidget {
                   child: AnimatedContainer(
                     duration: reduceMotion
                         ? Duration.zero
-                        : const Duration(milliseconds: 160),
+                        : const Duration(milliseconds: 180),
                     curve: Curves.easeOutCubic,
                     constraints: const BoxConstraints(minHeight: 48),
                     padding: const EdgeInsetsDirectional.symmetric(
@@ -56,27 +56,17 @@ class MindSegmented extends StatelessWidget {
                     ),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: index == i
-                          ? (isDark ? tokens.surfaceElevated : tokens.surface)
-                          : Colors.transparent,
+                      color: index == i ? tokens.surface3 : Colors.transparent,
                       borderRadius: BorderRadius.circular(innerRadius),
                       border: index == i
                           ? Border.all(
-                              color: tokens.border,
+                              color: tokens.segmentedActiveBorder,
                               width: 1.0,
                             )
                           : null,
                       boxShadow: index == i
-                          ? [
-                              BoxShadow(
-                                color: isDark
-                                    ? Colors.black.withValues(alpha: 0.30)
-                                    : tokens.textPrimary.withValues(alpha: 0.06),
-                                blurRadius: isDark ? 10 : 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
+                          ? tokens.segmentedActiveShadows
+                          : const <BoxShadow>[],
                     ),
                     child: Text(
                       labels[i],
@@ -84,14 +74,14 @@ class MindSegmented extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontFamily: 'Inter',
+                        fontFamily: LabTheme.fontFamily,
+                        fontFamilyFallback: LabTheme.fontFallback,
                         fontSize: 13.5,
                         height: 1.2,
-                        fontWeight:
-                            index == i ? FontWeight.w700 : FontWeight.w600,
-                        color: index == i
-                            ? tokens.textPrimary
-                            : tokens.textSecondary,
+                        fontWeight: index == i
+                            ? FontWeight.w700
+                            : FontWeight.w600,
+                        color: index == i ? tokens.ink : tokens.ink2,
                       ),
                     ),
                   ),
@@ -103,4 +93,3 @@ class MindSegmented extends StatelessWidget {
     );
   }
 }
-

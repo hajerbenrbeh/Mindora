@@ -1,24 +1,23 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import '../../app/theme/lab_colors.dart';
+
+import '../../app/theme/mind_tokens.dart';
 
 /// A delicate visual signature combining concentric fingerprint ridges
-/// and abstract flowing neural threads.
-///
-/// Embodies the Mind Forensics visual identity:
-/// "Every thought leaves a trace. Every emotion tells a story."
+/// and abstract flowing neural threads driven by [MindTokens].
 class FingerprintThreadSignature extends StatefulWidget {
   const FingerprintThreadSignature({
     super.key,
     this.size = 64.0,
-    this.primaryColor = LabColors.champagneGold,
-    this.accentColor = LabColors.deepBurgundy,
+    this.primaryColor,
+    this.accentColor,
     this.animated = false,
   });
 
   final double size;
-  final Color primaryColor;
-  final Color accentColor;
+  final Color? primaryColor;
+  final Color? accentColor;
   final bool animated;
 
   @override
@@ -74,7 +73,11 @@ class _FingerprintThreadSignatureState extends State<FingerprintThreadSignature>
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
+    final effectivePrimary = widget.primaryColor ?? tokens.m1;
+    final effectiveAccent = widget.accentColor ?? tokens.ink2;
+
     return ExcludeSemantics(
       child: AnimatedBuilder(
         animation: _controller,
@@ -85,8 +88,8 @@ class _FingerprintThreadSignatureState extends State<FingerprintThreadSignature>
               progress: (widget.animated && !reduceMotion)
                   ? _controller.value
                   : 0.0,
-              primaryColor: widget.primaryColor,
-              accentColor: widget.accentColor,
+              primaryColor: effectivePrimary,
+              accentColor: effectiveAccent,
             ),
           );
         },

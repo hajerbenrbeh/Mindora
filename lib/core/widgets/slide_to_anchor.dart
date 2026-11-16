@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../app/theme/lab_colors.dart';
 
-/// Luxury "Slide-to-Anchor" tactile slider.
-///
-/// Replaces generic tap buttons with an intentional, somatic swipe gesture
-/// that gives psychological finality and grounding when anchoring a reframe.
+import '../../app/theme/lab_theme.dart';
+import '../../app/theme/mind_tokens.dart';
+
+/// Tactile "Slide-to-Anchor" swipe confirmation driven exclusively by [MindTokens].
 class SlideToAnchor extends StatefulWidget {
   const SlideToAnchor({
     super.key,
     required this.label,
     required this.onCompleted,
-    this.accentColor = LabColors.warmBeige,
+    this.accentColor,
     this.backgroundColor,
     this.height = 54.0,
-    this.isDark = true,
+    @Deprecated('Removed in Step 5') this.isDark = true,
   });
 
   final String label;
   final Future<void> Function() onCompleted;
-  final Color accentColor;
+  final Color? accentColor;
   final Color? backgroundColor;
   final double height;
   final bool isDark;
@@ -28,7 +27,8 @@ class SlideToAnchor extends StatefulWidget {
   State<SlideToAnchor> createState() => _SlideToAnchorState();
 }
 
-class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProviderStateMixin {
+class _SlideToAnchorState extends State<SlideToAnchor>
+    with SingleTickerProviderStateMixin {
   double _dragPosition = 0.0;
   bool _isCompleted = false;
   late final AnimationController _resetController;
@@ -58,8 +58,6 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
     setState(() {
       _dragPosition = (_dragPosition + details.delta.dx).clamp(0.0, maxDrag);
       final progress = maxDrag > 0 ? _dragPosition / maxDrag : 0.0;
-
-      // Progressive micro-haptics along the drag path
       final step = (progress * 4).floor();
       if (step != _lastHapticStep && step > 0) {
         _lastHapticStep = step;
@@ -78,19 +76,19 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
     await widget.onCompleted();
   }
 
-  Future<void> _onHorizontalDragEnd(DragEndDetails details, double maxDrag) async {
+  Future<void> _onHorizontalDragEnd(
+    DragEndDetails details,
+    double maxDrag,
+  ) async {
     if (_isCompleted) return;
 
     final progress = maxDrag > 0 ? _dragPosition / maxDrag : 0.0;
     if (progress >= 0.85) {
       await _completeAnchor(maxDrag);
     } else {
-      // Snap back
       _lastHapticStep = 0;
       if (MediaQuery.disableAnimationsOf(context)) {
-        setState(() {
-          _dragPosition = 0.0;
-        });
+        setState(() => _dragPosition = 0.0);
         return;
       }
       _resetAnimation = Tween<double>(begin: _dragPosition, end: 0.0).animate(
@@ -102,19 +100,22 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final isDark = widget.isDark;
+    final tokens = context.tokens;
+    final accent = widget.accentColor ?? tokens.m1;
     final trackHeight = widget.height;
     final thumbSize = trackHeight - 8.0;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxDrag = (constraints.maxWidth - thumbSize - 8.0).clamp(0.0, double.infinity);
-        final progress = maxDrag > 0 ? (_dragPosition / maxDrag).clamp(0.0, 1.0) : 0.0;
+        final maxDrag = (constraints.maxWidth - thumbSize - 8.0).clamp(
+          0.0,
+          double.infinity,
+        );
+        final progress =
+            maxDrag > 0 ? (_dragPosition / maxDrag).clamp(0.0, 1.0) : 0.0;
 
-        final trackBg = widget.backgroundColor ??
-            (isDark ? const Color(0xFF0D0D0D) : const Color(0xFFF4F4F5));
-        final borderColor = isDark ? const Color(0xFF242424) : const Color(0xFFE4E4E7);
+        final trackBg = widget.backgroundColor ?? tokens.surface2;
 
         return Semantics(
           container: true,
@@ -128,23 +129,22 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
               width: double.infinity,
               decoration: BoxDecoration(
                 color: trackBg,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: borderColor, width: 1),
+                borderRadius: BorderRadius.circular(tokens.buttonRadius),
+                border: Border.all(color: tokens.line, width: 1),
               ),
               child: Stack(
                 alignment: Alignment.centerLeft,
                 children: [
-                  // Filled Progress Glow Track
                   Container(
                     width: _dragPosition + thumbSize + 4.0,
                     height: trackHeight,
                     decoration: BoxDecoration(
-                      color: widget.accentColor.withValues(alpha: isDark ? 0.22 : 0.18),
-                      borderRadius: BorderRadius.circular(9),
+                      color: tokens.tint(accent, tokens.tintSelected),
+                      borderRadius: BorderRadius.circular(
+                        tokens.buttonRadius - 1,
+                      ),
                     ),
                   ),
-
-                  // Centered Prompt Label
                   Center(
                     child: Opacity(
                       opacity: (1.0 - (progress * 1.4)).clamp(0.0, 1.0),
@@ -154,29 +154,31 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
                           Text(
                             widget.label.toUpperCase(),
                             style: TextStyle(
-                              fontSize: 11,
+                              fontFamily: LabTheme.fontFamily,
+                              fontFamilyFallback: LabTheme.fontFallback,
+                              fontSize: 11.5,
                               fontWeight: FontWeight.w800,
-                              letterSpacing: 1.2,
-                              color: isDark ? const Color(0xFFA1A1AA) : const Color(0xFF71717A),
+                              letterSpacing: 1.0,
+                              color: tokens.ink2,
                             ),
                           ),
                           const SizedBox(width: 6),
                           Icon(
                             Icons.arrow_forward_ios_rounded,
                             size: 11,
-                            color: isDark ? const Color(0xFFA1A1AA) : const Color(0xFF71717A),
+                            color: tokens.ink2,
                           ),
                         ],
                       ),
                     ),
                   ),
-
-                  // Interactive Draggable Thumb
                   Positioned(
                     left: 4.0 + _dragPosition,
                     child: GestureDetector(
-                      onHorizontalDragUpdate: (details) => _onHorizontalDragUpdate(details, maxDrag),
-                      onHorizontalDragEnd: (details) => _onHorizontalDragEnd(details, maxDrag),
+                      onHorizontalDragUpdate: (details) =>
+                          _onHorizontalDragUpdate(details, maxDrag),
+                      onHorizontalDragEnd: (details) =>
+                          _onHorizontalDragEnd(details, maxDrag),
                       child: AnimatedContainer(
                         duration: reduceMotion
                             ? Duration.zero
@@ -184,25 +186,29 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
                         width: thumbSize,
                         height: thumbSize,
                         decoration: BoxDecoration(
-                          color: _isCompleted
-                              ? widget.accentColor
-                              : (isDark ? Colors.white : Colors.black),
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: widget.accentColor.withValues(alpha: progress * 0.4),
-                              blurRadius: 10,
-                              spreadRadius: 1,
-                            ),
-                          ],
+                          color: _isCompleted ? accent : tokens.ink,
+                          borderRadius: BorderRadius.circular(
+                            tokens.iconButtonRadius,
+                          ),
+                          boxShadow: tokens.glow > 0
+                              ? [
+                                  BoxShadow(
+                                    color: accent.withValues(
+                                      alpha: progress * 0.4,
+                                    ),
+                                    blurRadius: 10,
+                                    spreadRadius: 1,
+                                  ),
+                                ]
+                              : const <BoxShadow>[],
                         ),
                         child: Center(
                           child: Icon(
-                            _isCompleted ? Icons.check_rounded : Icons.anchor_rounded,
+                            _isCompleted
+                                ? Icons.check_rounded
+                                : Icons.anchor_rounded,
                             size: 20,
-                            color: _isCompleted
-                                ? Colors.black
-                                : (isDark ? Colors.black : Colors.white),
+                            color: _isCompleted ? tokens.onMood : tokens.bg,
                           ),
                         ),
                       ),
@@ -217,4 +223,3 @@ class _SlideToAnchorState extends State<SlideToAnchor> with SingleTickerProvider
     );
   }
 }
-

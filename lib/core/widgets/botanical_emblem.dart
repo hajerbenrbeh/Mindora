@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/lab_colors.dart';
 
-/// Organic botanical leaf / sprout illustration matching the master reference.
-/// Used in avatars, encouragement banners, and section ornaments.
+import '../../app/theme/mind_tokens.dart';
+
+/// Organic botanical leaf emblem driven by [MindTokens].
 class BotanicalEmblem extends StatelessWidget {
   const BotanicalEmblem({
     super.key,
@@ -17,8 +17,8 @@ class BotanicalEmblem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final leafColor = color ?? (isDark ? LabColors.sageGreen : LabColors.secondaryOlive);
+    final tokens = context.tokens;
+    final leafColor = color ?? tokens.m1;
 
     final emblem = ExcludeSemantics(
       child: CustomPaint(
@@ -65,13 +65,11 @@ class _BotanicalLeafPainter extends CustomPainter {
     final w = size.width;
     final h = size.height;
 
-    // Central graceful stem curve
     final stem = Path()
       ..moveTo(w * 0.45, h * 0.95)
       ..cubicTo(w * 0.45, h * 0.70, w * 0.52, h * 0.40, w * 0.50, h * 0.12);
     canvas.drawPath(stem, paint);
 
-    // Primary central top leaf
     final topLeaf = Path()
       ..moveTo(w * 0.50, h * 0.12)
       ..cubicTo(w * 0.62, h * 0.22, w * 0.60, h * 0.38, w * 0.50, h * 0.42)
@@ -79,7 +77,6 @@ class _BotanicalLeafPainter extends CustomPainter {
     canvas.drawPath(topLeaf, fillPaint);
     canvas.drawPath(topLeaf, paint);
 
-    // Left lower leaf
     final leftLeaf = Path()
       ..moveTo(w * 0.48, h * 0.55)
       ..cubicTo(w * 0.28, h * 0.45, w * 0.22, h * 0.60, w * 0.26, h * 0.70)
@@ -87,7 +84,6 @@ class _BotanicalLeafPainter extends CustomPainter {
     canvas.drawPath(leftLeaf, fillPaint);
     canvas.drawPath(leftLeaf, paint);
 
-    // Right middle leaf
     final rightLeaf = Path()
       ..moveTo(w * 0.51, h * 0.42)
       ..cubicTo(w * 0.70, h * 0.36, w * 0.76, h * 0.50, w * 0.72, h * 0.60)
@@ -100,4 +96,3 @@ class _BotanicalLeafPainter extends CustomPainter {
   bool shouldRepaint(covariant _BotanicalLeafPainter oldDelegate) =>
       oldDelegate.color != color;
 }
-

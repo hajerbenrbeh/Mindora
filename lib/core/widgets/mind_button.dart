@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../app/theme/lab_colors.dart';
+
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
-enum MindButtonVariant {
-  primary,
-  secondary,
-  soft,
-  danger,
-}
+enum MindButtonVariant { primary, secondary, soft, ghost, danger }
 
-/// Accessible, minimum 48×48px tap target button with tactile micro-interaction.
+/// Accessible, minimum 48×48px tap target button driven strictly by [MindTokens].
 class MindButton extends StatelessWidget {
   const MindButton({
     super.key,
@@ -36,42 +32,51 @@ class MindButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final enabled = onPressed != null && !isLoading;
 
-    Color bg;
-    Color fg;
-    Color border;
+    final Color bg;
+    final Color fg;
+    final Color border;
+    final double borderWidth;
+    final List<BoxShadow> shadows;
 
     switch (variant) {
       case MindButtonVariant.primary:
-        bg = tokens.accent;
-        fg = tokens.onAccent;
+        bg = tokens.ink;
+        fg = tokens.bg;
         border = Colors.transparent;
-        break;
+        borderWidth = 1.0;
+        shadows = enabled ? tokens.primaryButtonShadows : const [];
       case MindButtonVariant.secondary:
         bg = tokens.surface;
-        fg = tokens.textPrimary;
-        border = tokens.border;
-        break;
+        fg = tokens.ink;
+        border = tokens.line;
+        borderWidth = 1.0;
+        shadows = const [];
       case MindButtonVariant.soft:
-        bg = tokens.accentSoft;
-        fg = tokens.accent;
-        border = tokens.accent.withValues(alpha: 0.25);
-        break;
+        bg = tokens.softButtonBg;
+        fg = tokens.ink;
+        border = tokens.softButtonBorder;
+        borderWidth = 1.0;
+        shadows = const [];
+      case MindButtonVariant.ghost:
+        bg = Colors.transparent;
+        fg = tokens.ink;
+        border = tokens.line;
+        borderWidth = 1.5;
+        shadows = const [];
       case MindButtonVariant.danger:
-        bg = tokens.safetyWarmthSoft;
-        fg = tokens.safetyWarmth;
-        border = isDark ? LabColors.safetyBorderDark : LabColors.safetyBorderLight;
-        break;
+        bg = tokens.safetySoft;
+        fg = tokens.safety;
+        border = tokens.dangerBorder;
+        borderWidth = 1.0;
+        shadows = const [];
     }
 
-    if (!enabled) {
-      bg = bg.withValues(alpha: 0.5);
-      fg = fg.withValues(alpha: 0.5);
-    }
+    final effectiveBg = enabled ? bg : bg.withValues(alpha: 0.45);
+    final effectiveFg = enabled ? fg : fg.withValues(alpha: 0.45);
 
-    Widget content = Row(
+    final content = Row(
       mainAxisSize: isFullWidth ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -81,12 +86,12 @@ class MindButton extends StatelessWidget {
             height: 14,
             child: CircularProgressIndicator(
               strokeWidth: 2,
-              valueColor: AlwaysStoppedAnimation<Color>(fg),
+              valueColor: AlwaysStoppedAnimation<Color>(effectiveFg),
             ),
           ),
           const SizedBox(width: 8),
         ] else if (leadingIcon != null) ...[
-          Icon(leadingIcon, size: 16, color: fg),
+          Icon(leadingIcon, size: 17, color: effectiveFg),
           const SizedBox(width: 8),
         ],
         Flexible(
@@ -100,9 +105,11 @@ class MindButton extends StatelessWidget {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  color: fg,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  fontFamily: LabTheme.fontFamily,
+                  fontFamilyFallback: LabTheme.fontFallback,
+                  color: effectiveFg,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
                   letterSpacing: -0.2,
                 ),
               ),
@@ -113,9 +120,11 @@ class MindButton extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: fg.withValues(alpha: 0.75),
-                    fontSize: 10,
-                    fontWeight: FontWeight.w400,
+                    fontFamily: LabTheme.fontFamily,
+                    fontFamilyFallback: LabTheme.fontFallback,
+                    color: effectiveFg.withValues(alpha: 0.78),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
             ],
@@ -123,7 +132,7 @@ class MindButton extends StatelessWidget {
         ),
         if (trailingIcon != null && !isLoading) ...[
           const SizedBox(width: 8),
-          Icon(trailingIcon, size: 16, color: fg),
+          Icon(trailingIcon, size: 17, color: effectiveFg),
         ],
       ],
     );
@@ -141,9 +150,10 @@ class MindButton extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
           decoration: BoxDecoration(
-            color: bg,
+            color: effectiveBg,
             borderRadius: BorderRadius.circular(tokens.buttonRadius),
-            border: Border.all(color: border, width: 1.0),
+            border: Border.all(color: border, width: borderWidth),
+            boxShadow: shadows,
           ),
           child: content,
         ),
@@ -151,4 +161,3 @@ class MindButton extends StatelessWidget {
     );
   }
 }
-

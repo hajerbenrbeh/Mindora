@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 
+import '../../app/theme/mind_tokens.dart';
 import 'mood_emblem.dart';
 
 /// Expressive, continuously animated fluid somatic mood orb built with pure
@@ -13,11 +14,10 @@ import 'mood_emblem.dart';
 /// - **Morphology (`calm`, `anxious`, `frustrated`, `heavy`, `restless`)**:
 ///   Each mood defines a distinct organic silhouette with counter-rotating waves.
 /// - **Intensity (`1..10`)**: Drives contour lobe amplitude, overall scale,
-///   wave velocity (gentle breathing at 1-2 vs energetic turbulence at 8-10),
-///   ambient glow, and a subtle outer resonance outline.
-/// - **Test & Accessibility Safety**: Uses [SingleTickerProviderStateMixin] for
-///   morph transitions + a guarded [Ticker] for continuous real-device motion
-///   when not inside headless widget tests or reduced-motion accessibility mode.
+///   wave velocity, ambient glow (scaled by `tokens.orbGlowFactor` — 35% in Dark
+///   Vercel vs 100% in Light Dawn), and outer resonance halo.
+/// - **Vertical Drag (`onIntensityChanged`)**: Optional vertical gesture changes
+///   intensity (1 level per 16px) with `selectionClick` haptic feedback.
 class OrganicMoodOrb extends StatefulWidget {
   const OrganicMoodOrb({
     super.key,
@@ -25,9 +25,11 @@ class OrganicMoodOrb extends StatefulWidget {
     required this.intensity,
     required this.color,
     this.size = 104.0,
-    this.isDark = false,
+    @Deprecated('Removed in Step 5') this.isDark = false,
     this.onTap,
+    this.onIntensityChanged,
     this.semanticLabel,
+    this.idle = false,
   });
 
   final String moodKey;
@@ -36,7 +38,9 @@ class OrganicMoodOrb extends StatefulWidget {
   final double size;
   final bool isDark;
   final VoidCallback? onTap;
+  final ValueChanged<int>? onIntensityChanged;
   final String? semanticLabel;
+  final bool idle;
 
   @override
   State<OrganicMoodOrb> createState() => _OrganicMoodOrbState();
@@ -196,6 +200,7 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
   Ticker? _flowTicker;
   Duration _lastElapsed = Duration.zero;
   double _tapScale = 1.0;
+  double _dragAccumDy = 0.0;
 
   _OrbShapeSpec? _fromSpec;
   _OrbShapeSpec? _toSpec;
@@ -210,7 +215,7 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
     _flowPhaseNotifier ??= ValueNotifier<double>(0.0);
     _morphController ??= AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 520),
+      duration: const Duration(milliseconds: 700),
     )..value = 1.0;
     _paintListenable ??=
         Listenable.merge([_morphController!, _flowPhaseNotifier!]);
@@ -324,47 +329,88 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
   @override
   Widget build(BuildContext context) {
     _ensureInitialized();
+    final tokens = context.tokens;
     final reduceMotion = MediaQuery.disableAnimationsOf(context);
     final isTest =
         WidgetsBinding.instance.runtimeType.toString().contains('Test');
 
-    final orb = AnimatedScale(
+    Widget orb = AnimatedScale(
       scale: _tapScale,
       duration:
           reduceMotion ? Duration.zero : const Duration(milliseconds: 150),
       curve: Curves.easeOutCubic,
-      child: AnimatedBuilder(
-        animation: _paintListenable!,
-        builder: (context, _) {
-          final morphT =
-              Curves.easeOutCubic.transform(_morphController!.value);
-          final spec = _OrbShapeSpec.lerp(_fromSpec!, _toSpec!, morphT);
-          // Seed deterministic visual asymmetry in headless screenshots based on intensity.
-          final effectivePhase = (isTest || reduceMotion)
-              ? spec.intensityNorm * 1.4
-              : _flowPhaseNotifier!.value;
-          return CustomPaint(
-            size: Size.square(widget.size),
-            painter: _OrganicMoodOrbPainter(
-              spec: spec,
-              phase: effectivePhase,
-              isDark: widget.isDark,
-            ),
-          );
-        },
+      child: RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: _paintListenable!,
+          builder: (context, _) {
+            final morphT =
+                Curves.easeOutCubic.transform(_morphController!.value);
+            final spec = _OrbShapeSpec.lerp(_fromSpec!, _toSpec!, morphT);
+            final effectivePhase = (isTest || reduceMotion)
+                ? spec.intensityNorm * 1.4
+                : _flowPhaseNotifier!.value;
+
+            final effectiveColor = (widget.idle && !isTest && !reduceMotion)
+                ? _idleColorAtPhase(effectivePhase, spec.color)
+                : spec.color;
+            final renderSpec = _OrbShapeSpec(
+              harmonicA: spec.harmonicA,
+              ampA: spec.ampA,
+              harmonicB: spec.harmonicB,
+              ampB: spec.ampB,
+              harmonicC: spec.harmonicC,
+              ampC: spec.ampC,
+              phaseOffset: spec.phaseOffset,
+              verticalSquash: spec.verticalSquash,
+              verticalBias: spec.verticalBias,
+              scaleFactor: spec.scaleFactor,
+              speedFactor: spec.speedFactor,
+              intensityNorm: spec.intensityNorm,
+              color: effectiveColor,
+            );
+
+            return CustomPaint(
+              size: Size.square(widget.size),
+              painter: _OrganicMoodOrbPainter(
+                spec: renderSpec,
+                phase: effectivePhase,
+                orbGlowFactor: tokens.orbGlowFactor,
+                isDark: tokens.isDark,
+              ),
+            );
+          },
+        ),
       ),
     );
 
-    if (widget.onTap == null) {
+    if (widget.onTap == null && widget.onIntensityChanged == null) {
       return ExcludeSemantics(child: orb);
     }
 
     return Semantics(
-      button: true,
+      button: widget.onTap != null,
+      slider: widget.onIntensityChanged != null,
       label: widget.semanticLabel,
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
-        onTap: _handleTap,
+        onTap: widget.onTap != null ? _handleTap : null,
+        onVerticalDragStart: widget.onIntensityChanged != null
+            ? (_) => _dragAccumDy = 0.0
+            : null,
+        onVerticalDragUpdate: widget.onIntensityChanged != null
+            ? (details) {
+                _dragAccumDy += details.delta.dy;
+                if (_dragAccumDy.abs() >= 16.0) {
+                  final step = _dragAccumDy < 0 ? 1 : -1;
+                  _dragAccumDy = 0.0;
+                  final next = (widget.intensity + step).clamp(1, 10);
+                  if (next != widget.intensity) {
+                    HapticFeedback.selectionClick();
+                    widget.onIntensityChanged!(next);
+                  }
+                }
+              }
+            : null,
         child: SizedBox(
           width: math.max(48.0, widget.size),
           height: math.max(48.0, widget.size),
@@ -373,17 +419,33 @@ class _OrganicMoodOrbState extends State<OrganicMoodOrb>
       ),
     );
   }
+
+  static Color _idleColorAtPhase(double phase, Color fallback) {
+    const moods = AppMood.values;
+    final cycle = (phase * 0.25) % moods.length;
+    final idx = cycle.floor() % moods.length;
+    final nextIdx = (idx + 1) % moods.length;
+    final t = cycle - cycle.floor();
+    return Color.lerp(
+          MindTokens.moodColor(moods[idx]),
+          MindTokens.moodColor(moods[nextIdx]),
+          t,
+        ) ??
+        fallback;
+  }
 }
 
 class _OrganicMoodOrbPainter extends CustomPainter {
   const _OrganicMoodOrbPainter({
     required this.spec,
     required this.phase,
+    required this.orbGlowFactor,
     required this.isDark,
   });
 
   final _OrbShapeSpec spec;
   final double phase;
+  final double orbGlowFactor;
   final bool isDark;
 
   Path _buildFluidPath(Size size, {double scaleMultiplier = 1.0}) {
@@ -440,14 +502,13 @@ class _OrganicMoodOrbPainter extends CustomPainter {
     final path = _buildFluidPath(size);
     final outerRadius = size.width * 0.40 * spec.scaleFactor;
 
-    // 1. Intensity-coupled ambient aura glow.
+    // 1. Intensity-coupled ambient aura glow (35% strength in Dark Vercel vs 100% in Light Dawn).
+    final baseGlowAlpha = (0.16 + spec.intensityNorm * 0.16) * orbGlowFactor;
     final haloPaint = Paint()
-      ..color = spec.color.withValues(
-        alpha: (isDark ? 0.22 : 0.14) + spec.intensityNorm * 0.16,
-      )
+      ..color = spec.color.withValues(alpha: baseGlowAlpha)
       ..maskFilter = MaskFilter.blur(
         BlurStyle.normal,
-        size.width * (0.11 + spec.intensityNorm * 0.08),
+        size.width * (0.11 + spec.intensityNorm * 0.08) * orbGlowFactor,
       );
     canvas.drawPath(path, haloPaint);
 
@@ -459,7 +520,7 @@ class _OrganicMoodOrbPainter extends CustomPainter {
       final echoPath = _buildFluidPath(size, scaleMultiplier: echoScale);
       final echoPaint = Paint()
         ..color = spec.color.withValues(
-          alpha: (spec.intensityNorm - 0.2) * (isDark ? 0.34 : 0.28),
+          alpha: (spec.intensityNorm - 0.2) * (0.28 * orbGlowFactor + 0.08),
         )
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2;
@@ -467,18 +528,24 @@ class _OrganicMoodOrbPainter extends CustomPainter {
     }
 
     // 3. Sculpted 3D liquid mesh shading (highlight shifts subtly with fluid motion).
-    final highlightColor =
-        Color.lerp(spec.color, Colors.white, isDark ? 0.48 : 0.58) ??
-            spec.color;
+    final highlightColor = Color.lerp(
+          spec.color,
+          MindTokens.pureWhiteConstant,
+          isDark ? 0.48 : 0.58,
+        ) ??
+        spec.color;
     final warmMid = Color.lerp(
           spec.color,
-          isDark ? Colors.white : const Color(0xFFFFF8EE),
+          isDark ? MindTokens.pureWhiteConstant : MindTokens.orbWarmHighlight,
           0.10,
         ) ??
         spec.color;
-    final deepColor =
-        Color.lerp(spec.color, Colors.black, isDark ? 0.30 : 0.20) ??
-            spec.color;
+    final deepColor = Color.lerp(
+          spec.color,
+          MindTokens.darkBg,
+          isDark ? 0.30 : 0.20,
+        ) ??
+        spec.color;
 
     final lightDriftX = -0.30 + 0.10 * math.cos(phase * 0.8);
     final lightDriftY = -0.34 + 0.08 * math.sin(phase * 0.9);
@@ -501,7 +568,9 @@ class _OrganicMoodOrbPainter extends CustomPainter {
 
     // 5. Soft pearlescent specular glint following top-left light shoulder.
     final glintPaint = Paint()
-      ..color = Colors.white.withValues(alpha: isDark ? 0.24 : 0.36)
+      ..color = MindTokens.pureWhiteConstant.withValues(
+        alpha: isDark ? 0.24 : 0.36,
+      )
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, size.width * 0.045);
     canvas.drawOval(
       Rect.fromCenter(
@@ -519,6 +588,7 @@ class _OrganicMoodOrbPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _OrganicMoodOrbPainter oldDelegate) {
     return oldDelegate.phase != phase ||
+        oldDelegate.orbGlowFactor != orbGlowFactor ||
         oldDelegate.isDark != isDark ||
         oldDelegate.spec.harmonicA != spec.harmonicA ||
         oldDelegate.spec.ampA != spec.ampA ||

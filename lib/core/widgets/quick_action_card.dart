@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
+import 'icon_blob.dart';
 import 'mind_pressable.dart';
 
-/// Rounded vertical Quick Action card matching Phone 2 ("Quick Actions").
+/// Rounded Quick Action tile reading surface, border, blob tint, and shadows from [MindTokens].
 class QuickActionCard extends StatelessWidget {
   const QuickActionCard({
     super.key,
@@ -11,23 +14,18 @@ class QuickActionCard extends StatelessWidget {
     required this.line1,
     required this.line2,
     required this.onTap,
+    this.accentColor,
   });
 
   final IconData icon;
   final String line1;
   final String line2;
   final VoidCallback onTap;
+  final Color? accentColor;
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final tokens = context.tokens;
-
-    final bg = tokens.surface;
-    final border = tokens.border;
-    final iconBg = tokens.accentSoft;
-    final iconColor = tokens.accent;
-    final textCol = tokens.textPrimary;
 
     return Expanded(
       child: MindPressable(
@@ -35,58 +33,50 @@ class QuickActionCard extends StatelessWidget {
           HapticFeedback.lightImpact();
           onTap();
         },
-        borderRadius: BorderRadius.circular(tokens.cardRadius),
+        borderRadius: BorderRadius.circular(tokens.tileRadius),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 10),
           decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(tokens.cardRadius),
-            border: Border.all(color: border, width: 1.0),
-            boxShadow: isDark
-                ? const []
-                : [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
+            color: tokens.surface,
+            borderRadius: BorderRadius.circular(tokens.tileRadius),
+            border: Border.all(color: tokens.line, width: 1.0),
+            boxShadow: tokens.shadows,
           ),
           child: MergeSemantics(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  shape: BoxShape.circle,
+                IconBlob(
+                  icon: icon,
+                  color: accentColor ?? tokens.m1,
+                  iconColor: tokens.ink,
                 ),
-                child: Icon(icon, size: 22, color: iconColor),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                line1,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w600,
-                  color: textCol,
-                  letterSpacing: -0.2,
+                const SizedBox(height: 10),
+                Text(
+                  line1,
+                  style: TextStyle(
+                    fontFamily: LabTheme.fontFamily,
+                    fontFamilyFallback: LabTheme.fontFallback,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: tokens.ink,
+                    letterSpacing: -0.2,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                line2,
-                style: TextStyle(
-                  fontSize: 11.5,
-                  fontWeight: FontWeight.w600,
-                  color: textCol,
-                  letterSpacing: -0.2,
+                Text(
+                  line2,
+                  style: TextStyle(
+                    fontFamily: LabTheme.fontFamily,
+                    fontFamilyFallback: LabTheme.fontFallback,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: tokens.ink,
+                    letterSpacing: -0.2,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+              ],
             ),
           ),
         ),
@@ -94,4 +84,3 @@ class QuickActionCard extends StatelessWidget {
     );
   }
 }
-

@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
-/// Semantic, warm sanctuary card primitive for Mind Forensics.
+/// Visual variant for [MindCard].
+enum MindCardVariant {
+  /// Standard raised card (`surface` fill, `1px line`, `shadows` in Dawn only).
+  plain,
+
+  /// Mood-tinted hero card (`13%` Dawn / `7%` Vercel `m1` blend over `surface`).
+  tint,
+
+  /// Inset well (`surface2` fill, borderless, zero shadow).
+  flat,
+}
+
+/// Token-driven card primitive for Mind Forensics.
 ///
-/// Implements 20px unified corner radius, hairline 1.0px warm border,
-/// solid neutral-warm surface (zero cool-blue gradient banding in Dark mode),
-/// soft daylight elevation, and optional tactile press feedback.
+/// Reads surface, border, corner radius (`28px`), and theme elevation strictly
+/// from `context.tokens` without per-widget brightness conditionals.
 class MindCard extends StatelessWidget {
   const MindCard({
     super.key,
     required this.child,
+    this.variant = MindCardVariant.plain,
     this.padding = const EdgeInsets.all(16),
     this.backgroundColor,
     this.borderColor,
@@ -20,6 +33,7 @@ class MindCard extends StatelessWidget {
   });
 
   final Widget child;
+  final MindCardVariant variant;
   final EdgeInsetsGeometry padding;
   final Color? backgroundColor;
   final Color? borderColor;
@@ -30,33 +44,31 @@ class MindCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final cardRadius = BorderRadius.circular(radius ?? tokens.cardRadius);
+
+    final resolvedBg =
+        backgroundColor ??
+        switch (variant) {
+          MindCardVariant.plain => tokens.surface,
+          MindCardVariant.tint => tokens.cardTint,
+          MindCardVariant.flat => tokens.surface2,
+        };
+
+    final resolvedBorder =
+        borderColor ??
+        (variant == MindCardVariant.flat ? Colors.transparent : tokens.line);
+
+    final resolvedShadows = variant == MindCardVariant.flat
+        ? const <BoxShadow>[]
+        : tokens.shadows;
 
     Widget content = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: backgroundColor ?? tokens.surface,
+        color: resolvedBg,
         borderRadius: cardRadius,
-        border: Border.all(
-          color: borderColor ?? tokens.border,
-          width: 1.0,
-        ),
-        boxShadow: isDark
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.22),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                ),
-              ]
-            : [
-                BoxShadow(
-                  color: tokens.textPrimary.withValues(alpha: 0.035),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+        border: Border.all(color: resolvedBorder, width: 1.0),
+        boxShadow: resolvedShadows,
       ),
       child: child,
     );
@@ -79,4 +91,3 @@ class MindCard extends StatelessWidget {
     return content;
   }
 }
-

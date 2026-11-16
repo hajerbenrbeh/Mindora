@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../app/theme/lab_theme.dart';
 import '../../app/theme/mind_tokens.dart';
 import 'mind_pressable.dart';
 
-/// Reusable pill component for time selectors, category tags, and filter chips.
-/// Matches the master reference specification (Phones 3, 4, 7).
+/// Reusable pill component for time selectors, category tags, and filter controls.
 class MindPill extends StatelessWidget {
   const MindPill({
     super.key,
@@ -26,13 +27,12 @@ class MindPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final reduceMotion = MediaQuery.disableAnimationsOf(context);
 
-    final activeBg = tokens.accent;
-    final activeFg = tokens.onAccent;
-    final inactiveBg = tokens.surfaceSecondary;
-    final inactiveFg = tokens.textSecondary;
-    final borderColor = tokens.border;
+    final activeBg = tokens.ink;
+    final activeFg = tokens.bg;
+    final inactiveBg = tokens.surface2;
+    final inactiveFg = tokens.ink2;
 
     return MindPressable(
       onPressed: () {
@@ -46,25 +46,21 @@ class MindPill extends StatelessWidget {
           widthFactor: 1.0,
           heightFactor: 1.0,
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: reduceMotion
+                ? Duration.zero
+                : const Duration(milliseconds: 200),
             curve: Curves.easeOutCubic,
             padding: padding,
             decoration: BoxDecoration(
               color: isSelected ? activeBg : inactiveBg,
               borderRadius: BorderRadius.circular(tokens.chipRadius),
               border: Border.all(
-                color: isSelected ? activeBg : borderColor,
+                color: isSelected ? activeBg : tokens.line,
                 width: 1.0,
               ),
-              boxShadow: (isSelected && !isDark)
-                  ? [
-                      BoxShadow(
-                        color: activeBg.withValues(alpha: 0.16),
-                        blurRadius: 6,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                  : null,
+              boxShadow: isSelected
+                  ? tokens.primaryButtonShadows
+                  : const <BoxShadow>[],
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -80,6 +76,8 @@ class MindPill extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
+                    fontFamily: LabTheme.fontFamily,
+                    fontFamilyFallback: LabTheme.fontFallback,
                     fontSize: fontSize,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? activeFg : inactiveFg,
@@ -94,4 +92,3 @@ class MindPill extends StatelessWidget {
     );
   }
 }
-

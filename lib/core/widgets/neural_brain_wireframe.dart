@@ -1,5 +1,8 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+
+import '../../app/theme/mind_tokens.dart';
 
 /// Luminous 3D wireframe brain illustration with orbital planetary rings.
 /// Matches Phone 1 (Splash) and Phone 5 (Inner Observatory) in the master reference.
@@ -99,8 +102,8 @@ class _BrainWireframePainter extends CustomPainter {
     final glowPaint = Paint()
       ..shader = RadialGradient(
         colors: [
-          const Color(0xFFD9D4A7).withValues(alpha: 0.30),
-          const Color(0xFF92977D).withValues(alpha: 0.12),
+          MindTokens.wireframeGlowInner.withValues(alpha: 0.30),
+          MindTokens.wireframeGlowOuter.withValues(alpha: 0.12),
           Colors.transparent,
         ],
         stops: const [0.0, 0.5, 1.0],
@@ -109,7 +112,7 @@ class _BrainWireframePainter extends CustomPainter {
 
     // 2. Orbital planetary rings
     final ringPaint = Paint()
-      ..color = const Color(0xFFC7CDAD).withValues(alpha: 0.45)
+      ..color = MindTokens.wireframeRingOuter.withValues(alpha: 0.45)
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -127,19 +130,19 @@ class _BrainWireframePainter extends CustomPainter {
     canvas.rotate(0.40 - (rotation * 0.08));
     canvas.drawOval(
       Rect.fromCenter(center: Offset.zero, width: radius * 2.1, height: radius * 0.65),
-      ringPaint..color = const Color(0xFFE2E7CB).withValues(alpha: 0.35),
+      ringPaint..color = MindTokens.wireframeRingInner.withValues(alpha: 0.35),
     );
     canvas.restore();
 
     // 3. Brain silhouette curves and cortical folds
     final linePaint = Paint()
-      ..color = const Color(0xFFE8ECD4).withValues(alpha: 0.75)
+      ..color = MindTokens.wireframeFold.withValues(alpha: 0.75)
       ..strokeWidth = 1.2
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final thinLinePaint = Paint()
-      ..color = const Color(0xFFB4BC9B).withValues(alpha: 0.50)
+      ..color = MindTokens.wireframeSulcus.withValues(alpha: 0.50)
       ..strokeWidth = 0.8
       ..style = PaintingStyle.stroke;
 
@@ -187,7 +190,7 @@ class _BrainWireframePainter extends CustomPainter {
 
     // 4. Shimmering node particles
     final nodePaint = Paint()
-      ..color = const Color(0xFFFBFEE6)
+      ..color = MindTokens.wireframeNode
       ..style = PaintingStyle.fill;
 
     final nodes = [
