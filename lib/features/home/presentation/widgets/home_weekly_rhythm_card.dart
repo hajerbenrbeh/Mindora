@@ -1,9 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../app/localization/app_strings.dart';
-import '../../../../app/theme/lab_colors.dart';
 import '../../../../app/theme/mind_tokens.dart';
+import '../../../../core/widgets/mind_card.dart';
 import '../../../../core/widgets/mind_pressable.dart';
 import '../../../../core/widgets/mood_emblem.dart';
 import '../../../mind_trace/domain/mind_trace_model.dart';
@@ -57,22 +59,8 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
       }
     }
 
-    return Container(
+    return MindCard(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(tokens.cardRadius),
-        border: Border.all(color: tokens.border, width: 1.0),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.025),
-                  blurRadius: 14,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -87,7 +75,7 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
                     fontFamily: 'Inter',
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -96,9 +84,9 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: tokens.surfaceSecondary,
+                  color: tokens.surface2,
                   borderRadius: BorderRadius.circular(tokens.chipRadius),
-                  border: Border.all(color: tokens.border),
+                  border: Border.all(color: tokens.line),
                 ),
                 child: Text(
                   strings.observedDaysCount(observedCount),
@@ -109,8 +97,8 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
                     fontSize: 11.5,
                     fontWeight: FontWeight.w700,
                     color: observedCount > 0
-                        ? tokens.textPrimary
-                        : tokens.textSecondary,
+                        ? tokens.ink
+                        : tokens.ink2,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
@@ -129,14 +117,15 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
               final Color nodeBorder;
               final double nodeBorderWidth;
               if (trace != null) {
-                final moodColor = getMoodColor(trace.overallMood);
-                nodeBg = LabColors.moodSoftFor(trace.overallMood, isDark: isDark);
-                nodeBorder = isToday ? tokens.textPrimary : moodColor;
-                nodeBorderWidth = isToday ? 1.8 : 1.3;
+                final mood = AppMood.fromKey(trace.overallMood);
+                final moodColor = MindTokens.moodColor(mood);
+                nodeBg = tokens.moodDayColor(moodColor, trace.moodIntensity);
+                nodeBorder = isToday ? tokens.ink : moodColor;
+                nodeBorderWidth = isToday ? 2.0 : 1.3;
               } else {
-                nodeBg = tokens.surfaceSecondary;
-                nodeBorder = isToday ? tokens.accent : tokens.border;
-                nodeBorderWidth = isToday ? 1.5 : 1.0;
+                nodeBg = tokens.surface2;
+                nodeBorder = isToday ? tokens.m1 : tokens.line;
+                nodeBorderWidth = isToday ? 1.8 : 1.0;
               }
 
               final semanticLabel = trace != null
@@ -178,7 +167,7 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
                                 ? MoodEmblem(
                                     moodKey: trace.overallMood,
                                     size: 16,
-                                    color: getMoodColor(trace.overallMood),
+                                    color: MindTokens.moodColor(AppMood.fromKey(trace.overallMood)),
                                   )
                                 : Container(
                                     width: 4,
@@ -186,9 +175,8 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: isToday
-                                          ? tokens.accent
-                                          : tokens.textTertiary
-                                              .withValues(alpha: 0.45),
+                                          ? tokens.m1
+                                          : tokens.ink3.withValues(alpha: 0.45),
                                     ),
                                   ),
                           ),
@@ -202,8 +190,8 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
                               fontWeight:
                                   isToday ? FontWeight.w700 : FontWeight.w500,
                               color: isToday
-                                  ? tokens.textPrimary
-                                  : tokens.textTertiary,
+                                  ? tokens.ink
+                                  : tokens.ink3,
                             ),
                           ),
                         ],
@@ -221,7 +209,7 @@ class HomeWeeklyRhythmCard extends StatelessWidget {
               fontFamily: 'Inter',
               fontSize: 12,
               height: 1.35,
-              color: tokens.textSecondary,
+              color: tokens.ink2,
             ),
           ),
         ],

@@ -1063,7 +1063,6 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
   }
 
   Widget _buildHistoryAndCalendarTab(MindTokens tokens, AppStrings strings) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final traces = ref.watch(mindTraceControllerProvider).value ?? const [];
     final cases = ref.watch(savedCasesProvider).value ?? const [];
     final now = DateTime.now();
@@ -1112,7 +1111,7 @@ class _TrackScreenState extends ConsumerState<TrackScreen>
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 28),
               child: Column(
                 children: [
-                  HomeOrganicExerciseArt(size: 72, isDark: isDark),
+                  HomeOrganicExerciseArt(size: 72),
                   const SizedBox(height: 14),
                   Text(
                     strings.timelineBuildsTitle,

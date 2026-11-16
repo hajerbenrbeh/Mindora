@@ -1,11 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/router/app_router.dart';
-import '../../../../app/theme/lab_colors.dart';
-import '../../../../app/theme/lab_theme.dart';
 import '../../../../app/theme/mind_tokens.dart';
+import '../../../../core/widgets/mind_button.dart';
+import '../../../../core/widgets/mind_card.dart';
 import '../../../../core/widgets/mind_intensity_picker.dart';
 import '../../../../core/widgets/mind_pressable.dart';
 import '../../../../core/widgets/mood_emblem.dart';
@@ -88,38 +90,11 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
         : (strings.isFrench ? 'VOIR' : 'VIEW');
 
     final showRecordedSummary = hasLoggedToday && !_isEditing;
-    final summaryMoodColor = showRecordedSummary
-        ? widget.getMoodColor(todayTrace.overallMood)
-        : tokens.border;
-    final summaryMoodSoft = showRecordedSummary
-        ? LabColors.moodSoftFor(todayTrace.overallMood, isDark: isDark)
-        : tokens.surface;
-    final cardSurface = showRecordedSummary
-        ? Color.alphaBlend(
-            summaryMoodSoft.withValues(alpha: isDark ? 0.36 : 0.42),
-            tokens.surface,
-          )
-        : tokens.surface;
-    final cardBorder = showRecordedSummary
-        ? summaryMoodColor.withValues(alpha: isDark ? 0.38 : 0.32)
-        : tokens.border;
+    final cardVariant = showRecordedSummary ? MindCardVariant.tint : MindCardVariant.plain;
 
-    final cardBody = Container(
+    final cardBody = MindCard(
+      variant: cardVariant,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardSurface,
-        borderRadius: BorderRadius.circular(tokens.cardRadius),
-        border: Border.all(color: cardBorder, width: 1.0),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 16,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-      ),
       child: showRecordedSummary
           ? _buildRecordedSummaryView(
               context: context,
@@ -160,8 +135,8 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
     required String viewLabel,
   }) {
     final moodKey = todayTrace.overallMood;
-    final moodColor = widget.getMoodColor(moodKey);
-    final moodSoft = LabColors.moodSoftFor(moodKey, isDark: isDark);
+    final moodEnum = AppMood.fromKey(moodKey);
+    final moodColor = MindTokens.moodColor(moodEnum);
     final moodLabel = widget.getMoodLabel(moodKey, strings);
     final note = todayTrace.journalText?.trim() ?? '';
 
@@ -177,7 +152,6 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
               intensity: todayTrace.moodIntensity,
               color: moodColor,
               size: 64,
-              isDark: isDark,
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -203,7 +177,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             letterSpacing: strings.isArabic ? 0 : 0.7,
-                            color: tokens.textSecondary,
+                            color: tokens.ink2,
                           ),
                         ),
                       ),
@@ -218,7 +192,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       fontFamily: 'Inter',
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
+                      color: tokens.ink,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
@@ -234,7 +208,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: moodSoft,
+                          color: tokens.blobTintFor(moodColor),
                           borderRadius:
                               BorderRadius.circular(tokens.chipRadius),
                           border: Border.all(
@@ -257,7 +231,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                           fontFamily: 'Inter',
                           fontSize: 12.5,
                           fontWeight: FontWeight.w600,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                         ),
                       ),
                     ],
@@ -272,9 +246,9 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: tokens.surface.withValues(alpha: isDark ? 0.65 : 0.85),
+              color: tokens.surface2,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: tokens.border),
+              border: Border.all(color: tokens.line),
             ),
             child: Text(
               note,
@@ -284,13 +258,13 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                 fontFamily: 'Inter',
                 fontSize: 12.5,
                 height: 1.35,
-                color: tokens.textSecondary,
+                color: tokens.ink2,
               ),
             ),
           ),
         ],
         const SizedBox(height: 14),
-        Divider(height: 1, color: tokens.border),
+        Divider(height: 1, color: tokens.line),
         const SizedBox(height: 12),
         Text(
           strings.aGentleNextStepHeader,
@@ -301,60 +275,30 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
             fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: strings.isArabic ? 0 : 0.7,
-            color: tokens.textSecondary,
+            color: tokens.ink2,
           ),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
             Expanded(
-              child: MindPressable(
+              child: MindButton(
+                text: strings.actionBreatheLabel,
+                leadingIcon: Icons.air_rounded,
+                variant: MindButtonVariant.soft,
                 onPressed: widget.onBreatheTap ??
                     () => ContextualSupportSheet.show(
                           context,
                           initialChoice: SupportChoice.settle,
                         ),
-                semanticLabel: strings.actionBreatheLabel,
-                borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: 48),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: tokens.surface.withValues(alpha: isDark ? 0.7 : 0.9),
-                    borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                    border: Border.all(color: tokens.border),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.air_rounded,
-                        size: 16,
-                        color: tokens.textPrimary,
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          strings.actionBreatheLabel,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: tokens.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: MindPressable(
+              child: MindButton(
+                text: strings.actionTalkAboutItLabel,
+                leadingIcon: Icons.auto_awesome_outlined,
+                variant: MindButtonVariant.soft,
                 onPressed: () {
                   if (widget.onTalkAboutIt != null) {
                     widget.onTalkAboutIt!(todayTrace);
@@ -362,42 +306,6 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                     context.go(AppRouter.companion);
                   }
                 },
-                semanticLabel: strings.actionTalkAboutItLabel,
-                borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                child: Container(
-                  constraints: const BoxConstraints(minHeight: 48),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: tokens.surface.withValues(alpha: isDark ? 0.7 : 0.9),
-                    borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                    border: Border.all(color: tokens.border),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.auto_awesome_outlined,
-                        size: 16,
-                        color: moodColor,
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          strings.actionTalkAboutItLabel,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                            color: tokens.textPrimary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ),
             ),
           ],
@@ -420,7 +328,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       Icon(
                         Icons.edit_outlined,
                         size: 15,
-                        color: tokens.textSecondary,
+                        color: tokens.ink2,
                       ),
                       const SizedBox(width: 6),
                       Flexible(
@@ -432,7 +340,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                             fontFamily: 'Inter',
                             fontSize: 12.5,
                             fontWeight: FontWeight.w600,
-                            color: tokens.textPrimary,
+                            color: tokens.ink,
                             decoration: TextDecoration.underline,
                             decorationColor: moodColor,
                           ),
@@ -460,7 +368,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                         fontFamily: 'Inter',
                         fontSize: 12.5,
                         fontWeight: FontWeight.w700,
-                        color: tokens.textPrimary,
+                        color: tokens.ink,
                         letterSpacing: strings.isArabic ? 0 : 0.4,
                         decoration: TextDecoration.underline,
                         decorationColor: moodColor,
@@ -470,7 +378,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                     Icon(
                       Icons.chevron_right_rounded,
                       size: 16,
-                      color: tokens.textSecondary,
+                      color: tokens.ink2,
                     ),
                   ],
                 ),
@@ -495,8 +403,9 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
       widget.moodOptions.isEmpty ? 0 : widget.moodOptions.length - 1,
     );
     final activeMood = widget.moodOptions[safeIdx].key;
-    final activeMoodColor = widget.getMoodColor(activeMood);
-    final activeMoodSoft = LabColors.moodSoftFor(activeMood, isDark: isDark);
+    final activeMoodEnum = AppMood.fromKey(activeMood);
+    final activeMoodColor = MindTokens.moodColor(activeMoodEnum);
+    final activeMoodSoft = tokens.blobTintFor(activeMoodColor);
     final roundedIntensity = widget.moodIntensity.round().clamp(1, 10);
     final previousTrace = widget.traces.firstOrNull;
     final rowOneCount =
@@ -516,7 +425,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                     fontFamily: 'Inter',
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -529,7 +438,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                   child: Icon(
                     Icons.close_rounded,
                     size: 18,
-                    color: tokens.textSecondary,
+                    color: tokens.ink2,
                   ),
                 ),
               ),
@@ -545,7 +454,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
               fontSize: 16,
               fontWeight: FontWeight.w700,
               height: 1.28,
-              color: tokens.textPrimary,
+              color: tokens.ink,
               letterSpacing: -0.2,
             ),
           ),
@@ -556,7 +465,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: tokens.surfaceSecondary,
+                  color: tokens.surface2,
                   borderRadius: BorderRadius.circular(tokens.chipRadius),
                 ),
                 child: Row(
@@ -576,7 +485,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontSize: 11.5,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -596,7 +505,6 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
             intensity: roundedIntensity,
             color: activeMoodColor,
             size: 102,
-            isDark: isDark,
             semanticLabel: widget.getMoodLabel(activeMood, strings),
             onTap: () {
               if (widget.moodOptions.length > 1) {
@@ -615,7 +523,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
               fontFamily: 'Inter',
               fontSize: 12.5,
               fontWeight: FontWeight.w600,
-              color: tokens.textSecondary,
+              color: tokens.ink2,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
@@ -681,7 +589,7 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                         fontSize: 11.5,
                         fontWeight: FontWeight.w700,
                         letterSpacing: strings.isArabic ? 0 : 0.7,
-                        color: tokens.textPrimary,
+                        color: tokens.ink,
                         fontFeatures: const [FontFeature.tabularFigures()],
                       ),
                     ),
@@ -741,28 +649,28 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           style: TextStyle(
             fontFamily: 'Inter',
             fontSize: 13.5,
-            color: tokens.textPrimary,
+            color: tokens.ink,
           ),
           decoration: InputDecoration(
             hintText: strings.todaysNoteHint,
             hintStyle: TextStyle(
               fontFamily: 'Inter',
-              color: tokens.textTertiary,
+              color: tokens.ink3,
               fontSize: 13,
             ),
             filled: true,
-            fillColor: tokens.surfaceSecondary,
+            fillColor: tokens.surface2,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 14,
               vertical: 12,
             ),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: tokens.border),
+              borderSide: BorderSide(color: tokens.line),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: tokens.border),
+              borderSide: BorderSide(color: tokens.line),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
@@ -772,43 +680,21 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
         ),
         const SizedBox(height: 14),
 
-        // Primary Save / Update CTA
-        SizedBox(
-          width: double.infinity,
-          height: 48,
-          child: FilledButton.icon(
-            onPressed: () {
-              widget.onSave();
-              if (hasLoggedToday && mounted) {
-                setState(() => _isEditing = false);
-              }
-            },
-            icon: Icon(
-              hasLoggedToday
-                  ? Icons.refresh_rounded
-                  : Icons.check_circle_outline_rounded,
-              size: 18,
-            ),
-            label: Text(
-              hasLoggedToday
-                  ? strings.updateCheckInButton
-                  : strings.saveCheckInButton,
-            ),
-            style: FilledButton.styleFrom(
-              backgroundColor: tokens.accent,
-              foregroundColor: tokens.onAccent,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(tokens.buttonRadius),
-              ),
-              textStyle: const TextStyle(
-                fontFamily: 'Inter',
-                fontFamilyFallback: LabTheme.fontFallback,
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
-              ),
-            ),
-          ),
+        // Primary Save / Update CTA (Single primary CTA in this viewport)
+        MindButton(
+          text: hasLoggedToday
+              ? strings.updateCheckInButton
+              : strings.saveCheckInButton,
+          leadingIcon: hasLoggedToday
+              ? Icons.refresh_rounded
+              : Icons.check_circle_outline_rounded,
+          variant: MindButtonVariant.primary,
+          onPressed: () {
+            widget.onSave();
+            if (hasLoggedToday && mounted) {
+              setState(() => _isEditing = false);
+            }
+          },
         ),
       ],
     );
@@ -825,7 +711,6 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
   }) {
     final label = widget.getMoodLabel(option.key, strings);
     final moodColor = widget.getMoodColor(option.key);
-    final moodSoft = LabColors.moodSoftFor(option.key, isDark: isDark);
     final tileRadius = BorderRadius.circular(16);
 
     return Semantics(
@@ -841,14 +726,11 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
           curve: Curves.easeOutCubic,
           decoration: BoxDecoration(
             color: isSelected
-                ? Color.alphaBlend(
-                    moodSoft.withValues(alpha: isDark ? 0.55 : 0.72),
-                    tokens.surfaceSecondary,
-                  )
-                : tokens.surfaceSecondary,
+                ? tokens.selectedTintFor(moodColor)
+                : tokens.surface2,
             borderRadius: tileRadius,
             border: Border.all(
-              color: isSelected ? moodColor : tokens.border,
+              color: isSelected ? moodColor : tokens.line,
               width: 1.4,
             ),
           ),
@@ -888,11 +770,10 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontSize: 12.5,
-                        // Invariant weight prevents sibling layout shifts on tap.
                         fontWeight: FontWeight.w600,
                         color: isSelected
-                            ? tokens.textPrimary
-                            : tokens.textSecondary,
+                            ? tokens.ink
+                            : tokens.ink2,
                       ),
                     ),
                   ],
@@ -914,8 +795,8 @@ class _HomeDailyCheckInCardState extends State<HomeDailyCheckInCard> {
                       Icons.check_rounded,
                       size: 11,
                       color: moodColor.computeLuminance() > 0.45
-                          ? const Color(0xFF111110)
-                          : Colors.white,
+                          ? tokens.onMood
+                          : MindTokens.pureWhiteConstant,
                     ),
                   ),
                 ),

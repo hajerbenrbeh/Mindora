@@ -379,6 +379,12 @@ class MindTokens extends ThemeExtension<MindTokens> {
   /// Active mood selected chip/tile tint (20% Light / 14% Dark).
   Color get selectedTint => tint(m1, tintSelected);
 
+  /// Computes selected chip/tile background for an arbitrary [accent] color.
+  Color selectedTintFor(Color accent) => tint(accent, tintSelected);
+
+  /// Computes card tint background for an arbitrary [accent] color.
+  Color cardTintFor(Color accent) => tint(accent, tintCard);
+
   /// Active mood icon blob tint (38% Light / 24% Dark).
   Color get blobTint => tint(m1, tintBlob);
 

@@ -8,14 +8,17 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../app/localization/app_strings.dart';
 import '../../../app/router/app_router.dart';
-import '../../../app/theme/lab_colors.dart';
 import '../../../app/theme/mind_tokens.dart';
 import '../../../core/safety/crisis_keywords.dart';
 import '../../../core/safety/safety_interceptor.dart';
 import '../../../core/security/encrypted_storage_helper.dart';
 import '../../../core/security/secure_key_manager.dart';
 import '../../../core/safety/support_button.dart';
+import '../../../core/widgets/ambient_scaffold.dart';
 import '../../../core/widgets/fingerprint_thread_signature.dart';
+import '../../../core/widgets/icon_blob.dart';
+import '../../../core/widgets/mind_button.dart';
+import '../../../core/widgets/mind_card.dart';
 import '../../../core/widgets/mind_pressable.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../investigation/controllers/investigation_providers.dart';
@@ -204,15 +207,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: context.tokens.accent,
+          backgroundColor: context.tokens.ink,
           content: Text(
             safetyLevel == 1
                 ? '${strings.checkInSavedSnackbar} ${strings.needSupportBtn}'
                 : strings.checkInSavedSnackbar,
             style: TextStyle(
-              color: Theme.of(context).brightness == Brightness.dark
-                  ? context.tokens.background
-                  : Colors.white,
+              color: context.tokens.bg,
               fontSize: 13.5,
               fontWeight: FontWeight.w600,
             ),
@@ -220,9 +221,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           action: safetyLevel == 1
               ? SnackBarAction(
                   label: strings.supportTitle,
-                  textColor: Theme.of(context).brightness == Brightness.dark
-                      ? context.tokens.background
-                      : Colors.white,
+                  textColor: context.tokens.bg,
                   onPressed: () {
                     if (mounted) SupportModalSheet.show(context);
                   },
@@ -259,8 +258,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Color _getMoodColor(String key) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return LabColors.moodColorFor(key, isDark: isDark);
+    return MindTokens.moodColor(AppMood.fromKey(key));
   }
 
   ConversationMode _recommendedModeForTrace(MindTraceModel trace) {
@@ -330,9 +328,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final headerMoodKey = todayTrace?.overallMood ??
         _moodOptions[_selectedMoodIndex.clamp(0, _moodOptions.length - 1)].key;
     final headerAvatarColor = _getMoodColor(headerMoodKey);
-    final headerAvatarFg = headerAvatarColor.computeLuminance() > 0.45
-        ? const Color(0xFF111110)
-        : Colors.white;
+    final headerAvatarFg = tokens.onMood;
     final todayDateOverline = strings.formattedDateOverline(DateTime.now());
 
     final nextSig = todayTrace != null ? _traceSignature(todayTrace) : null;
@@ -343,70 +339,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       });
     }
 
-    return Scaffold(
-      backgroundColor: tokens.background,
-      appBar: AppBar(
-        backgroundColor: tokens.background,
-        elevation: 0,
-        titleSpacing: 16,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 30,
-              height: 30,
-              decoration: BoxDecoration(
-                color: tokens.accentSoft,
-                borderRadius: BorderRadius.circular(tokens.chipRadius),
-                border: Border.all(color: tokens.border),
-              ),
-              alignment: Alignment.center,
-              child: FingerprintThreadSignature(
-                size: 20,
-                animated: false,
-                primaryColor: isDark ? LabColors.warmBeige : LabColors.deepBurgundy,
-                accentColor: isDark ? LabColors.sageGreen : LabColors.secondaryOlive,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Flexible(
-              child: Text(
-                'Mind Forensics',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontSize: 15.5,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.2,
-                  color: tokens.textPrimary,
-                ),
-              ),
-            ),
-          ],
-        ),
-        actions: const [
-          SupportButton(),
-          SizedBox(width: 8),
-        ],
-      ),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: RefreshIndicator(
+    return AmbientScaffold(
+      body: SafeArea(
+        child: RefreshIndicator(
           onRefresh: () async {
             await _loadRecentCases();
             ref.invalidate(mindTraceControllerProvider);
           },
-          color: tokens.accent,
+          color: tokens.m1,
           backgroundColor: tokens.surface,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // 1. TOP HEADER ROW (Crisp single greeting + Mind Assistant & Avatar)
+                // Top Brand Header Row
+                Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: tokens.selectedTintFor(tokens.m1),
+                        borderRadius:
+                            BorderRadius.circular(tokens.chipRadius),
+                        border: Border.all(color: tokens.line),
+                      ),
+                      alignment: Alignment.center,
+                      child: FingerprintThreadSignature(
+                        size: 18,
+                        animated: false,
+                        primaryColor: tokens.m1,
+                        accentColor: tokens.ink2,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Mind Forensics',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Inter',
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: -0.3,
+                          color: tokens.ink,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    const SupportButton(compact: true),
+                  ],
+                ),
+                const SizedBox(height: 14),
+
+                // 1. TOP GREETING ROW (Crisp single greeting + Calendar & Avatar)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -424,7 +413,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               fontSize: 11,
                               fontWeight: FontWeight.w700,
                               letterSpacing: strings.isArabic ? 0 : 0.8,
-                              color: tokens.textTertiary,
+                              color: tokens.ink3,
                             ),
                           ),
                           const SizedBox(height: 3),
@@ -435,7 +424,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               fontSize: 22,
                               fontWeight: FontWeight.w700,
                               height: 1.25,
-                              color: tokens.textPrimary,
+                              color: tokens.ink,
                               letterSpacing: -0.3,
                             ),
                           ),
@@ -445,7 +434,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             style: TextStyle(
                               fontSize: 13.5,
                               fontWeight: FontWeight.w400,
-                              color: tokens.textSecondary,
+                              color: tokens.ink2,
                             ),
                           ),
                         ],
@@ -472,14 +461,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                   shape: BoxShape.circle,
                                   color: tokens.surface,
                                   border: Border.all(
-                                    color: tokens.border,
+                                    color: tokens.line,
                                     width: 1.0,
                                   ),
                                 ),
                                 child: Icon(
                                   Icons.calendar_month_outlined,
                                   size: 18,
-                                  color: tokens.textPrimary,
+                                  color: tokens.ink,
                                 ),
                               ),
                             ),
@@ -586,7 +575,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           fontSize: 12,
                           fontWeight: FontWeight.w700,
                           letterSpacing: 0.8,
-                          color: tokens.textSecondary,
+                          color: tokens.ink2,
                         ),
                       ),
                     ),
@@ -607,7 +596,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
                             letterSpacing: 0.5,
-                            color: tokens.textPrimary,
+                            color: tokens.ink,
                           ),
                         ),
                       ),
@@ -633,8 +622,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ),
       ),
-        ],
-      ),
     );
   }
 
@@ -655,12 +642,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           style: TextStyle(
             fontSize: 17,
             fontWeight: FontWeight.w800,
-            color: tokens.textPrimary,
+            color: tokens.ink,
           ),
         ),
         const SizedBox(height: 12),
-        MindPressable(
-          onPressed: () {
+        MindCard(
+          onTap: () {
             HapticFeedback.mediumImpact();
             ContextualSupportSheet.show(
               context,
@@ -668,71 +655,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             );
           },
           semanticLabel: strings.relieveStress,
-          borderRadius: BorderRadius.circular(tokens.cardRadius),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: tokens.surface,
-              borderRadius: BorderRadius.circular(tokens.cardRadius),
-              border: Border.all(color: tokens.border, width: 1.0),
-            ),
-            child: Row(
-              children: [
-                // Calming Organic Vector Art (ZERO emojis)
-                HomeOrganicExerciseArt(
-                  size: 64,
-                  isDark: isDark,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        strings.relieveStress,
-                        style: TextStyle(
-                          fontSize: 15.5,
-                          fontWeight: FontWeight.w800,
-                          color: tokens.textPrimary,
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              // Calming Organic Vector Art (ZERO emojis)
+              const HomeOrganicExerciseArt(
+                size: 64,
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      strings.relieveStress,
+                      style: TextStyle(
+                        fontSize: 15.5,
+                        fontWeight: FontWeight.w800,
+                        color: tokens.ink,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      strings.breathingPractice,
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        color: tokens.ink2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.hourglass_empty_rounded,
+                          size: 13,
+                          color: tokens.ink2,
                         ),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        strings.breathingPractice,
-                        style: TextStyle(
-                          fontSize: 12.5,
-                          color: tokens.textSecondary,
+                        const SizedBox(width: 4),
+                        Text(
+                          strings.duration5Min,
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: tokens.ink2,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.hourglass_empty_rounded,
-                            size: 13,
-                            color: tokens.textSecondary,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            strings.duration5Min,
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w600,
-                              color: tokens.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                      ],
+                    ),
+                  ],
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: tokens.textSecondary,
-                ),
-              ],
-            ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 14,
+                color: tokens.ink2,
+              ),
+            ],
           ),
         ),
       ],
@@ -791,25 +769,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     AppStrings strings,
     bool isDark,
   ) {
-    return Container(
+    return MindCard(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(color: tokens.border, width: 1.0),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: tokens.accentSoft,
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                child: Icon(Icons.bolt_rounded, color: tokens.accent, size: 22),
+              IconBlob(
+                icon: Icons.bolt_rounded,
+                color: tokens.m1,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -821,7 +790,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 15.5,
-                        color: tokens.textPrimary,
+                        color: tokens.ink,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -829,7 +798,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       strings.startInvestigationSub,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 12, color: tokens.textSecondary, height: 1.3),
+                      style: TextStyle(fontSize: 12, color: tokens.ink2, height: 1.3),
                     ),
                   ],
                 ),
@@ -837,25 +806,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                context.go(AppRouter.companion);
-              },
-              icon: const Icon(Icons.add_rounded, size: 18),
-              label: Text(strings.newInvestigation),
-              style: FilledButton.styleFrom(
-                backgroundColor: tokens.accent,
-                foregroundColor: isDark ? tokens.background : Colors.white,
-                minimumSize: const Size(48, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-            ),
+          MindButton(
+            text: strings.newInvestigation,
+            leadingIcon: Icons.add_rounded,
+            variant: MindButtonVariant.primary,
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              context.go(AppRouter.companion);
+            },
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -905,14 +863,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
-            color: tokens.surfaceSecondary,
+            color: tokens.surface2,
             borderRadius: BorderRadius.circular(tokens.chipRadius),
-            border: Border.all(color: tokens.border),
+            border: Border.all(color: tokens.line),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 15, color: tokens.textSecondary),
+              Icon(icon, size: 15, color: tokens.ink2),
               const SizedBox(width: 6),
               Flexible(
                 child: Text(
@@ -920,7 +878,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   style: TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
-                    color: tokens.textPrimary,
+                    color: tokens.ink,
                   ),
                 ),
               ),
@@ -932,18 +890,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _buildNoCasesCard(MindTokens tokens, AppStrings strings) {
-    return Container(
-      width: double.infinity,
+    return MindCard(
+      variant: MindCardVariant.flat,
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(tokens.cardRadius),
-        border: Border.all(color: tokens.border, width: 1),
-      ),
       child: Center(
         child: Text(
           strings.noCasesOnFile,
-          style: TextStyle(fontSize: 11.5, letterSpacing: 0.5, fontWeight: FontWeight.w600, color: tokens.textSecondary),
+          style: TextStyle(
+            fontSize: 11.5,
+            letterSpacing: 0.5,
+            fontWeight: FontWeight.w600,
+            color: tokens.ink3,
+          ),
         ),
       ),
     );
@@ -957,38 +915,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(18.0),
-        border: Border.all(color: tokens.border, width: 1),
-      ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: tokens.surfaceSecondary,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Icon(
-            c.isCompleted ? Icons.check_circle_outline_rounded : Icons.pending_outlined,
-            size: 18,
-            color: c.isCompleted ? tokens.accent : tokens.textSecondary,
-          ),
-        ),
-        title: Text(
-          c.title,
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: tokens.textPrimary),
-        ),
-        subtitle: Text(
-          '${strings.formatSessionNumber(c.caseNumber)}  •  ${strings.stageNumberLabel(c.currentStage.stepNumber)}',
-          style: TextStyle(
-            fontSize: 11,
-            color: tokens.textSecondary,
-          ),
-        ),
-        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 12, color: tokens.textSecondary),
+      child: MindCard(
         onTap: () async {
           HapticFeedback.lightImpact();
           if (c.isCompleted) {
@@ -999,16 +926,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           }
           _loadRecentCases();
         },
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Row(
+          children: [
+            IconBlob(
+              icon: c.isCompleted ? Icons.check_circle_outline_rounded : Icons.pending_outlined,
+              color: c.isCompleted ? tokens.m1 : tokens.ink3,
+              size: 36,
+              iconSize: 18,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    c.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5, color: tokens.ink),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${strings.formatSessionNumber(c.caseNumber)}  •  ${strings.stageNumberLabel(c.currentStage.stepNumber)}',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: tokens.ink2,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios_rounded, size: 12, color: tokens.ink2),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildQuickAccessGrid(MindTokens tokens, AppStrings strings) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final toolsAccent = tokens.warm;
-    final toolsSoft = tokens.warmSoft;
-    final calendarAccent = LabColors.moodColorFor('restless', isDark: isDark);
-    final calendarSoft = LabColors.moodSoftFor('restless', isDark: isDark);
+    final toolsAccent = MindTokens.moodHeavy;
+    final calendarAccent = MindTokens.moodRestless;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1019,89 +978,71 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             fontSize: 12,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.8,
-            color: tokens.textSecondary,
+            color: tokens.ink2,
           ),
         ),
         const SizedBox(height: 10),
         // Featured asymmetric Hero AI Companion launcher
-        MindPressable(
-          onPressed: () {
+        MindCard(
+          variant: MindCardVariant.tint,
+          onTap: () {
             HapticFeedback.lightImpact();
             context.go(AppRouter.companion);
           },
-          borderRadius: BorderRadius.circular(tokens.cardRadius),
-          child: Container(
-            constraints: const BoxConstraints(minHeight: 74),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: isDark ? tokens.surface : tokens.accentSoft.withValues(alpha: 0.55),
-              borderRadius: BorderRadius.circular(tokens.cardRadius),
-              border: Border.all(
-                color: tokens.accent.withValues(alpha: isDark ? 0.35 : 0.25),
-                width: 1.0,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              IconBlob(
+                icon: Icons.psychology_alt_outlined,
+                color: tokens.m1,
+                size: 42,
+                iconSize: 21,
               ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 42,
-                  height: 42,
-                  decoration: BoxDecoration(
-                    color: tokens.accent,
-                    borderRadius: BorderRadius.circular(tokens.chipRadius),
-                  ),
-                  child: Icon(
-                    Icons.psychology_alt_outlined,
-                    size: 21,
-                    color: tokens.onAccent,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        strings.navAiGuide,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14.5,
-                          fontWeight: FontWeight.w700,
-                          color: tokens.textPrimary,
-                        ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      strings.navAiGuide,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: tokens.ink,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        strings.quickAiSubtitle,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: tokens.textSecondary,
-                        ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      strings.quickAiSubtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: tokens.ink2,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: tokens.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: tokens.border),
-                  ),
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    size: 16,
-                    color: tokens.accent,
-                  ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: tokens.surface,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: tokens.line),
                 ),
-              ],
-            ),
+                child: Icon(
+                  Icons.arrow_forward_rounded,
+                  size: 16,
+                  color: tokens.m1,
+                ),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 10),
@@ -1113,7 +1054,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 subtitle: strings.quickToolsSubtitle,
                 icon: Icons.spa_outlined,
                 iconAccent: toolsAccent,
-                iconBg: toolsSoft,
                 tokens: tokens,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -1128,7 +1068,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 subtitle: strings.quickCalendarSubtitle,
                 icon: Icons.calendar_month_outlined,
                 iconAccent: calendarAccent,
-                iconBg: calendarSoft,
                 tokens: tokens,
                 onTap: () {
                   HapticFeedback.lightImpact();
@@ -1143,8 +1082,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           title: strings.quickInsightsTitle,
           subtitle: strings.quickInsightsSubtitle,
           icon: Icons.insights_outlined,
-          iconAccent: tokens.accent,
-          iconBg: tokens.accentSoft,
+          iconAccent: tokens.m1,
           tokens: tokens,
           onTap: () {
             HapticFeedback.lightImpact();
@@ -1160,70 +1098,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     required String subtitle,
     required IconData icon,
     required Color iconAccent,
-    required Color iconBg,
     required MindTokens tokens,
     required VoidCallback onTap,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final tileRadius = tokens.cardRadius;
-    final iconBoxRadius = tokens.chipRadius;
-
-    return MindPressable(
-      onPressed: onTap,
-      borderRadius: BorderRadius.circular(tileRadius),
-      child: Container(
-        constraints: const BoxConstraints(minHeight: 70),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        decoration: BoxDecoration(
-          color: tokens.surface,
-          borderRadius: BorderRadius.circular(tileRadius),
-          border: Border.all(color: tokens.border, width: 1.0),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: iconBg,
-                borderRadius: BorderRadius.circular(iconBoxRadius),
-                border: isDark
-                    ? Border.all(color: iconAccent.withValues(alpha: 0.28))
-                    : null,
-              ),
-              child: Icon(icon, size: 18, color: iconAccent),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700,
-                      color: tokens.textPrimary,
-                    ),
+    return MindCard(
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        children: [
+          IconBlob(
+            icon: icon,
+            color: iconAccent,
+            size: 36,
+            iconSize: 18,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: tokens.ink,
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: tokens.textSecondary,
-                    ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: tokens.ink2,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

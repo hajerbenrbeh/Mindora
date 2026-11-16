@@ -1,57 +1,51 @@
 import 'package:flutter/material.dart';
 
-import '../../../../app/theme/lab_colors.dart';
+import '../../../../app/theme/mind_tokens.dart';
 
 /// A serene botanical wave-ring emblem for the "Exercises for you" card.
 ///
-/// Uses pure vector geometry harmonized with [LabColors] tokens (zero emojis,
+/// Uses pure vector geometry harmonized with [MindTokens] (zero emojis,
 /// zero cartoonish facial features).
 class HomeOrganicExerciseArt extends StatelessWidget {
   const HomeOrganicExerciseArt({
     super.key,
     this.size = 64.0,
-    this.isDark = false,
   });
 
   final double size;
-  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
+    final tokens = context.tokens;
     return SizedBox(
       width: size,
       height: size,
       child: CustomPaint(
-        painter: _BotanicalRipplePainter(isDark: isDark),
+        painter: _BotanicalRipplePainter(tokens: tokens),
       ),
     );
   }
 }
 
 class _BotanicalRipplePainter extends CustomPainter {
-  _BotanicalRipplePainter({required this.isDark});
+  _BotanicalRipplePainter({required this.tokens});
 
-  final bool isDark;
+  final MindTokens tokens;
 
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final outerRadius = size.width * 0.44;
 
-    // Grounded organic enclosure (Mineral Forest / Obsidian Slate)
+    // Grounded organic enclosure
     final bodyPaint = Paint()
       ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: isDark
-            ? const [
-                LabColors.nightSurfaceElevated,
-                LabColors.nightAccentSoft,
-              ]
-            : const [
-                LabColors.daylightAccentSoft,
-                LabColors.daylightSurfaceSubtle,
-              ],
+        colors: [
+          tokens.surface2,
+          tokens.cardTint,
+        ],
       ).createShader(Rect.fromCircle(center: center, radius: outerRadius))
       ..style = PaintingStyle.fill;
 
@@ -66,13 +60,13 @@ class _BotanicalRipplePainter extends CustomPainter {
     canvas.drawRRect(bodyRect, bodyPaint);
 
     final borderPaint = Paint()
-      ..color = (isDark ? LabColors.nightBorder : LabColors.daylightBorder)
+      ..color = tokens.line
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.0;
     canvas.drawRRect(bodyRect, borderPaint);
 
     // Layered concentric botanical breath rings
-    final ringAccent = isDark ? LabColors.nightAccent : LabColors.daylightAccent;
+    final ringAccent = tokens.m1;
     final radiiScales = [0.33, 0.23, 0.13];
     final alphas = [0.28, 0.52, 0.85];
 
@@ -93,5 +87,5 @@ class _BotanicalRipplePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _BotanicalRipplePainter oldDelegate) =>
-      oldDelegate.isDark != isDark;
+      oldDelegate.tokens != tokens;
 }

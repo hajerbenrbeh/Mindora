@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import '../../../../app/localization/app_strings.dart';
 import '../../../../app/theme/mind_tokens.dart';
 import '../../../../core/widgets/mind_badge.dart';
+import '../../../../core/widgets/mind_button.dart';
+import '../../../../core/widgets/mind_card.dart';
 import '../../../investigation/domain/case_model.dart';
 
 /// Clean, modular Active Case Card for HomeScreen.
@@ -28,13 +30,8 @@ class HomeActiveCaseCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final progress = caseModel.currentStage.stepNumber / 6.0;
 
-    return Container(
+    return MindCard(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(20.0),
-        border: Border.all(color: tokens.border, width: 1.0),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -45,7 +42,7 @@ class HomeActiveCaseCard extends StatelessWidget {
                     '${strings.formatSessionNumber(caseModel.caseNumber)}  •  ${strings.stageNumberLabel(caseModel.currentStage.stepNumber)}',
               ),
               const Spacer(),
-              Icon(Icons.arrow_forward_ios_rounded, size: 12, color: tokens.textSecondary),
+              Icon(Icons.arrow_forward_ios_rounded, size: 12, color: tokens.ink2),
             ],
           ),
           const SizedBox(height: 12),
@@ -56,7 +53,7 @@ class HomeActiveCaseCard extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 15.5,
-              color: tokens.textPrimary,
+              color: tokens.ink,
             ),
           ),
           const SizedBox(height: 12),
@@ -65,32 +62,18 @@ class HomeActiveCaseCard extends StatelessWidget {
             child: LinearProgressIndicator(
               value: progress,
               minHeight: 4,
-              backgroundColor: tokens.surfaceSecondary,
-              valueColor: AlwaysStoppedAnimation<Color>(tokens.accent),
+              backgroundColor: tokens.surface2,
+              valueColor: AlwaysStoppedAnimation<Color>(tokens.m1),
             ),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: () {
-                HapticFeedback.mediumImpact();
-                onResume();
-              },
-              style: FilledButton.styleFrom(
-                backgroundColor: tokens.accent,
-                foregroundColor: isDark ? tokens.background : Colors.white,
-                minimumSize: const Size(48, 48),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(tokens.buttonRadius),
-                ),
-                padding: const EdgeInsets.symmetric(vertical: 12),
-              ),
-              child: Text(
-                strings.resumeInvestigation,
-                style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13.5),
-              ),
-            ),
+          MindButton(
+            text: strings.resumeInvestigation,
+            variant: MindButtonVariant.primary,
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              onResume();
+            },
           ),
         ],
       ),
