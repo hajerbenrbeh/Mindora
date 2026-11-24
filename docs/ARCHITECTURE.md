@@ -11,20 +11,22 @@ Mindora uses a **beginner-maintainable, feature-first Flutter architecture** wit
 ```text
 lib/
 ├── main.dart                     # Application entry point & ProviderScope
-├── app/                          # App-level widget, theme wiring, and router
-├── core/                         # Shared design system, utilities, and storage (later)
+├── app/
+│   ├── app.dart                  # MaterialApp.router & light/dark theme wiring
+│   ├── router.dart               # GoRouter with StatefulShellRoute.indexedStack
+│   └── shell/
+│       └── mindora_shell_scaffold.dart # Persistent 5-tab scaffold & MindoraBottomNavBar
+├── core/
+│   ├── design_system.dart        # Design system barrel export
+│   ├── theme/                    # MindoraPalette, MindoraColorTokens, Spacing, Typography, Theme
+│   ├── widgets/                  # Reusable calm UI primitives
+│   └── preview/                  # Milestone 1 design-system showcase
 └── features/                     # Self-contained feature modules
-    ├── home/
-    ├── track/
-    ├── clarity/
-    ├── toolkit/
-    ├── profile/
-    └── experiences/
-        ├── feelings/
-        ├── my_state/
-        ├── my_body/
-        ├── what_shaped_today/
-        └── my_thoughts/
+    ├── home/presentation/
+    ├── track/presentation/
+    ├── clarity/presentation/
+    ├── toolkit/presentation/
+    └── profile/presentation/
 ```
 Inside each feature (added as features are built):
 - `presentation/` — Screens, widgets, and view controllers.
@@ -42,36 +44,35 @@ Inside each feature (added as features are built):
 
 ---
 
-## 4. Navigation Strategy
-- **Choice:** `go_router`.
-- **Structure:**
-  - The five main sections (**Home**, **Track**, **Clarity**, **Toolkit**, **Profile**) will use a persistent navigation shell (`StatefulShellRoute.indexedStack`) so tab state is preserved.
-  - The five independent experiences (**Feelings**, **My State**, **My Body**, **What Shaped Today**, **My Thoughts**) will be registered as independent push routes accessible from any relevant section without forcing a sequence.
+## 4. Navigation Strategy (Implemented in Milestone 2)
+- **Choice:** `go_router` using `StatefulShellRoute.indexedStack`.
+- **Five Persistent Branches:**
+  1. `Home` (`/home`)
+  2. `Track` (`/track`, with nested `/track/detail` verifying independent stack preservation)
+  3. `Clarity` (`/clarity`)
+  4. `Toolkit` (`/toolkit`)
+  5. `Profile` (`/profile`)
+- **Behavior:**
+  - Each branch owns an independent `GlobalKey<NavigatorState>` so pushing nested routes inside one tab preserves that stack when switching to other tabs and handles Back navigation cleanly.
+  - Custom `MindoraBottomNavBar` uses `MindoraColorTokens` (`surface`, `divider`, `accentSoft`, `textPrimary`, `textMuted`), 48dp+ touch targets, semantic hints/selected states, and `FittedBox` label scaling to prevent overflow on small screens.
+  - The five independent experiences (to be built in Milestones 4–5) will be registered as independent routes without forcing a sequence.
 
 ---
 
 ## 5. Persistence & Security Strategy *(Pre-Implementation Baseline)*
-- **Milestone 0 Status:** No database or speculative data models are implemented yet.
+- **Milestone 2 Status:** No database or speculative data models are implemented yet.
 - **Confirmed Data Model Principle:**
   - One daily record per calendar day.
   - Subsequent saves on the same day update relevant fields without deleting unrelated information.
   - Creation and update timestamps are retained on the daily record; per-field timestamps are never fabricated.
   - Missing values remain missing; multiple emotions are preserved.
-- **Planned Persistence Approach:** SQLite for structured daily records and `shared_preferences` for non-sensitive UI settings (evaluated and finalized before Milestone 4).
-- **Mandatory Pre-Persistence Security Evaluation:** Before storing sensitive personal health data, we must formally evaluate and decide on:
-  - OS-level application sandboxing.
-  - Database encryption options (e.g., `sqflite_sqlcipher` vs. OS storage).
-  - Optional biometric/PIN application lock *(noting that an app lock does not by itself encrypt the database)*.
-  - Encryption-key storage and recovery implications.
-  - Android/iOS compatibility and future schema/encryption migration implications.
+- **Mandatory Pre-Persistence Security Evaluation:** Before storing sensitive personal health data (Milestone 4), we must formally evaluate OS-level sandboxing, database encryption options, optional biometric/PIN app lock (distinct from DB encryption), key storage/recovery, Android/iOS compatibility, and migration implications.
 
 ---
 
 ## 6. Testing Approach
-Testing begins in Milestone 0 and expands with each milestone:
-- **Unit tests:** Domain models, deterministic `Clarity` logic, and data-integrity rules.
-- **Repository & persistence tests:** Real SQLite behavior (using `sqflite_common_ffi` on Windows so tests run fast without an emulator).
-- **Widget & navigation tests:** Verify real UI behavior, route transitions, and accessibility semantics—not just widget existence.
+- **Unit & Theme tests:** Palette tokens, spacing/touch-target constants, light/dark themes.
+- **Widget & Navigation tests:** All 5 destinations render, tab switching preserves nested stacks, back navigation pops cleanly, semantic selection states, 48dp+ touch targets, light/dark switching, and zero overflow on small screens (`320x568`) at `1.6x`–`1.8x` text scale.
 - **Static analysis:** `flutter analyze` with `flutter_lints` must pass with zero issues after every milestone.
 
 ---

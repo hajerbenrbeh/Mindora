@@ -4,19 +4,19 @@ Mindora is built through controlled milestones. Each milestone has a defined sco
 
 ---
 
-## Milestone 0 — Product and Technical Foundation *(Current)*
+## Milestone 0 — Product and Technical Foundation *(Completed)*
 - **Scope:** Initialize Flutter (`com.mindora.app`, Android & iOS), initialize Git (no auto-commit), add initial dependencies (`flutter_riverpod`, `go_router`, `flutter_lints`), create permanent `docs/`, add minimal entry point and initialization test.
 - **Acceptance Criteria:** Clean project structure, `flutter analyze` passes, initialization test passes, Android target launches if available, iOS support preserved.
 
-## Milestone 1 — Design System
+## Milestone 1 — Design System *(Completed)*
 - **Dependencies:** Milestone 0 + font license verification (Lora & Inter).
 - **Scope:** Exact 5-color palette tokens, bundled typography, spacing, layout primitives, buttons, inputs, cards, navigation components, iconography guidelines, welcoming empty states, and WCAG accessibility contrast checks.
 - **Acceptance Criteria:** Theme tokens verified, contrast checks documented, widget tests pass for core primitives.
 
-## Milestone 2 — Application Shell
+## Milestone 2 — Application Shell *(Current)*
 - **Dependencies:** Milestone 1.
-- **Scope:** Persistent 5-tab navigation (`Home`, `Track`, `Clarity`, `Toolkit`, `Profile`) via `go_router`, independent routes for the 5 experiences, theme integration, Riverpod root wiring.
-- **Acceptance Criteria:** Tab state persists across switches, independent routes open from any tab, navigation tests pass.
+- **Scope:** Persistent 5-tab navigation (`Home`, `Track`, `Clarity`, `Toolkit`, `Profile`) via `go_router` (`StatefulShellRoute.indexedStack`), custom `MindoraBottomNavBar`, 5 distinct placeholder screens, nested branch stack preservation, theme integration, and responsive/accessibility tests.
+- **Acceptance Criteria:** Tab state persists across switches, nested back navigation works, small screens and large text scales do not overflow, analysis and tests pass.
 
 ## Milestone 3 — Home
 - **Dependencies:** Milestone 2.

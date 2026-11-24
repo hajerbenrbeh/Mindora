@@ -3,26 +3,19 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:mindora/app/app.dart';
+import 'package:mindora/app/shell/mindora_shell_scaffold.dart';
 
 void main() {
-  testWidgets('MindoraApp renders showcase and toggles light/dark theme', (
+  testWidgets('MindoraApp initializes with 5-tab shell on Home', (
     tester,
   ) async {
     await tester.pumpWidget(const ProviderScope(child: MindoraApp()));
     await tester.pumpAndSettle();
 
-    expect(find.text('Mindora Design System'), findsOneWidget);
-    expect(find.text('Color Palette'), findsOneWidget);
-    expect(find.text('Typography Hierarchy'), findsOneWidget);
+    expect(find.byType(MindoraBottomNavBar), findsOneWidget);
+    expect(find.text('A quiet space to begin'), findsOneWidget);
 
-    final lightTheme = Theme.of(tester.element(find.byType(Scaffold)));
+    final lightTheme = Theme.of(tester.element(find.byType(Scaffold).first));
     expect(lightTheme.brightness, Brightness.light);
-
-    await tester.tap(find.byIcon(Icons.dark_mode_outlined));
-    await tester.pumpAndSettle();
-
-    final darkTheme = Theme.of(tester.element(find.byType(Scaffold)));
-    expect(darkTheme.brightness, Brightness.dark);
-    expect(tester.takeException(), isNull);
   });
 }
