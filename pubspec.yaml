@@ -53,11 +53,19 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
+
+  fonts:
+    - family: Lora
+      fonts:
+        - asset: assets/fonts/lora/Lora-Variable.ttf
+        - asset: assets/fonts/lora/Lora-Italic-Variable.ttf
+          style: italic
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/inter/Inter-Variable.ttf
+        - asset: assets/fonts/inter/Inter-Italic-Variable.ttf
+          style: italic
 
   # To add assets to your application, add an assets section, like this:
   # assets:
