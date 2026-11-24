@@ -23,6 +23,9 @@ lib/
 │   └── preview/                  # Milestone 1 design-system showcase
 └── features/                     # Self-contained feature modules
     ├── home/presentation/
+    │   ├── home_screen.dart      # Welcome, Living Tapestry, Dimensions, Portals, Recent Activity
+    │   └── widgets/              # home_welcome_header, living_tapestry, dimensions_overview, exploration_portals, recent_activity_section
+    ├── experiences/presentation/ # Temporary Milestone 3 placeholder routes for the 5 experiences
     ├── track/presentation/
     ├── clarity/presentation/
     ├── toolkit/presentation/
@@ -55,7 +58,7 @@ Inside each feature (added as features are built):
 - **Behavior:**
   - Each branch owns an independent `GlobalKey<NavigatorState>` so pushing nested routes inside one tab preserves that stack when switching to other tabs and handles Back navigation cleanly.
   - Custom `MindoraBottomNavBar` uses `MindoraColorTokens` (`surface`, `divider`, `accentSoft`, `textPrimary`, `textMuted`), 48dp+ touch targets, semantic hints/selected states, and `FittedBox` label scaling to prevent overflow on small screens.
-  - The five independent experiences (to be built in Milestones 4–5) will be registered as independent routes without forcing a sequence.
+  - The five independent experiences (`/experiences/feelings`, `/experiences/my-state`, `/experiences/my-body`, `/experiences/what-shaped-today`, `/experiences/my-thoughts`) are registered on the root navigator so users can enter any experience independently from Home without altering tab stacks. (Full recording workflows will be built in Milestones 4–5.)
 
 ---
 

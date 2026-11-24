@@ -19,7 +19,7 @@ void main() {
     }
 
     // Initial screen is Home
-    expect(find.text('A quiet space to begin'), findsOneWidget);
+    expect(find.text('Welcome to your space'), findsOneWidget);
 
     await tester.tap(find.bySemanticsLabel('Track records and history'));
     await tester.pumpAndSettle();

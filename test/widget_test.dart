@@ -13,7 +13,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(MindoraBottomNavBar), findsOneWidget);
-    expect(find.text('A quiet space to begin'), findsOneWidget);
+    expect(find.text('Welcome to your space'), findsOneWidget);
 
     final lightTheme = Theme.of(tester.element(find.byType(Scaffold).first));
     expect(lightTheme.brightness, Brightness.light);

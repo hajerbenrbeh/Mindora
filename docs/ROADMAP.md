@@ -13,15 +13,15 @@ Mindora is built through controlled milestones. Each milestone has a defined sco
 - **Scope:** Exact 5-color palette tokens, bundled typography, spacing, layout primitives, buttons, inputs, cards, navigation components, iconography guidelines, welcoming empty states, and WCAG accessibility contrast checks.
 - **Acceptance Criteria:** Theme tokens verified, contrast checks documented, widget tests pass for core primitives.
 
-## Milestone 2 — Application Shell *(Current)*
+## Milestone 2 — Application Shell *(Completed)*
 - **Dependencies:** Milestone 1.
 - **Scope:** Persistent 5-tab navigation (`Home`, `Track`, `Clarity`, `Toolkit`, `Profile`) via `go_router` (`StatefulShellRoute.indexedStack`), custom `MindoraBottomNavBar`, 5 distinct placeholder screens, nested branch stack preservation, theme integration, and responsive/accessibility tests.
 - **Acceptance Criteria:** Tab state persists across switches, nested back navigation works, small screens and large text scales do not overflow, analysis and tests pass.
 
-## Milestone 3 — Home
+## Milestone 3 — Home *(Current)*
 - **Dependencies:** Milestone 2.
-- **Scope:** Calm overview, **Living Tapestry** concept, gentle access portals to the 5 independent experiences, recent activity placeholder/summary, non-obligatory contextual invitations.
-- **Acceptance Criteria:** Zero streak/guilt UI, responsive layout, widget & accessibility tests pass.
+- **Scope:** Hybrid **Living Tapestry** organic centerpiece, understated welcome area, balanced overview of the four wellbeing dimensions, five independent exploration portals navigating to placeholder experience routes, and genuine recent-activity empty state.
+- **Acceptance Criteria:** Zero streak/guilt UI, zero fabricated data, responsive layout across small screens and large text scales, widget & accessibility tests pass, light/dark emulator verification complete.
 
 ## Milestone 4 — First Complete Experience: Feelings
 - **Dependencies:** Milestone 3 + **Mandatory Security & Data Model Evaluation** (daily-record schema + encryption/app-lock trade-offs).

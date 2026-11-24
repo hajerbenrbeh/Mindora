@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 
 import '../core/preview/design_system_showcase.dart';
 import '../features/clarity/presentation/clarity_screen.dart';
+import '../features/experiences/presentation/experience_placeholder_screen.dart';
 import '../features/home/presentation/home_screen.dart';
+import '../features/home/presentation/widgets/exploration_portals.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/toolkit/presentation/toolkit_screen.dart';
 import '../features/track/presentation/track_screen.dart';
@@ -24,7 +26,8 @@ final themeModeProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(
   ThemeModeNotifier.new,
 );
 
-/// Provides the root [GoRouter] instance with a persistent 5-tab shell.
+/// Provides the root [GoRouter] instance with a persistent 5-tab shell
+/// and independent experience placeholder routes.
 final appRouterProvider = Provider<GoRouter>((ref) {
   final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 
@@ -97,6 +100,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+
+      // Five independent experience placeholder routes (Milestone 3)
+      for (final portal in mindoraPortals)
+        GoRoute(
+          path: portal.route,
+          parentNavigatorKey: rootNavigatorKey,
+          builder: (context, state) => ExperiencePlaceholderScreen(
+            title: portal.title,
+            description: portal.description,
+            icon: portal.icon,
+            milestoneNote:
+                'Placeholder for Milestone 3. The full ${portal.title} '
+                'recording experience will be implemented in a later milestone.',
+          ),
+        ),
+
       GoRoute(
         path: '/design-system',
         parentNavigatorKey: rootNavigatorKey,

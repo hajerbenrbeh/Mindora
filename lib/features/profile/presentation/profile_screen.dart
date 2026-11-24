@@ -60,28 +60,9 @@ class ProfileScreen extends ConsumerWidget {
                 const MindoraDivider(),
                 MindoraSurface(
                   tone: MindoraSurfaceTone.secondary,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Appearance preview',
-                              style: textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: MindoraSpacing.xs),
-                            Text(
-                              isDark
-                                  ? 'Dark organic theme active'
-                                  : 'Warm ivory light theme active',
-                              style: textTheme.bodyMedium,
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: MindoraSpacing.sm),
-                      MindoraSecondaryButton(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final button = MindoraSecondaryButton(
                         label: isDark ? 'Light' : 'Dark',
                         icon: isDark
                             ? Icons.light_mode_outlined
@@ -89,8 +70,43 @@ class ProfileScreen extends ConsumerWidget {
                         onPressed: () => ref
                             .read(themeModeProvider.notifier)
                             .setDarkMode(!isDark),
-                      ),
-                    ],
+                      );
+                      final info = Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Appearance preview',
+                            style: textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: MindoraSpacing.xs),
+                          Text(
+                            isDark
+                                ? 'Dark organic theme active'
+                                : 'Warm ivory light theme active',
+                            style: textTheme.bodyMedium,
+                          ),
+                        ],
+                      );
+
+                      if (constraints.maxWidth < 300) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            info,
+                            const SizedBox(height: MindoraSpacing.md),
+                            button,
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        children: [
+                          Expanded(child: info),
+                          const SizedBox(width: MindoraSpacing.sm),
+                          button,
+                        ],
+                      );
+                    },
                   ),
                 ),
               ],
