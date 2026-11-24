@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../core/preview/design_system_showcase.dart';
 import '../features/clarity/presentation/clarity_screen.dart';
+import '../features/experiences/feelings/presentation/feelings_screen.dart';
 import '../features/experiences/presentation/experience_placeholder_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/home/presentation/widgets/exploration_portals.dart';
@@ -101,8 +102,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
 
-      // Five independent experience placeholder routes (Milestone 3)
-      for (final portal in mindoraPortals)
+      // Feelings experience (Milestone 4)
+      GoRoute(
+        path: '/experiences/feelings',
+        parentNavigatorKey: rootNavigatorKey,
+        builder: (context, state) => const FeelingsScreen(),
+      ),
+
+      // Remaining four experience placeholder routes (Milestone 5)
+      for (final portal in mindoraPortals.where(
+        (p) => p.route != '/experiences/feelings',
+      ))
         GoRoute(
           path: portal.route,
           parentNavigatorKey: rootNavigatorKey,

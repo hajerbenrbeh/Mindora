@@ -14,6 +14,8 @@
 | 2026-11-24 | **Approved 5-color palette** | `#F7EFE3`, `#D8D9BF`, `#A8B18A`, `#35452B`, `#EAE1D0` define Mindora's calm, organic identity. |
 | 2026-11-24 | **One daily record per calendar day** | Subsequent saves update relevant fields without overwriting unrelated data; retains created/updated timestamps; preserves multiple emotions; never fabricates field timestamps or missing values. |
 | 2026-11-24 | **First end-to-end experience: Feelings** | Selected for Milestone 4 to validate the full vertical slice before building the remaining four experiences. |
+| 2026-11-24 | **Standard SQLite (`sqflite`) + Option B (`DailyRecord` + child `FeelingsEntry`)** | Preserves one `DailyRecord` per local calendar date while supporting multiple timestamped `FeelingsEntry` records with optional tone, unsure state, custom emotions, and non-destructive edits. |
+| 2026-11-24 | **Android backup restriction (`allowBackup="false"` + `backup_rules.xml` + `data_extraction_rules.xml`)** | Excludes unencrypted SQLite and preferences from Android cloud backup and device transfer; iOS backup exclusion (`NSURLIsExcludedFromBackupKey`) documented for macOS/Xcode verification. |
 | 2026-11-24 | **Zero paid APIs, ads, telemetry, or AI dependency** | Protects privacy, offline usability, and zero-cost sustainability. |
 
 ---

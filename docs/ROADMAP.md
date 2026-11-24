@@ -18,14 +18,14 @@ Mindora is built through controlled milestones. Each milestone has a defined sco
 - **Scope:** Persistent 5-tab navigation (`Home`, `Track`, `Clarity`, `Toolkit`, `Profile`) via `go_router` (`StatefulShellRoute.indexedStack`), custom `MindoraBottomNavBar`, 5 distinct placeholder screens, nested branch stack preservation, theme integration, and responsive/accessibility tests.
 - **Acceptance Criteria:** Tab state persists across switches, nested back navigation works, small screens and large text scales do not overflow, analysis and tests pass.
 
-## Milestone 3 — Home *(Current)*
+## Milestone 3 — Home *(Completed)*
 - **Dependencies:** Milestone 2.
 - **Scope:** Hybrid **Living Tapestry** organic centerpiece, understated welcome area, balanced overview of the four wellbeing dimensions, five independent exploration portals navigating to placeholder experience routes, and genuine recent-activity empty state.
 - **Acceptance Criteria:** Zero streak/guilt UI, zero fabricated data, responsive layout across small screens and large text scales, widget & accessibility tests pass, light/dark emulator verification complete.
 
-## Milestone 4 — First Complete Experience: Feelings
-- **Dependencies:** Milestone 3 + **Mandatory Security & Data Model Evaluation** (daily-record schema + encryption/app-lock trade-offs).
-- **Scope:** Full end-to-end implementation of **Feelings**—UI, multiple emotions, optional description/context, editing, SQLite daily-record persistence, retained created/updated timestamps, data-integrity tests, and history integration.
+## Milestone 4 — First Complete Experience: Feelings *(Current)*
+- **Dependencies:** Milestone 3 + **Mandatory Security & Data Model Evaluation** (daily-record schema + backup/storage trade-offs).
+- **Scope:** Full end-to-end implementation of **Feelings**—UI, multiple emotions, custom emotions, explicit unsure state, optional overall tone, optional description/context, editing, SQLite daily-record persistence (`sqflite`), retained created/updated timestamps, data-integrity tests, and Home integration.
 - **Acceptance Criteria:** Feelings entries save, update without overwriting unrelated fields, persist across restarts, and pass unit, repository, and widget tests.
 
 ## Milestone 5 — Remaining Four Experiences

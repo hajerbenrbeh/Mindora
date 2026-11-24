@@ -62,10 +62,14 @@ void main() {
       await tester.tap(portalFinder);
       await tester.pumpAndSettle();
 
-      expect(find.text('Return to Home'), findsOneWidget);
       expect(find.text(portal.title), findsWidgets);
 
-      await tester.tap(find.text('Return to Home'));
+      if (portal.route == '/experiences/feelings') {
+        await tester.pageBack();
+      } else {
+        expect(find.text('Return to Home'), findsOneWidget);
+        await tester.tap(find.text('Return to Home'));
+      }
       await tester.pumpAndSettle();
 
       expect(find.byType(HomeScreen), findsOneWidget);
